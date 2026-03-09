@@ -1,0 +1,45 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html, body {
+  background-color: #0D0D0D;
+  color: #FFFFFF;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: #0D0D0D; }
+::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
+
+@layer components {
+  .btn-primary {
+    @apply bg-rx-red text-white font-bold px-6 py-3 rounded-lg hover:bg-red-600 active:scale-95 transition-all;
+  }
+  .btn-secondary {
+    @apply bg-rx-card text-white font-bold px-6 py-3 rounded-lg border border-rx-border hover:border-rx-red transition-all;
+  }
+  .card {
+    @apply bg-rx-card border border-rx-border rounded-xl p-4;
+  }
+  .input {
+    @apply bg-rx-surface border border-rx-border text-white rounded-lg px-4 py-3 focus:outline-none focus:border-rx-red transition-colors w-full;
+  }
+  .badge {
+    @apply text-xs font-bold px-2 py-1 rounded-full;
+  }
+  .section-title {
+    @apply text-2xl font-black text-white mb-1;
+  }
+  .section-sub {
+    @apply text-rx-muted text-sm mb-6;
+  }
+}
