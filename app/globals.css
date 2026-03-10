@@ -13,6 +13,8 @@ html, body {
   color: #FFFFFF;
   font-family: var(--font-noto-sans), 'Noto Sans KR', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
+  font-size: 15px;
+  line-height: 1.6;
 }
 
 /* Scrollbar */

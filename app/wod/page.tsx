@@ -1,5 +1,5 @@
 'use client'
-import { useState, useMemo } from 'react'
+import React, { useState, useMemo } from 'react'
 import Link from 'next/link'
 import Header from '@/components/layout/Header'
 import MobileNav from '@/components/layout/MobileNav'
@@ -65,6 +65,7 @@ export default function WODPage() {
   const [category, setCategory] = useState('all')
   const [equipment, setEquipment] = useState('all')
   const [search, setSearch] = useState('')
+  const [showAll, setShowAll] = useState(false)
 
   const filtered = useMemo(() => {
     return WODS.filter((wod) => {
@@ -80,77 +81,68 @@ export default function WODPage() {
   return (
     <div className="min-h-screen bg-rx-bg">
       <Header />
-      <main className="pt-14 pb-24 md:pb-10 px-4 max-w-5xl mx-auto">
+      <main className="pt-20 pb-24 md:pb-10 px-4 max-w-5xl mx-auto">
         {/* AdSense top */}
         <div className="mt-4 mb-6 w-full h-16 bg-rx-surface border border-rx-border rounded-lg flex items-center justify-center">
           <span className="text-rx-muted text-xs">광고 영역 (AdSense)</span>
         </div>
 
-        <div className="flex items-end justify-between mb-6">
-          <div>
-            <h1 className="text-4xl font-black text-white mb-1">WOD Library</h1>
-            <p className="text-rx-muted text-sm">{WODS.length}개의 벤치마크 WOD · Girl / Hero / Open</p>
-          </div>
-          <Link
-            href="/wod/log"
-            className="btn-primary text-sm px-5 py-2.5 rounded-xl flex-shrink-0"
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="mr-1.5">
-              <line x1="12" y1="5" x2="12" y2="19" />
-              <line x1="5" y1="12" x2="19" y2="12" />
+        <div className="mb-6">
+          <h1 className="text-4xl font-black text-white mb-1">WOD 라이브러리</h1>
+          <p className="text-rx-muted text-sm">{WODS.length}개의 벤치마크 WOD · Girl / Hero / Open</p>
+        </div>
+
+        {/* Sticky Search + Filters */}
+        <div className="sticky top-20 z-20 bg-rx-bg py-2">
+          {/* Search */}
+          <div className="relative mb-3">
+            <svg className="absolute left-3 top-1/2 -translate-y-1/2 text-rx-muted" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
             </svg>
-            기록하기
-          </Link>
-        </div>
+            <input
+              type="text"
+              placeholder="WOD 이름, 동작, 태그 검색..."
+              className="input pl-9"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
 
-        {/* Search */}
-        <div className="relative mb-4">
-          <svg className="absolute left-3 top-1/2 -translate-y-1/2 text-rx-muted" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
-            <circle cx="11" cy="11" r="8" />
-            <line x1="21" y1="21" x2="16.65" y2="16.65" />
-          </svg>
-          <input
-            type="text"
-            placeholder="WOD 이름, 동작, 태그 검색..."
-            className="input pl-9"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-        </div>
+          {/* Category Filter */}
+          <div className="flex gap-2 mb-2 overflow-x-auto pb-1">
+            {WOD_CATEGORIES.map((cat) => (
+              <button
+                key={cat.id}
+                onClick={() => setCategory(cat.id)}
+                className={`flex-shrink-0 px-4 py-2 rounded-full text-xs font-bold transition-all ${
+                  category === cat.id
+                    ? 'gradient-bg text-white shadow-lg'
+                    : 'bg-rx-surface border border-rx-border text-rx-muted hover:text-white'
+                }`}
+              >
+                {cat.label}
+              </button>
+            ))}
+          </div>
 
-        {/* Category Filter */}
-        <div className="flex gap-2 mb-3 overflow-x-auto pb-1">
-          {WOD_CATEGORIES.map((cat) => (
-            <button
-              key={cat.id}
-              onClick={() => setCategory(cat.id)}
-              className={`flex-shrink-0 px-4 py-2 rounded-full text-xs font-bold transition-all ${
-                category === cat.id
-                  ? 'gradient-bg text-white shadow-lg'
-                  : 'bg-rx-surface border border-rx-border text-rx-muted hover:text-white'
-              }`}
-            >
-              {cat.label}
-            </button>
-          ))}
-        </div>
-
-        {/* Equipment Filter */}
-        <div className="flex gap-2 mb-6 overflow-x-auto pb-1">
-          {EQUIPMENT_FILTERS.map((eq) => (
-            <button
-              key={eq.id}
-              onClick={() => setEquipment(eq.id)}
-              className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-bold transition-all flex items-center gap-1 ${
-                equipment === eq.id
-                  ? 'bg-white/10 border border-white/20 text-white'
-                  : 'bg-rx-surface border border-rx-border text-rx-muted hover:text-white'
-              }`}
-            >
-              {eq.id !== 'all' && <span>{EQUIPMENT_ICONS[eq.id]}</span>}
-              {eq.label}
-            </button>
-          ))}
+          {/* Equipment Filter */}
+          <div className="flex gap-2 overflow-x-auto pb-1">
+            {EQUIPMENT_FILTERS.map((eq) => (
+              <button
+                key={eq.id}
+                onClick={() => setEquipment(eq.id)}
+                className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-bold transition-all flex items-center gap-1 ${
+                  equipment === eq.id
+                    ? 'bg-white/10 border border-white/20 text-white'
+                    : 'bg-rx-surface border border-rx-border text-rx-muted hover:text-white'
+                }`}
+              >
+                {eq.id !== 'all' && <span>{EQUIPMENT_ICONS[eq.id]}</span>}
+                {eq.label}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Results count */}
@@ -158,20 +150,14 @@ export default function WODPage() {
 
         {/* WOD Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filtered.map((wod, index) => (
-            <>
-              <div key={wod.id} className="group relative bg-rx-card border border-rx-border rounded-2xl p-5 hover:-translate-y-1 transition-all duration-200 hover:border-white/20">
+          {(showAll ? filtered : filtered.slice(0, 36)).map((wod, index) => (
+            <React.Fragment key={wod.id}>
+              <div className="group relative bg-rx-card border border-rx-border rounded-2xl p-5 hover:-translate-y-1 transition-all duration-200 hover:border-white/20">
                 {/* Type Badge */}
                 <div className="flex items-start justify-between mb-3">
                   <span className={`badge border ${TYPE_COLORS[wod.type]}`}>
                     {TYPE_LABELS[wod.type]}
                   </span>
-                  <Link
-                    href={`/wod/log?wod=${wod.id}`}
-                    className="text-[10px] font-bold px-2.5 py-1 rounded-full gradient-bg text-white opacity-0 group-hover:opacity-100 transition-opacity"
-                  >
-                    기록하기
-                  </Link>
                 </div>
 
                 {/* Name */}
@@ -225,9 +211,17 @@ export default function WODPage() {
                   <span className="text-rx-muted text-xs">광고 영역 (AdSense)</span>
                 </div>
               )}
-            </>
+            </React.Fragment>
           ))}
         </div>
+
+        {filtered.length > 36 && !showAll && (
+          <div className="text-center mt-8">
+            <button onClick={() => setShowAll(true)} className="btn-secondary px-8 py-3 rounded-xl">
+              더보기 ({filtered.length - 36}개 더)
+            </button>
+          </div>
+        )}
 
         {filtered.length === 0 && (
           <div className="text-center py-16">

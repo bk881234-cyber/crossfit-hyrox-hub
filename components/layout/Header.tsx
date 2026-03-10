@@ -29,7 +29,7 @@ export default function Header() {
   return (
     <>
       <header
-        className={`fixed top-0 left-0 right-0 z-50 h-14 flex items-center px-4 transition-all duration-400 relative ${
+        className={`fixed top-0 left-0 right-0 z-50 h-20 flex items-center px-4 transition-all duration-400 relative ${
           scrolled
             ? 'bg-rx-bg/90 backdrop-blur-xl border-b border-white/8 shadow-lg'
             : 'bg-rx-bg/60 backdrop-blur-md border-b border-transparent'
@@ -40,9 +40,9 @@ export default function Header() {
           <Image
             src="/Fittersstudio_BI.png"
             alt="FITTERS STUDIO"
-            height={32}
-            width={150}
-            className="h-8 w-auto"
+            height={44}
+            width={176}
+            className="h-11 w-auto"
             priority
           />
         </Link>
@@ -55,9 +55,9 @@ export default function Header() {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                className={`px-3 py-2 rounded-md text-base font-medium transition-colors ${
                   isActive
-                    ? 'text-white bg-white/10'
+                    ? 'text-white bg-white/10 font-bold'
                     : 'text-rx-muted hover:text-white hover:bg-rx-card'
                 }`}
               >
@@ -105,7 +105,7 @@ export default function Header() {
           menuOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
       >
-        <div className="flex items-center justify-between px-4 h-14 border-b border-rx-border">
+        <div className="flex items-center justify-between px-4 h-20 border-b border-rx-border">
           <Image
             src="/Fittersstudio_BI.png"
             alt="FITTERS STUDIO"

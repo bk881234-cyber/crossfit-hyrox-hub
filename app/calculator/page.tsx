@@ -31,9 +31,9 @@ function lbToKg(lb: number): number {
 
 export default function CalculatorPage() {
   const [tab, setTab] = useState<Tab>('barbell')
-  const [unit, setUnit] = useState<Unit>('kg')
+  const [unit, setUnit] = useState<Unit>('lb')
   const [weightInput, setWeightInput] = useState('')
-  const [reps, setReps] = useState(5)
+  const [reps, setReps] = useState(1)
   const [bodyweight, setBodyweight] = useState('')
 
   const weightKg = useCallback(() => {
@@ -75,7 +75,7 @@ export default function CalculatorPage() {
   return (
     <div className="min-h-screen bg-rx-bg">
       <Header />
-      <main className="pt-14 pb-24 md:pb-10 px-4 max-w-2xl mx-auto">
+      <main className="pt-20 pb-24 md:pb-10 px-4 max-w-2xl mx-auto">
         {/* AdSense Placeholder */}
         <div className="mt-4 mb-4 w-full h-16 bg-rx-surface border border-rx-border rounded-lg flex items-center justify-center">
           <span className="text-rx-muted text-xs">광고 영역 (AdSense)</span>

@@ -60,7 +60,7 @@ export default function CommunityPage() {
   return (
     <div className="min-h-screen bg-rx-bg">
       <Header />
-      <main className="pt-14 pb-24 md:pb-10 px-4 max-w-5xl mx-auto">
+      <main className="pt-20 pb-24 md:pb-10 px-4 max-w-5xl mx-auto">
         <h1 className="section-title mt-4">커뮤니티</h1>
         <p className="section-sub">HYROX 대회 · 크로스핏 대회 · 자유게시판</p>
 

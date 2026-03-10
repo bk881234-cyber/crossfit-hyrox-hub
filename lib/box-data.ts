@@ -14,6 +14,19 @@ export interface CrossFitBox {
 }
 
 export const BOXES: CrossFitBox[] = [
+  {
+    id: 'ultimate-isu',
+    name: '얼티밋트레이닝 이수점',
+    city: '서울',
+    district: '동작구',
+    address: '서울특별시 동작구 이수대로 86, 2층 (사당동)',
+    dropinFee: '20,000원',
+    phone: '02-000-0000',
+    lat: 37.4848,
+    lng: 126.9817,
+    sponsored: true,
+    features: ['주차가능', '샤워실', '에어컨', '와이파이', '보충제판매'],
+  },
   // ===== Seoul =====
   {
     id: 'cfseoul-gangnam',

@@ -77,7 +77,12 @@ export default function TimerPage() {
   const [elapsed, setElapsed] = useState(0)
   const [finished, setFinished] = useState(false)
 
+  const [countdownEnabled, setCountdownEnabled] = useState(false)
+  const [countingDown, setCountingDown] = useState(false)
+  const [countdownVal, setCountdownVal] = useState(10)
+
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const countdownRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const audioCtxRef = useRef<AudioContext | null>(null)
   const wakeLockRef = useRef<WakeLockSentinel | null>(null)
   const stateRef = useRef({ phase, timeLeft, currentRound })
@@ -136,6 +141,9 @@ export default function TimerPage() {
 
   const stop = useCallback(() => {
     if (intervalRef.current) clearInterval(intervalRef.current)
+    if (countdownRef.current) clearInterval(countdownRef.current)
+    setCountingDown(false)
+    setCountdownVal(10)
     setRunning(false)
     releaseWakeLock()
   }, [releaseWakeLock])
@@ -163,15 +171,41 @@ export default function TimerPage() {
       reset()
       return
     }
+    if (countingDown) {
+      if (countdownRef.current) clearInterval(countdownRef.current)
+      setCountingDown(false)
+      setCountdownVal(10)
+      return
+    }
     if (running) {
       stop()
+      return
+    }
+    if (countdownEnabled) {
+      await requestWakeLock()
+      const ctx = getAudioCtx()
+      setCountingDown(true)
+      setCountdownVal(10)
+      let val = 10
+      countdownRef.current = setInterval(() => {
+        val -= 1
+        setCountdownVal(val)
+        beep(ctx, 660, 0.12, 0.25)
+        if (val <= 0) {
+          if (countdownRef.current) clearInterval(countdownRef.current)
+          setCountingDown(false)
+          setCountdownVal(10)
+          beepStart(ctx)
+          setRunning(true)
+        }
+      }, 1000)
       return
     }
     await requestWakeLock()
     const ctx = getAudioCtx()
     beepStart(ctx)
     setRunning(true)
-  }, [finished, running, stop, reset, requestWakeLock, getAudioCtx])
+  }, [finished, countingDown, running, stop, reset, requestWakeLock, getAudioCtx, countdownEnabled])
 
   useEffect(() => {
     if (!running) return
@@ -269,7 +303,7 @@ export default function TimerPage() {
   return (
     <div className={`min-h-screen bg-rx-bg transition-colors duration-500`}>
       <Header />
-      <main className="pt-14 pb-24 md:pb-10 px-4 max-w-lg mx-auto">
+      <main className="pt-20 pb-24 md:pb-10 px-4 max-w-lg mx-auto">
         {/* AdSense top */}
         <div className="mt-4 mb-4 w-full h-16 bg-rx-surface border border-rx-border rounded-lg flex items-center justify-center">
           <span className="text-rx-muted text-xs">광고 영역 (AdSense)</span>
@@ -492,6 +526,19 @@ export default function TimerPage() {
           )}
         </div>
 
+        {/* 10초 후 시작 */}
+        {!running && !finished && (
+          <label className="flex items-center gap-3 cursor-pointer mb-4">
+            <input
+              type="checkbox"
+              checked={countdownEnabled}
+              onChange={(e) => setCountdownEnabled(e.target.checked)}
+              className="w-4 h-4 accent-rx-red"
+            />
+            <span className="text-rx-muted text-sm">10초 후 시작</span>
+          </label>
+        )}
+
         {/* Controls */}
         <div className="flex gap-3 mb-6">
           <button
@@ -540,6 +587,15 @@ export default function TimerPage() {
           <span className="text-rx-muted text-xs">광고 영역 (AdSense)</span>
         </div>
       </main>
+      {countingDown && (
+        <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/70">
+          <div className="text-center">
+            <div className="font-black text-white" style={{ fontSize: 'clamp(100px, 30vw, 200px)' }}>{countdownVal}</div>
+            <p className="text-white/50 text-lg mt-2">준비하세요!</p>
+            <button onClick={() => { if (countdownRef.current) clearInterval(countdownRef.current); setCountingDown(false); setCountdownVal(10); }} className="mt-4 text-rx-muted text-sm underline">취소</button>
+          </div>
+        </div>
+      )}
       <MobileNav />
     </div>
   )

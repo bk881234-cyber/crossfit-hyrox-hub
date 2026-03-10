@@ -29,7 +29,7 @@ export default function MapPage() {
   return (
     <div className="min-h-screen bg-rx-bg">
       <Header />
-      <main className="pt-14 pb-24 md:pb-10">
+      <main className="pt-20 pb-24 md:pb-10">
         {/* Map Placeholder */}
         <div className="w-full h-48 md:h-64 bg-rx-surface border-b border-rx-border flex flex-col items-center justify-center gap-3 relative overflow-hidden">
           {/* Fake map grid */}

@@ -74,7 +74,7 @@ export default function AboutPage() {
   return (
     <div className="min-h-screen bg-rx-bg">
       <Header />
-      <main className="pt-14 pb-24 md:pb-10">
+      <main className="pt-20 pb-24 md:pb-10">
 
         {/* ── Hero ── */}
         <section className="relative px-4 pt-16 pb-20 text-center overflow-hidden">

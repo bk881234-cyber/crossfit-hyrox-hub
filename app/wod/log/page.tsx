@@ -192,7 +192,7 @@ function WodLogContent() {
   return (
     <div className="min-h-screen bg-rx-bg">
       <Header />
-      <main className="pt-14 pb-24 md:pb-10 px-4 max-w-2xl mx-auto">
+      <main className="pt-20 pb-24 md:pb-10 px-4 max-w-2xl mx-auto">
 
         {/* ─ Header ─ */}
         <div className="mt-6 mb-6">

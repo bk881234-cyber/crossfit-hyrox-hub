@@ -80,7 +80,7 @@ export default function WODDetailPage({ params }: Props) {
   return (
     <div className="min-h-screen bg-rx-bg">
       <Header />
-      <main className="pt-14 pb-24 md:pb-10 px-4 max-w-2xl mx-auto">
+      <main className="pt-20 pb-24 md:pb-10 px-4 max-w-2xl mx-auto">
         {/* Breadcrumb */}
         <nav className="flex items-center gap-2 mt-4 mb-6 text-xs text-rx-muted">
           <Link href="/" className="hover:text-white transition-colors">홈</Link>
