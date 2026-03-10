@@ -93,7 +93,15 @@ export default function WODPage() {
         </div>
 
         {/* Sticky Search + Filters */}
-        <div className="sticky top-20 z-20 bg-rx-bg py-2">
+        <div
+          className="sticky top-20 z-20 py-2"
+          style={{
+            background: '#0D0D0D',
+            WebkitMaskImage: 'linear-gradient(to bottom, black 85%, transparent 100%)',
+            maskImage: 'linear-gradient(to bottom, black 85%, transparent 100%)',
+            paddingBottom: '2rem',
+          }}
+        >
           {/* Search */}
           <div className="relative mb-3">
             <svg className="absolute left-3 top-1/2 -translate-y-1/2 text-rx-muted" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">

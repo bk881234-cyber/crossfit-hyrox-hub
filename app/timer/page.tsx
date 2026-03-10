@@ -55,7 +55,11 @@ function beepEnd(ctx: AudioContext) {
 }
 
 function beepCountdown(ctx: AudioContext) {
-  beep(ctx, 660, 0.1, 0.2)
+  beep(ctx, 880, 0.15, 0.8)
+}
+
+function beepCountdownFinal(ctx: AudioContext) {
+  beep(ctx, 1200, 0.15, 0.8)
 }
 
 export default function TimerPage() {
@@ -214,13 +218,18 @@ export default function TimerPage() {
       setTimeLeft((prev) => {
         const ctx = audioCtxRef.current
 
-        if (prev <= 3 && prev > 1 && ctx) {
+        if ((prev === 3 || prev === 2) && ctx) {
           beepCountdown(ctx)
+        }
+
+        if (prev === 1 && ctx) {
+          beepCountdownFinal(ctx)
         }
 
         if (prev <= 1) {
           // Phase end
-          if (ctx) beepEnd(ctx)
+          const endCtx = audioCtxRef.current
+          if (endCtx) setTimeout(() => beepEnd(endCtx), 400)
 
           const cur = stateRef.current
           const c = config[mode]

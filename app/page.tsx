@@ -211,7 +211,6 @@ export default function HomePage() {
   const r3 = useReveal(100)
   const r4 = useReveal(0)
   const r5 = useReveal(0)
-  const r6 = useReveal(0)
 
   return (
     <div className="min-h-screen bg-rx-bg overflow-x-hidden">
@@ -230,7 +229,7 @@ export default function HomePage() {
           </div>
           <h1
             className="font-heading font-black uppercase tracking-tighter mb-4 leading-none animate-fade-in-up"
-            style={{ fontSize: 'clamp(3rem, 10vw, 7rem)', animationDelay: '0.1s', letterSpacing: '0.05em' }}
+            style={{ fontSize: 'clamp(3rem, 10vw, 7rem)', animationDelay: '0.1s', letterSpacing: '0.02em' }}
           >
             <span className="block text-white">FITTERS</span>
             <span className="block gradient-text">STUDIO</span>
@@ -255,10 +254,9 @@ export default function HomePage() {
 
       {/* ═══ SECTION 3: AUX 2 TOOLS ═══ */}
       <section className="bg-rx-surface px-4 py-14 relative overflow-hidden">
-        <div className="absolute inset-0 z-0" style={{ backgroundImage: "url('/fittersstudio_img01.png')", backgroundSize: 'cover', backgroundPosition: 'center', opacity: 0.18 }} />
+        <div className="absolute inset-0 z-0" style={{ backgroundImage: "url('/fittersstudio_img01.png')", backgroundSize: 'cover', backgroundPosition: 'center', opacity: 0.5 }} />
         <div className="max-w-6xl mx-auto relative z-10">
           <div ref={r3} className="text-center mb-8">
-            <p className="text-rx-muted text-xs tracking-widest uppercase mb-3">추가 도구</p>
             <h2 className="font-heading font-black text-4xl md:text-5xl uppercase text-white tracking-tight">More Features</h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -275,7 +273,6 @@ export default function HomePage() {
       {/* ═══ SECTION 4: STATS ═══ */}
       <section className="px-4 py-16 max-w-6xl mx-auto">
         <div ref={r4} className="text-center mb-12">
-          <p className="text-rx-muted text-xs tracking-widest uppercase mb-3">숫자로 보는</p>
           <h2 className="font-heading font-black text-4xl md:text-5xl uppercase text-white tracking-tight">By the Numbers</h2>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -299,7 +296,6 @@ export default function HomePage() {
           <div ref={r5} className="grid md:grid-cols-2 gap-12">
             {/* Left: Text */}
             <div className="flex flex-col">
-              <p className="text-rx-muted text-xs tracking-widest uppercase mb-3">소개</p>
               <h2 className="font-heading font-black text-5xl md:text-6xl uppercase gradient-text tracking-tight mb-6 leading-none">
                 What is<br />CrossFit?
               </h2>
@@ -341,63 +337,38 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ═══ SECTION 6: TODAY'S WOD BANNER ═══ */}
-      <section className="px-4 py-16">
-        <div ref={r6} className="max-w-6xl mx-auto">
-          <div className="relative rounded-3xl overflow-hidden border border-white/10">
-            <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg, rgba(232,50,26,0.15), rgba(255,45,139,0.12))' }} />
-            <div className="relative px-8 py-12 text-center">
-              <p className="text-rx-muted text-xs tracking-widest uppercase mb-3">WOD 컬렉션</p>
-              <h2 className="font-heading font-black text-4xl md:text-5xl uppercase text-white mb-4 tracking-tight">
-                WOD 라이브러리 바로가기
-              </h2>
-              <p className="text-white/50 text-sm md:text-base mb-8 max-w-md mx-auto leading-relaxed">
-                Girl · Hero · CrossFit Open WOD를 한눈에 확인하세요.<br className="hidden md:block" />
-                스케일링 옵션과 목표 시간까지 제공합니다.
-              </p>
-              <div className="flex gap-3 justify-center flex-wrap">
-                <Link href="/wod" className="btn-primary text-sm px-8 py-3.5 rounded-xl font-bold">Named WOD</Link>
-                <Link href="/wod?category=open" className="btn-secondary text-sm px-8 py-3.5 rounded-xl font-bold">CrossFit Open</Link>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Large Brand Text */}
-      <div className="overflow-hidden select-none" style={{ background: '#0D0D0D' }}>
+      {/* Large Brand Text + Footer */}
+      <footer className="bg-rx-bg" style={{ borderTop: '1px solid #333' }}>
+        {/* FITTERSSTUDIO 100vw watermark text */}
         <div
-          className="font-heading font-black uppercase text-center w-full leading-none"
+          className="select-none overflow-hidden w-full leading-none font-heading font-black uppercase"
           style={{
-            fontSize: 'clamp(4rem, 18vw, 16rem)',
+            fontSize: '15vw',
             color: '#2b1119',
-            letterSpacing: '-0.02em',
+            letterSpacing: '-0.01em',
+            whiteSpace: 'nowrap',
+            textAlign: 'center',
+            lineHeight: 1,
           }}
         >
           FITTERSSTUDIO
         </div>
-      </div>
 
-      {/* Footer */}
-      <footer className="bg-rx-bg border-t border-rx-border px-4 py-8">
-        <div className="max-w-6xl mx-auto">
-          <div className="flex flex-col md:flex-row justify-between gap-6">
+        {/* Footer info */}
+        <div className="px-6 pb-8 max-w-6xl mx-auto">
+          <div className="flex flex-col md:flex-row justify-between gap-6 pt-4 border-t border-rx-border">
             <div>
               <div className="font-heading font-black text-xl text-white mb-2">FITTERS STUDIO</div>
-              <p className="text-rx-muted text-xs leading-relaxed">
-                상호명: Fitters Studio<br />
-                대표자: 임병권<br />
-                이메일: bkbk881234@gmail.com
+              <p className="text-rx-muted text-sm leading-relaxed">
+                상호명: Fitters Studio&nbsp;&nbsp;|&nbsp;&nbsp;대표자: 임병권&nbsp;&nbsp;|&nbsp;&nbsp;이메일: bkbk881234@gmail.com
               </p>
             </div>
-            <div className="flex flex-col gap-2">
-              <Link href="/terms" className="text-rx-muted text-xs hover:text-white transition-colors">이용약관</Link>
-              <Link href="/privacy" className="text-rx-muted text-xs hover:text-white transition-colors">개인정보 처리방침</Link>
+            <div className="flex items-center gap-6 flex-shrink-0">
+              <Link href="/terms" className="text-rx-muted text-sm hover:text-white transition-colors">이용약관</Link>
+              <Link href="/privacy" className="text-rx-muted text-sm hover:text-white transition-colors">개인정보 처리방침</Link>
             </div>
           </div>
-          <div className="border-t border-rx-border mt-6 pt-4">
-            <p className="text-rx-muted text-xs text-center">Copyright © 2026 Fitters Studio. All rights reserved.</p>
-          </div>
+          <p className="text-rx-muted text-sm text-center mt-4">Copyright © 2026 Fitters Studio. All rights reserved.</p>
         </div>
       </footer>
 

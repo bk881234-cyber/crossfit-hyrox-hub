@@ -8,7 +8,7 @@ const navItems = [
   { href: '/', label: '홈' },
   { href: '/calculator', label: '1RM 계산기' },
   { href: '/timer', label: 'WOD 타이머' },
-  { href: '/wod', label: 'WOD Library' },
+  { href: '/wod', label: 'WOD 라이브러리' },
   { href: '/map', label: '드랍인 지도' },
   { href: '/community', label: '커뮤니티' },
   { href: '/about', label: '크로스핏이란?' },

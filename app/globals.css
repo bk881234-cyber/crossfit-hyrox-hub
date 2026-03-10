@@ -13,7 +13,7 @@ html, body {
   color: #FFFFFF;
   font-family: var(--font-noto-sans), 'Noto Sans KR', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
-  font-size: 15px;
+  font-size: 16px;
   line-height: 1.6;
 }
 
@@ -100,7 +100,7 @@ html, body {
   }
 
   .badge {
-    @apply text-xs font-bold px-2.5 py-1 rounded-full;
+    @apply text-sm font-bold px-2.5 py-1 rounded-full;
   }
 
   .section-title {
@@ -158,4 +158,18 @@ html, body {
   background: #1A1A1A;
   clip-path: polygon(0 60%, 100% 0, 100% 100%, 0 100%);
   margin-top: -1px;
+}
+
+/* ────────── Minimum font size 14px ────────── */
+.text-xs {
+  font-size: 0.875rem !important; /* 14px */
+}
+.text-\[10px\] {
+  font-size: 0.875rem !important;
+}
+.text-\[11px\] {
+  font-size: 0.875rem !important;
+}
+.text-\[12px\] {
+  font-size: 0.875rem !important;
 }
