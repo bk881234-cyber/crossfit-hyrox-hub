@@ -279,7 +279,7 @@ export default function HomePage() {
       </section>
 
       {/* ═══ SECTION 2: CORE 3 TOOLS ═══ */}
-      <section className="px-4 pt-2 pb-0 max-w-6xl mx-auto">
+      <section className="px-4 pt-2 pb-10 max-w-6xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {allTools.slice(0, 3).map((tool) => (
             <ToolCard key={tool.href} tool={tool} />
@@ -287,8 +287,11 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Section 2→3 배경 연결 (검정) */}
+      <div className="h-10 bg-rx-bg" />
+
       {/* ═══ SECTION 3: AUX 2 TOOLS ═══ */}
-      <section className="bg-rx-surface px-4 pt-10 pb-14 relative overflow-hidden" style={{ marginTop: 0 }}>
+      <section className="bg-rx-surface px-4 pt-14 pb-14 relative overflow-hidden">
         <div className="absolute inset-0 z-0" style={{ backgroundImage: "url('/fittersstudio_img01.png')", backgroundSize: 'cover', backgroundPosition: 'center', opacity: 0.5 }} />
         <div className="max-w-6xl mx-auto relative z-10">
           <div ref={r3} className="text-center mb-8">
