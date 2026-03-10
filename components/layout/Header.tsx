@@ -1,5 +1,6 @@
 'use client'
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { useState, useEffect } from 'react'
 
@@ -28,21 +29,26 @@ export default function Header() {
   return (
     <>
       <header
-        className={`fixed top-0 left-0 right-0 z-50 h-14 flex items-center px-4 transition-all duration-400 ${
+        className={`fixed top-0 left-0 right-0 z-50 h-14 flex items-center px-4 transition-all duration-400 relative ${
           scrolled
             ? 'bg-rx-bg/90 backdrop-blur-xl border-b border-white/8 shadow-lg'
             : 'bg-rx-bg/60 backdrop-blur-md border-b border-transparent'
         }`}
       >
-        {/* Logo */}
-        <Link href="/" className="flex items-center gap-2 mr-8 flex-shrink-0">
-          <span className="font-heading font-black text-lg tracking-widest uppercase gradient-text">
-            FITTERS STUDIO
-          </span>
+        {/* Logo — left */}
+        <Link href="/" className="flex items-center flex-shrink-0">
+          <Image
+            src="/Fittersstudio_BI.png"
+            alt="FITTERS STUDIO"
+            height={32}
+            width={150}
+            className="h-8 w-auto"
+            priority
+          />
         </Link>
 
-        {/* Desktop Nav */}
-        <nav className="hidden md:flex items-center gap-1 flex-1">
+        {/* Desktop Nav — absolute center */}
+        <nav className="hidden md:flex absolute left-1/2 -translate-x-1/2 items-center gap-1">
           {navItems.map((item) => {
             const isActive = pathname === item.href
             return (
@@ -100,7 +106,13 @@ export default function Header() {
         }`}
       >
         <div className="flex items-center justify-between px-4 h-14 border-b border-rx-border">
-          <span className="font-heading font-black text-sm tracking-widest uppercase gradient-text">FITTERS STUDIO</span>
+          <Image
+            src="/Fittersstudio_BI.png"
+            alt="FITTERS STUDIO"
+            height={24}
+            width={120}
+            className="h-6 w-auto"
+          />
           <button onClick={() => setMenuOpen(false)} className="p-2 text-rx-muted hover:text-white">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
               <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />

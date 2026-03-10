@@ -62,7 +62,13 @@ const allTools = [
     desc: '최대 중량 계산 + 훈련 퍼센트 테이블',
     detail: '바벨·덤벨·맨몸 운동의 최대 중량을 빠르게 계산하세요.',
     icon: (
-      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="url(#g1)" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
+        <defs>
+          <linearGradient id="g1" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="24" y2="24">
+            <stop offset="0%" stopColor="#E8321A" />
+            <stop offset="100%" stopColor="#FF2D8B" />
+          </linearGradient>
+        </defs>
         <rect x="4" y="2" width="16" height="20" rx="2" />
         <line x1="8" y1="6" x2="16" y2="6" />
         <line x1="8" y1="10" x2="16" y2="10" />
@@ -77,7 +83,13 @@ const allTools = [
     desc: 'AMRAP · EMOM · Tabata · For Time · HIIT',
     detail: '5가지 모드, 소리 알림 + 화면 켜짐 유지.',
     icon: (
-      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="url(#g2)" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
+        <defs>
+          <linearGradient id="g2" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="24" y2="24">
+            <stop offset="0%" stopColor="#E8321A" />
+            <stop offset="100%" stopColor="#FF2D8B" />
+          </linearGradient>
+        </defs>
         <circle cx="12" cy="12" r="10" />
         <polyline points="12 6 12 12 16 14" />
       </svg>
@@ -89,7 +101,13 @@ const allTools = [
     desc: '37개+ 벤치마크 WOD 컬렉션',
     detail: 'Girl · Hero · Open WOD. 스케일링 옵션 포함.',
     icon: (
-      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="url(#g3)" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
+        <defs>
+          <linearGradient id="g3" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="24" y2="24">
+            <stop offset="0%" stopColor="#E8321A" />
+            <stop offset="100%" stopColor="#FF2D8B" />
+          </linearGradient>
+        </defs>
         <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
         <polyline points="14 2 14 8 20 8" />
         <line x1="16" y1="13" x2="8" y2="13" />
@@ -103,7 +121,13 @@ const allTools = [
     desc: '전국 크로스핏 박스 드랍인 요금·정보',
     detail: '전국 크로스핏 박스 드랍인 요금·정보를 한눈에 확인하세요.',
     icon: (
-      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="url(#g4)" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
+        <defs>
+          <linearGradient id="g4" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="24" y2="24">
+            <stop offset="0%" stopColor="#E8321A" />
+            <stop offset="100%" stopColor="#FF2D8B" />
+          </linearGradient>
+        </defs>
         <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
         <circle cx="12" cy="10" r="3" />
       </svg>
@@ -115,7 +139,13 @@ const allTools = [
     desc: 'HYROX 대회 일정 · 국내 크로스핏 대회 · 자유게시판',
     detail: 'HYROX 대회 일정 · 국내 크로스핏 대회 · 자유게시판',
     icon: (
-      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="url(#g5)" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
+        <defs>
+          <linearGradient id="g5" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="24" y2="24">
+            <stop offset="0%" stopColor="#E8321A" />
+            <stop offset="100%" stopColor="#FF2D8B" />
+          </linearGradient>
+        </defs>
         <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
         <circle cx="9" cy="7" r="4" />
         <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
@@ -151,8 +181,8 @@ function ToolCard({ tool }: { tool: typeof allTools[number] }) {
       href={tool.href}
       className="tool-card group p-6 md:p-8 flex flex-row md:flex-col gap-4 md:gap-5 items-center md:items-start"
     >
-      {/* Icon */}
-      <div className="flex-shrink-0 text-white/50 group-hover:text-white transition-colors">
+      {/* Icon — always gradient stroke, no hover color change */}
+      <div className="flex-shrink-0">
         {tool.icon}
       </div>
 
@@ -165,18 +195,14 @@ function ToolCard({ tool }: { tool: typeof allTools[number] }) {
         <p className="text-rx-muted text-xs leading-relaxed md:hidden">{tool.desc}</p>
       </div>
 
-      {/* Arrow — mobile */}
-      <div className="flex-shrink-0 text-rx-muted group-hover:text-white transition-colors group-hover:translate-x-1 duration-300 md:hidden">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M9 18l6-6-6-6" />
-        </svg>
-      </div>
-      {/* Arrow — desktop */}
-      <div className="hidden md:block mt-auto text-rx-muted group-hover:text-white transition-colors group-hover:translate-x-1 duration-300 pt-2">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M5 12h14M12 5l7 7-7 7" />
-        </svg>
-      </div>
+      {/* 바로가기 → — mobile */}
+      <span className="flex-shrink-0 text-xs font-bold gradient-text md:hidden whitespace-nowrap">
+        바로가기 →
+      </span>
+      {/* 바로가기 → — desktop */}
+      <span className="hidden md:block mt-auto text-sm font-bold gradient-text pt-2">
+        바로가기 →
+      </span>
     </Link>
   )
 }
@@ -191,7 +217,7 @@ export default function HomePage() {
     <div className="min-h-screen bg-rx-bg overflow-x-hidden">
       <Header />
 
-      {/* ═══ SECTION 1: HERO (compact) ═══ */}
+      {/* ═══ SECTION 1: HERO ═══ */}
       <section className="relative pt-20 pb-6 px-4 overflow-hidden">
         <div className="absolute inset-0 hero-grid-bg opacity-60" />
         <div className="absolute inset-0" style={{ background: 'radial-gradient(ellipse 80% 60% at 50% 40%, rgba(232,50,26,0.08) 0%, transparent 70%)' }} />
@@ -202,7 +228,6 @@ export default function HomePage() {
             <span className="w-1.5 h-1.5 rounded-full gradient-bg animate-pulse" />
             CrossFit & HYROX Platform
           </div>
-
           <h1
             className="font-heading font-black uppercase tracking-tighter mb-4 leading-none animate-fade-in-up"
             style={{ fontSize: 'clamp(3rem, 10vw, 7rem)', animationDelay: '0.1s' }}
@@ -210,7 +235,6 @@ export default function HomePage() {
             <span className="block text-white">FITTERS</span>
             <span className="block gradient-text">STUDIO</span>
           </h1>
-
           <p className="text-rx-muted text-sm md:text-base animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
             크로스피터를 위한 모든 도구를 한곳에
           </p>
@@ -236,7 +260,6 @@ export default function HomePage() {
             <p className="text-rx-muted text-xs tracking-widest uppercase mb-3">추가 도구</p>
             <h2 className="font-heading font-black text-4xl md:text-5xl uppercase text-white tracking-tight">More Features</h2>
           </div>
-
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {allTools.slice(3).map((tool) => (
               <ToolCard key={tool.href} tool={tool} />
@@ -254,11 +277,11 @@ export default function HomePage() {
           <p className="text-rx-muted text-xs tracking-widest uppercase mb-3">숫자로 보는</p>
           <h2 className="font-heading font-black text-4xl md:text-5xl uppercase text-white tracking-tight">By the Numbers</h2>
         </div>
-
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {stats.map((s) => (
             <div key={s.label} className="bg-rx-surface border border-rx-border rounded-2xl p-6 md:p-8 text-center hover:border-white/20 transition-colors group">
-              <div className="font-heading font-black text-5xl md:text-6xl gradient-text mb-2 group-hover:scale-110 transition-transform duration-300 inline-block">
+              {/* font-normal = weight 400 */}
+              <div className="font-heading font-normal text-5xl md:text-6xl gradient-text mb-2 group-hover:scale-110 transition-transform duration-300 inline-block">
                 <CountUp end={s.end} suffix={s.suffix} duration={1800} />
               </div>
               <div className="text-white font-bold text-sm mb-1">{s.label}</div>
@@ -271,9 +294,10 @@ export default function HomePage() {
       {/* ═══ SECTION 5: CROSSFIT 소개 ═══ */}
       <section className="px-4 py-16 bg-rx-surface">
         <div className="max-w-6xl mx-auto">
-          <div ref={r5} className="grid md:grid-cols-2 gap-12 items-start">
-            {/* Text */}
-            <div>
+          {/* items-stretch so both columns share the same height */}
+          <div ref={r5} className="grid md:grid-cols-2 gap-12">
+            {/* Left: Text */}
+            <div className="flex flex-col">
               <p className="text-rx-muted text-xs tracking-widest uppercase mb-3">소개</p>
               <h2 className="font-heading font-black text-5xl md:text-6xl uppercase gradient-text tracking-tight mb-6 leading-none">
                 What is<br />CrossFit?
@@ -292,18 +316,20 @@ export default function HomePage() {
                   </div>
                 ))}
               </div>
-              <Link href="/about" className="btn-primary px-7 py-3 rounded-xl font-bold inline-flex items-center gap-2">
-                더 알아보기
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                  <path d="M5 12h14M12 5l7 7-7 7" />
-                </svg>
-              </Link>
+              <div className="mt-auto">
+                <Link href="/about" className="btn-primary px-7 py-3 rounded-xl font-bold inline-flex items-center gap-2">
+                  더 알아보기
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
+                </Link>
+              </div>
             </div>
 
-            {/* Term cards — no extra row, height matches text naturally */}
-            <div className="grid grid-cols-2 gap-3">
+            {/* Right: Term cards — grid-rows-2 fills full column height */}
+            <div className="grid grid-cols-2 grid-rows-2 gap-3 h-full">
               {termCards.map((term) => (
-                <div key={term.label} className="bg-rx-card border border-rx-border rounded-2xl p-4 hover:border-white/20 transition-colors">
+                <div key={term.label} className="bg-rx-card border border-rx-border rounded-2xl p-4 hover:border-white/20 transition-colors flex flex-col justify-center">
                   <div className="font-heading font-black text-2xl gradient-text mb-1">{term.label}</div>
                   <div className="text-white text-xs font-medium mb-0.5">{term.en}</div>
                   <div className="text-rx-muted text-xs">{term.ko}</div>
@@ -329,12 +355,8 @@ export default function HomePage() {
                 기록 페이지에 저장하세요.
               </p>
               <div className="flex gap-4 justify-center flex-wrap">
-                <Link href="/wod" className="btn-primary text-sm px-8 py-3.5 rounded-xl font-bold">
-                  WOD Library
-                </Link>
-                <Link href="/wod/log" className="btn-secondary text-sm px-8 py-3.5 rounded-xl font-bold">
-                  기록하기
-                </Link>
+                <Link href="/wod" className="btn-primary text-sm px-8 py-3.5 rounded-xl font-bold">WOD Library</Link>
+                <Link href="/wod/log" className="btn-secondary text-sm px-8 py-3.5 rounded-xl font-bold">기록하기</Link>
               </div>
             </div>
           </div>
