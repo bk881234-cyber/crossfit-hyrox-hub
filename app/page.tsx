@@ -9,12 +9,31 @@ function useFitText(text: string) {
   useEffect(() => {
     const el = ref.current
     if (!el) return
+
     const fit = () => {
-      el.style.fontSize = '100px'
-      const ratio = window.innerWidth / el.scrollWidth
-      el.style.fontSize = Math.floor(100 * ratio * 0.99) + 'px'
+      // Measure using a detached span to avoid container constraints
+      const span = document.createElement('span')
+      span.style.cssText = [
+        `font-family:${getComputedStyle(el).fontFamily}`,
+        `font-weight:${getComputedStyle(el).fontWeight}`,
+        `font-size:200px`,
+        `white-space:nowrap`,
+        `position:fixed`,
+        `visibility:hidden`,
+        `top:-9999px`,
+        `left:-9999px`,
+      ].join(';')
+      span.textContent = text
+      document.body.appendChild(span)
+      const textW = span.getBoundingClientRect().width
+      document.body.removeChild(span)
+      if (textW > 0) {
+        el.style.fontSize = Math.floor(200 * (document.documentElement.clientWidth / textW)) + 'px'
+      }
     }
-    fit()
+
+    // Wait for fonts to load for accurate measurement
+    document.fonts.ready.then(fit)
     window.addEventListener('resize', fit)
     return () => window.removeEventListener('resize', fit)
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -260,7 +279,7 @@ export default function HomePage() {
       </section>
 
       {/* ═══ SECTION 2: CORE 3 TOOLS ═══ */}
-      <section className="px-4 pb-6 pt-2 max-w-6xl mx-auto">
+      <section className="px-4 pt-2 pb-0 max-w-6xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {allTools.slice(0, 3).map((tool) => (
             <ToolCard key={tool.href} tool={tool} />
@@ -268,11 +287,8 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Diagonal divider */}
-      <div className="bg-rx-surface" style={{ height: '60px', clipPath: 'polygon(0 60%, 100% 0, 100% 100%, 0 100%)' }} />
-
       {/* ═══ SECTION 3: AUX 2 TOOLS ═══ */}
-      <section className="bg-rx-surface px-4 py-14 relative overflow-hidden">
+      <section className="bg-rx-surface px-4 pt-10 pb-14 relative overflow-hidden" style={{ marginTop: 0 }}>
         <div className="absolute inset-0 z-0" style={{ backgroundImage: "url('/fittersstudio_img01.png')", backgroundSize: 'cover', backgroundPosition: 'center', opacity: 0.5 }} />
         <div className="max-w-6xl mx-auto relative z-10">
           <div ref={r3} className="text-center mb-8">
@@ -309,25 +325,24 @@ export default function HomePage() {
       </section>
 
       {/* ═══ SECTION 5: CROSSFIT 소개 ═══ */}
-      <section className="px-4 py-16 bg-rx-surface">
+      <section className="px-4 bg-rx-surface" style={{ paddingTop: '80px', paddingBottom: '80px' }}>
         <div className="max-w-6xl mx-auto">
-          {/* items-stretch so both columns share the same height */}
           <div ref={r5} className="grid md:grid-cols-2 gap-12">
             {/* Left: Text */}
             <div className="flex flex-col">
               <h2 className="font-heading font-black text-5xl md:text-6xl uppercase gradient-text tracking-tight mb-6 leading-none">
                 What is<br />CrossFit?
               </h2>
-              <p className="text-white/70 text-sm md:text-base leading-relaxed mb-8">
+              <p className="text-white/70 md:text-base" style={{ lineHeight: 1.8, marginBottom: '24px' }}>
                 크로스핏은 <strong className="text-white">기능적 동작</strong>을 <strong className="text-white">끊임없이 변화</strong>하는 방식으로 <strong className="text-white">고강도</strong>로 수행하는 훈련입니다. 체력의 10가지 요소(심폐지구력, 근지구력, 근력, 유연성, 파워, 스피드, 민첩성, 균형, 협응, 정확성)를 골고루 발전시킵니다.
               </p>
-              <div className="flex flex-col gap-4 mb-8">
+              <div className="flex flex-col mb-8" style={{ gap: '20px' }}>
                 {crossfitPoints.map((p) => (
-                  <div key={p.title} className="flex items-start gap-4">
-                    <span className="text-2xl">{p.icon}</span>
+                  <div key={p.title} className="flex items-start" style={{ gap: '12px' }}>
+                    <span className="text-2xl flex-shrink-0">{p.icon}</span>
                     <div>
-                      <div className="text-white font-bold text-sm mb-0.5">{p.title}</div>
-                      <div className="text-rx-muted text-xs">{p.desc}</div>
+                      <div className="text-white font-bold" style={{ marginBottom: '4px' }}>{p.title}</div>
+                      <div className="text-rx-muted" style={{ lineHeight: 1.6 }}>{p.desc}</div>
                     </div>
                   </div>
                 ))}
@@ -342,13 +357,13 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Right: Term cards — grid-rows-2 fills full column height */}
-            <div className="grid grid-cols-2 grid-rows-2 gap-3 h-full">
+            {/* Right: Term cards */}
+            <div className="grid grid-cols-2 grid-rows-2 h-full" style={{ gap: '16px' }}>
               {termCards.map((term) => (
-                <div key={term.label} className="bg-rx-card border border-rx-border rounded-2xl p-4 hover:border-white/20 transition-colors flex flex-col justify-center">
-                  <div className="font-heading font-black text-2xl gradient-text mb-1">{term.label}</div>
-                  <div className="text-white text-xs font-medium mb-0.5">{term.en}</div>
-                  <div className="text-rx-muted text-xs">{term.ko}</div>
+                <div key={term.label} className="bg-rx-card border border-rx-border rounded-2xl hover:border-white/20 transition-colors flex flex-col justify-center" style={{ padding: '24px' }}>
+                  <div className="font-heading font-black text-2xl gradient-text" style={{ marginBottom: '8px' }}>{term.label}</div>
+                  <div className="text-white font-medium" style={{ lineHeight: 1.6, marginBottom: '4px' }}>{term.en}</div>
+                  <div className="text-rx-muted" style={{ lineHeight: 1.6 }}>{term.ko}</div>
                 </div>
               ))}
             </div>
@@ -357,7 +372,10 @@ export default function HomePage() {
       </section>
 
       {/* Large Brand Text (homepage only) */}
-      <div className="bg-rx-bg overflow-hidden select-none" style={{ lineHeight: 1 }}>
+      <div
+        className="bg-rx-bg select-none"
+        style={{ overflow: 'hidden', lineHeight: 1, width: '100%', padding: 0, margin: 0 }}
+      >
         <div
           ref={brandRef}
           className="font-heading font-black uppercase"
@@ -366,6 +384,8 @@ export default function HomePage() {
             whiteSpace: 'nowrap',
             display: 'block',
             lineHeight: 1,
+            padding: 0,
+            margin: 0,
           }}
         >
           FITTERSSTUDIO
