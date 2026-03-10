@@ -19,13 +19,37 @@ const TYPE_LABELS: Record<WOD['type'], string> = {
   benchmark: '벤치마크',
 }
 
-const EQUIPMENT_ICONS: Record<string, string> = {
-  barbell: '🏋️',
-  dumbbell: '💪',
-  bodyweight: '🤸',
-  rope: '🪢',
-  kettlebell: '🔔',
-  box: '📦',
+const EQUIPMENT_ICONS: Record<string, JSX.Element> = {
+  barbell: (
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="6" y1="12" x2="18" y2="12" /><rect x="1" y="10" width="4" height="4" rx="1" /><rect x="19" y="10" width="4" height="4" rx="1" />
+    </svg>
+  ),
+  dumbbell: (
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M6.5 6.5h11M6.5 17.5h11M3 10h18M3 14h18" />
+    </svg>
+  ),
+  bodyweight: (
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="5" r="2" /><path d="M12 7v6l-3 3m3-3l3 3" />
+    </svg>
+  ),
+  rope: (
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 2C12 2 8 6 8 12s4 10 4 10" /><path d="M12 2c0 0 4 4 4 10s-4 10-4 10" />
+    </svg>
+  ),
+  kettlebell: (
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="13" r="7" /><path d="M9 6a3 3 0 0 1 6 0" />
+    </svg>
+  ),
+  box: (
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="2" y="7" width="20" height="14" rx="2" /><path d="M16 7V5a2 2 0 0 0-4 0v2" />
+    </svg>
+  ),
 }
 
 const EQUIPMENT_LABELS: Record<string, string> = {
@@ -47,7 +71,8 @@ export default function WODPage() {
       const matchCat = category === 'all' || wod.type === category
       const matchEq = equipment === 'all' || wod.equipment.includes(equipment as WOD['equipment'][number])
       const matchSearch = search === '' || wod.name.toLowerCase().includes(search.toLowerCase()) ||
-        wod.movements.some(m => m.includes(search)) || wod.tags.some(t => t.includes(search))
+        wod.movements.some(m => m.toLowerCase().includes(search.toLowerCase())) ||
+        wod.tags.some(t => t.toLowerCase().includes(search.toLowerCase()))
       return matchCat && matchEq && matchSearch
     })
   }, [category, equipment, search])
@@ -57,16 +82,30 @@ export default function WODPage() {
       <Header />
       <main className="pt-14 pb-24 md:pb-10 px-4 max-w-5xl mx-auto">
         {/* AdSense top */}
-        <div className="mt-4 mb-4 w-full h-16 bg-rx-surface border border-rx-border rounded-lg flex items-center justify-center">
+        <div className="mt-4 mb-6 w-full h-16 bg-rx-surface border border-rx-border rounded-lg flex items-center justify-center">
           <span className="text-rx-muted text-xs">광고 영역 (AdSense)</span>
         </div>
 
-        <h1 className="section-title">WOD 아카이브</h1>
-        <p className="section-sub">{WODS.length}개의 벤치마크 WOD · Girl / Hero / Open</p>
+        <div className="flex items-end justify-between mb-6">
+          <div>
+            <h1 className="text-4xl font-black text-white mb-1">WOD Library</h1>
+            <p className="text-rx-muted text-sm">{WODS.length}개의 벤치마크 WOD · Girl / Hero / Open</p>
+          </div>
+          <Link
+            href="/wod/log"
+            className="btn-primary text-sm px-5 py-2.5 rounded-xl flex-shrink-0"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="mr-1.5">
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+            기록하기
+          </Link>
+        </div>
 
         {/* Search */}
         <div className="relative mb-4">
-          <svg className="absolute left-3 top-1/2 -translate-y-1/2 text-rx-muted" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <svg className="absolute left-3 top-1/2 -translate-y-1/2 text-rx-muted" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
             <circle cx="11" cy="11" r="8" />
             <line x1="21" y1="21" x2="16.65" y2="16.65" />
           </svg>
@@ -85,9 +124,9 @@ export default function WODPage() {
             <button
               key={cat.id}
               onClick={() => setCategory(cat.id)}
-              className={`flex-shrink-0 px-4 py-2 rounded-full text-xs font-bold transition-colors ${
+              className={`flex-shrink-0 px-4 py-2 rounded-full text-xs font-bold transition-all ${
                 category === cat.id
-                  ? 'bg-rx-red text-white'
+                  ? 'gradient-bg text-white shadow-lg'
                   : 'bg-rx-surface border border-rx-border text-rx-muted hover:text-white'
               }`}
             >
@@ -102,13 +141,13 @@ export default function WODPage() {
             <button
               key={eq.id}
               onClick={() => setEquipment(eq.id)}
-              className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-bold transition-colors ${
+              className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-bold transition-all flex items-center gap-1 ${
                 equipment === eq.id
-                  ? 'bg-rx-orange/80 text-white'
+                  ? 'bg-white/10 border border-white/20 text-white'
                   : 'bg-rx-surface border border-rx-border text-rx-muted hover:text-white'
               }`}
             >
-              {eq.id !== 'all' && <span className="mr-1">{EQUIPMENT_ICONS[eq.id]}</span>}
+              {eq.id !== 'all' && <span>{EQUIPMENT_ICONS[eq.id]}</span>}
               {eq.label}
             </button>
           ))}
@@ -121,29 +160,31 @@ export default function WODPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {filtered.map((wod, index) => (
             <>
-              <Link
-                key={wod.id}
-                href={`/wod/${wod.id}`}
-                className="card hover:border-rx-red/40 hover:-translate-y-1 transition-all duration-200 group block"
-              >
+              <div key={wod.id} className="group relative bg-rx-card border border-rx-border rounded-2xl p-5 hover:-translate-y-1 transition-all duration-200 hover:border-white/20">
                 {/* Type Badge */}
                 <div className="flex items-start justify-between mb-3">
                   <span className={`badge border ${TYPE_COLORS[wod.type]}`}>
                     {TYPE_LABELS[wod.type]}
                   </span>
-                  <svg className="text-rx-muted group-hover:text-rx-red transition-colors" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M9 18l6-6-6-6" />
-                  </svg>
+                  <Link
+                    href={`/wod/log?wod=${wod.id}`}
+                    className="text-[10px] font-bold px-2.5 py-1 rounded-full gradient-bg text-white opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    기록하기
+                  </Link>
                 </div>
 
                 {/* Name */}
-                <h3 className="font-black text-white text-xl mb-1 group-hover:text-rx-red transition-colors">{wod.name}</h3>
+                <Link href={`/wod/${wod.id}`}>
+                  <h3 className="font-black text-white text-2xl mb-2 hover:gradient-text transition-all">{wod.name}</h3>
+                </Link>
 
                 {/* Equipment icons */}
                 <div className="flex gap-1.5 mb-3">
                   {wod.equipment.map((eq) => (
-                    <span key={eq} className="text-xs bg-rx-surface px-2 py-0.5 rounded-full text-rx-muted border border-rx-border">
-                      {EQUIPMENT_ICONS[eq]} {EQUIPMENT_LABELS[eq]}
+                    <span key={eq} className="text-xs bg-rx-surface px-2 py-0.5 rounded-full text-rx-muted border border-rx-border flex items-center gap-1">
+                      {EQUIPMENT_ICONS[eq]}
+                      {EQUIPMENT_LABELS[eq]}
                     </span>
                   ))}
                 </div>
@@ -151,7 +192,7 @@ export default function WODPage() {
                 {/* Movements preview */}
                 <div className="mb-3">
                   {wod.movements.slice(0, 3).map((m, i) => (
-                    <span key={i} className="text-rx-muted text-xs mr-2">· {m}</span>
+                    <span key={i} className="text-rx-muted text-xs mr-2 font-medium">· {m}</span>
                   ))}
                   {wod.movements.length > 3 && (
                     <span className="text-rx-muted text-xs">+{wod.movements.length - 3}개</span>
@@ -159,14 +200,25 @@ export default function WODPage() {
                 </div>
 
                 {/* Target time */}
-                <div className="flex items-center gap-1 text-xs text-rx-orange font-bold">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <circle cx="12" cy="12" r="10" />
-                    <polyline points="12 6 12 12 16 14" />
-                  </svg>
-                  {wod.timeTarget.split('(')[0].trim()}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1 text-xs text-rx-muted font-medium">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
+                      <circle cx="12" cy="12" r="10" />
+                      <polyline points="12 6 12 12 16 14" />
+                    </svg>
+                    {wod.timeTarget.split('(')[0].trim()}
+                  </div>
+                  <Link
+                    href={`/wod/${wod.id}`}
+                    className="text-xs text-rx-muted hover:text-white transition-colors flex items-center gap-0.5"
+                  >
+                    자세히
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
+                      <path d="M9 18l6-6-6-6" />
+                    </svg>
+                  </Link>
                 </div>
-              </Link>
+              </div>
               {/* AdSense between rows */}
               {(index + 1) % 9 === 0 && index < filtered.length - 1 && (
                 <div key={`ad-${index}`} className="sm:col-span-2 lg:col-span-3 w-full h-16 bg-rx-surface border border-rx-border rounded-lg flex items-center justify-center">
@@ -179,8 +231,10 @@ export default function WODPage() {
 
         {filtered.length === 0 && (
           <div className="text-center py-16">
-            <p className="text-rx-muted text-4xl mb-3">🔍</p>
-            <p className="text-white font-bold mb-1">검색 결과가 없습니다</p>
+            <svg className="w-12 h-12 text-rx-muted mx-auto mb-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
+              <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+            <p className="text-white font-bold text-lg mb-1">검색 결과가 없습니다</p>
             <p className="text-rx-muted text-sm">다른 검색어나 필터를 사용해보세요</p>
           </div>
         )}

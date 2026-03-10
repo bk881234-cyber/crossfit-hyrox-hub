@@ -11,6 +11,7 @@ const config: Config = {
       colors: {
         rx: {
           red: '#E8321A',
+          pink: '#FF2D8B',
           orange: '#F97316',
           bg: '#0D0D0D',
           surface: '#1A1A1A',
@@ -20,8 +21,13 @@ const config: Config = {
           muted: '#999999',
         },
       },
+      backgroundImage: {
+        'rx-gradient': 'linear-gradient(135deg, #E8321A, #FF2D8B)',
+        'rx-gradient-r': 'linear-gradient(to right, #E8321A, #FF2D8B)',
+      },
       fontFamily: {
-        sans: ['system-ui', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+        heading: ['var(--font-noto-sans)', 'sans-serif'],
+        sans: ['var(--font-noto-sans)', 'system-ui', 'sans-serif'],
       },
     },
   },

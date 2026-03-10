@@ -7,7 +7,7 @@ const tabs = [
     href: '/',
     label: '홈',
     icon: (
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
         <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
         <polyline points="9 22 9 12 15 12 15 22" />
       </svg>
@@ -17,7 +17,7 @@ const tabs = [
     href: '/timer',
     label: '타이머',
     icon: (
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
         <circle cx="12" cy="12" r="10" />
         <polyline points="12 6 12 12 16 14" />
       </svg>
@@ -27,7 +27,7 @@ const tabs = [
     href: '/wod',
     label: 'WOD',
     icon: (
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
         <line x1="8" y1="6" x2="21" y2="6" />
         <line x1="8" y1="12" x2="21" y2="12" />
         <line x1="8" y1="18" x2="21" y2="18" />
@@ -41,7 +41,7 @@ const tabs = [
     href: '/map',
     label: '지도',
     icon: (
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
         <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
         <circle cx="12" cy="10" r="3" />
       </svg>
@@ -51,7 +51,7 @@ const tabs = [
     href: '/community',
     label: '커뮤니티',
     icon: (
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
         <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
         <circle cx="9" cy="7" r="4" />
         <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
@@ -66,22 +66,22 @@ export default function MobileNav() {
 
   return (
     <nav
-      className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-rx-surface border-t border-rx-border"
+      className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-rx-surface/95 backdrop-blur-xl border-t border-rx-border"
       style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
     >
       <div className="flex items-stretch">
         {tabs.map((tab) => {
-          const isActive = pathname === tab.href
+          const isActive = pathname === tab.href || (tab.href === '/wod' && pathname.startsWith('/wod'))
           return (
             <Link
               key={tab.href}
               href={tab.href}
               className={`flex flex-col items-center justify-center flex-1 py-2 gap-0.5 transition-colors ${
-                isActive ? 'text-rx-red' : 'text-rx-muted hover:text-white'
+                isActive ? 'text-white' : 'text-rx-muted hover:text-white'
               }`}
             >
-              {tab.icon}
-              <span className="text-[10px] font-semibold">{tab.label}</span>
+              <span className={isActive ? 'gradient-text' : ''}>{tab.icon}</span>
+              <span className={`text-[10px] font-semibold ${isActive ? 'gradient-text' : ''}`}>{tab.label}</span>
             </Link>
           )
         })}

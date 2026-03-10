@@ -1,12 +1,68 @@
+'use client'
+import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import Header from '@/components/layout/Header'
 import MobileNav from '@/components/layout/MobileNav'
 
-const features = [
+/* ─── Scroll Reveal Hook ─── */
+function useReveal(delay = 0) {
+  const ref = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    el.classList.add('reveal')
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setTimeout(() => el.classList.add('visible'), delay)
+          observer.unobserve(el)
+        }
+      },
+      { threshold: 0.1, rootMargin: '0px 0px -40px 0px' }
+    )
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [delay])
+  return ref
+}
+
+/* ─── Count-Up ─── */
+function CountUp({ end, suffix = '', duration = 1800 }: { end: number; suffix?: string; duration?: number }) {
+  const [count, setCount] = useState(0)
+  const [started, setStarted] = useState(false)
+  const ref = useRef<HTMLSpanElement>(null)
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    const obs = new IntersectionObserver(
+      ([e]) => { if (e.isIntersecting) { setStarted(true); obs.unobserve(el) } },
+      { threshold: 0.5 }
+    )
+    obs.observe(el)
+    return () => obs.disconnect()
+  }, [])
+  useEffect(() => {
+    if (!started) return
+    const t0 = performance.now()
+    const tick = (now: number) => {
+      const p = Math.min((now - t0) / duration, 1)
+      setCount(Math.floor((1 - Math.pow(1 - p, 3)) * end))
+      if (p < 1) requestAnimationFrame(tick)
+    }
+    requestAnimationFrame(tick)
+  }, [started, end, duration])
+  return <span ref={ref}>{count}{suffix}</span>
+}
+
+/* ─── Data ─── */
+const allTools = [
   {
     href: '/calculator',
+    label: '1RM CALCULATOR',
+    desc: '최대 중량 계산 + 훈련 퍼센트 테이블',
+    detail: '바벨·덤벨·맨몸 운동의 최대 중량을 빠르게 계산하세요.',
     icon: (
-      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
         <rect x="4" y="2" width="16" height="20" rx="2" />
         <line x1="8" y1="6" x2="16" y2="6" />
         <line x1="8" y1="10" x2="16" y2="10" />
@@ -14,169 +70,276 @@ const features = [
         <line x1="8" y1="18" x2="12" y2="18" />
       </svg>
     ),
-    iconColor: 'text-rx-red',
-    bgColor: 'bg-rx-red/10',
-    title: '1RM 계산기',
-    subtitle: '무게 변환 & 최대 중량 계산',
-    description: '바벨, 덤벨, 맨몸 운동별 1RM을 계산하고 퍼센트 테이블을 확인하세요.',
   },
   {
     href: '/timer',
+    label: 'WOD TIMER',
+    desc: 'AMRAP · EMOM · Tabata · For Time · HIIT',
+    detail: '5가지 모드, 소리 알림 + 화면 켜짐 유지.',
     icon: (
-      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
         <circle cx="12" cy="12" r="10" />
         <polyline points="12 6 12 12 16 14" />
       </svg>
     ),
-    iconColor: 'text-rx-orange',
-    bgColor: 'bg-rx-orange/10',
-    title: 'WOD 타이머',
-    subtitle: 'AMRAP/EMOM/Tabata 타이머',
-    description: '5가지 모드의 WOD 타이머. 소리 알림과 화면 켜짐 유지 기능 포함.',
   },
   {
     href: '/wod',
+    label: 'WOD LIBRARY',
+    desc: '37개+ 벤치마크 WOD 컬렉션',
+    detail: 'Girl · Hero · Open WOD. 스케일링 옵션 포함.',
     icon: (
-      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
         <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
         <polyline points="14 2 14 8 20 8" />
         <line x1="16" y1="13" x2="8" y2="13" />
         <line x1="16" y1="17" x2="8" y2="17" />
-        <polyline points="10 9 9 9 8 9" />
       </svg>
     ),
-    iconColor: 'text-green-400',
-    bgColor: 'bg-green-400/10',
-    title: 'WOD 아카이브',
-    subtitle: '35개+ 벤치마크 WOD',
-    description: 'Girl WODs, Hero WODs, CrossFit Open WOD를 한눈에. 스케일링 옵션 포함.',
   },
   {
     href: '/map',
+    label: 'DROP-IN MAP',
+    desc: '전국 크로스핏 박스 드랍인 요금·정보',
+    detail: '전국 크로스핏 박스 드랍인 요금·정보를 한눈에 확인하세요.',
     icon: (
-      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
         <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
         <circle cx="12" cy="10" r="3" />
       </svg>
     ),
-    iconColor: 'text-blue-400',
-    bgColor: 'bg-blue-400/10',
-    title: '드랍인 지도',
-    subtitle: '전국 크로스핏 박스 찾기',
-    description: '서울, 부산, 대구, 인천 등 전국 크로스핏 박스의 드랍인 요금과 정보.',
   },
   {
     href: '/community',
+    label: 'COMMUNITY',
+    desc: 'HYROX 대회 일정 · 국내 크로스핏 대회 · 자유게시판',
+    detail: 'HYROX 대회 일정 · 국내 크로스핏 대회 · 자유게시판',
     icon: (
-      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
         <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
         <circle cx="9" cy="7" r="4" />
-        <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+        <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
       </svg>
     ),
-    iconColor: 'text-purple-400',
-    bgColor: 'bg-purple-400/10',
-    title: '커뮤니티',
-    subtitle: 'HYROX & 크로스핏 대회 정보',
-    description: 'HYROX 대회 일정, 국내 크로스핏 대회, 자유게시판까지 한곳에.',
   },
 ]
 
 const stats = [
-  { value: '35+', label: 'WOD 수록' },
-  { value: '20+', label: '전국 박스' },
-  { value: '5가지', label: '타이머 모드' },
-  { value: '무료', label: '완전 무료' },
+  { end: 37, suffix: '+', label: 'WODs', sub: 'Girl · Hero · Open' },
+  { end: 20, suffix: '+', label: '전국 박스', sub: '드랍인 정보' },
+  { end: 5, suffix: '가지', label: '타이머 모드', sub: 'AMRAP · EMOM · Tabata' },
+  { end: 100, suffix: '%', label: '무료', sub: '광고 없는 도구' },
 ]
 
-export default function HomePage() {
+const crossfitPoints = [
+  { icon: '⚡', title: '기능적 동작', desc: '일상의 움직임을 기반으로 한 실용적 운동' },
+  { icon: '🔥', title: '고강도 인터벌', desc: '짧고 강렬한 WOD로 최대 효율의 훈련' },
+  { icon: '🔄', title: '끝없는 가변성', desc: '매일 다른 WOD로 지루함 없는 훈련' },
+]
+
+const termCards = [
+  { label: 'WOD', en: 'Workout of the Day', ko: '오늘의 운동' },
+  { label: 'AMRAP', en: 'As Many Rounds As Possible', ko: '최대 라운드 수행' },
+  { label: 'EMOM', en: 'Every Minute on the Minute', ko: '매 분 시작' },
+  { label: 'RX', en: 'As Prescribed', ko: '정규 무게/기준' },
+]
+
+/* ─── Shared Tool Card ─── */
+function ToolCard({ tool }: { tool: typeof allTools[number] }) {
   return (
-    <div className="min-h-screen bg-rx-bg">
+    <Link
+      href={tool.href}
+      className="tool-card group p-6 md:p-8 flex flex-row md:flex-col gap-4 md:gap-5 items-center md:items-start"
+    >
+      {/* Icon */}
+      <div className="flex-shrink-0 text-white/50 group-hover:text-white transition-colors">
+        {tool.icon}
+      </div>
+
+      {/* Text */}
+      <div className="flex-1 min-w-0">
+        <div className="font-heading font-black text-xl md:text-2xl text-white uppercase tracking-tight mb-0.5 md:mb-1 group-hover:gradient-text transition-all leading-tight">
+          {tool.label}
+        </div>
+        <p className="text-rx-muted text-xs md:text-sm leading-relaxed hidden md:block">{tool.detail}</p>
+        <p className="text-rx-muted text-xs leading-relaxed md:hidden">{tool.desc}</p>
+      </div>
+
+      {/* Arrow — mobile */}
+      <div className="flex-shrink-0 text-rx-muted group-hover:text-white transition-colors group-hover:translate-x-1 duration-300 md:hidden">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M9 18l6-6-6-6" />
+        </svg>
+      </div>
+      {/* Arrow — desktop */}
+      <div className="hidden md:block mt-auto text-rx-muted group-hover:text-white transition-colors group-hover:translate-x-1 duration-300 pt-2">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M5 12h14M12 5l7 7-7 7" />
+        </svg>
+      </div>
+    </Link>
+  )
+}
+
+export default function HomePage() {
+  const r3 = useReveal(100)
+  const r4 = useReveal(0)
+  const r5 = useReveal(0)
+  const r6 = useReveal(0)
+
+  return (
+    <div className="min-h-screen bg-rx-bg overflow-x-hidden">
       <Header />
 
-      <main className="pt-14 pb-20 md:pb-8">
-        {/* Hero */}
-        <section className="px-4 pt-12 pb-10 text-center">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rx-red/10 border border-rx-red/30 text-rx-red text-xs font-bold mb-4">
-            <span className="w-1.5 h-1.5 rounded-full bg-rx-red animate-pulse" />
-            크로스피터를 위한 올인원 허브
+      {/* ═══ SECTION 1: HERO (compact) ═══ */}
+      <section className="relative pt-20 pb-6 px-4 overflow-hidden">
+        <div className="absolute inset-0 hero-grid-bg opacity-60" />
+        <div className="absolute inset-0" style={{ background: 'radial-gradient(ellipse 80% 60% at 50% 40%, rgba(232,50,26,0.08) 0%, transparent 70%)' }} />
+        <div className="absolute bottom-0 left-0 right-0 h-16" style={{ background: 'linear-gradient(to bottom, transparent, #0D0D0D)' }} />
+
+        <div className="relative text-center max-w-5xl mx-auto">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-white/50 text-xs font-semibold mb-5 tracking-widest uppercase animate-fade-in-up">
+            <span className="w-1.5 h-1.5 rounded-full gradient-bg animate-pulse" />
+            CrossFit & HYROX Platform
           </div>
-          <h1 className="text-5xl md:text-7xl font-black text-white tracking-tight mb-3">
-            RX <span className="text-rx-red">HUB</span>
+
+          <h1
+            className="font-heading font-black uppercase tracking-tighter mb-4 leading-none animate-fade-in-up"
+            style={{ fontSize: 'clamp(3rem, 10vw, 7rem)', animationDelay: '0.1s' }}
+          >
+            <span className="block text-white">FITTERS</span>
+            <span className="block gradient-text">STUDIO</span>
           </h1>
-          <p className="text-rx-muted text-lg md:text-xl max-w-md mx-auto leading-relaxed">
-            크로스피터를 위한 모든 도구
-          </p>
-          <p className="text-rx-muted/70 text-sm mt-2 max-w-sm mx-auto">
-            1RM 계산기 · WOD 타이머 · WOD 아카이브 · 드랍인 지도 · 커뮤니티
-          </p>
-        </section>
 
-        {/* Feature Cards */}
-        <section className="px-4 max-w-5xl mx-auto">
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
-            {features.map((f) => (
-              <Link
-                key={f.href}
-                href={f.href}
-                className="group bg-rx-card border border-rx-border rounded-2xl p-4 hover:border-rx-red/50 hover:-translate-y-1 transition-all duration-200"
-              >
-                <div className={`w-12 h-12 rounded-xl ${f.bgColor} flex items-center justify-center mb-3 ${f.iconColor} group-hover:scale-110 transition-transform`}>
-                  {f.icon}
-                </div>
-                <h3 className="font-black text-white text-sm mb-0.5">{f.title}</h3>
-                <p className="text-rx-muted text-xs leading-snug">{f.subtitle}</p>
-              </Link>
-            ))}
+          <p className="text-rx-muted text-sm md:text-base animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
+            크로스피터를 위한 모든 도구를 한곳에
+          </p>
+        </div>
+      </section>
+
+      {/* ═══ SECTION 2: CORE 3 TOOLS ═══ */}
+      <section className="px-4 pb-6 pt-2 max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {allTools.slice(0, 3).map((tool) => (
+            <ToolCard key={tool.href} tool={tool} />
+          ))}
+        </div>
+      </section>
+
+      {/* Diagonal divider */}
+      <div className="bg-rx-surface" style={{ height: '60px', clipPath: 'polygon(0 60%, 100% 0, 100% 100%, 0 100%)' }} />
+
+      {/* ═══ SECTION 3: AUX 2 TOOLS ═══ */}
+      <section className="bg-rx-surface px-4 py-14">
+        <div className="max-w-6xl mx-auto">
+          <div ref={r3} className="text-center mb-8">
+            <p className="text-rx-muted text-xs tracking-widest uppercase mb-3">추가 도구</p>
+            <h2 className="font-heading font-black text-4xl md:text-5xl uppercase text-white tracking-tight">More Features</h2>
           </div>
 
-          {/* Feature descriptions - desktop only */}
-          <div className="hidden md:grid md:grid-cols-3 gap-4 mt-6">
-            {features.slice(0, 3).map((f) => (
-              <Link
-                key={f.href + '-desc'}
-                href={f.href}
-                className="bg-rx-surface border border-rx-border rounded-xl p-5 hover:border-rx-red/40 transition-colors"
-              >
-                <div className={`${f.iconColor} mb-2`}>
-                  {f.icon}
-                </div>
-                <h3 className="font-bold text-white mb-1">{f.title}</h3>
-                <p className="text-rx-muted text-sm leading-relaxed">{f.description}</p>
-              </Link>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {allTools.slice(3).map((tool) => (
+              <ToolCard key={tool.href} tool={tool} />
             ))}
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* Stats */}
-        <section className="px-4 max-w-5xl mx-auto mt-10">
-          <div className="grid grid-cols-4 gap-3">
-            {stats.map((s) => (
-              <div key={s.label} className="bg-rx-surface border border-rx-border rounded-xl p-4 text-center">
-                <div className="text-2xl font-black text-rx-red">{s.value}</div>
-                <div className="text-rx-muted text-xs mt-1">{s.label}</div>
+      {/* Diagonal divider */}
+      <div style={{ height: '60px', clipPath: 'polygon(0 0, 100% 60%, 100% 100%, 0 100%)', background: '#0D0D0D', marginTop: '-1px' }} />
+
+      {/* ═══ SECTION 4: STATS ═══ */}
+      <section className="px-4 py-16 max-w-6xl mx-auto">
+        <div ref={r4} className="text-center mb-12">
+          <p className="text-rx-muted text-xs tracking-widest uppercase mb-3">숫자로 보는</p>
+          <h2 className="font-heading font-black text-4xl md:text-5xl uppercase text-white tracking-tight">By the Numbers</h2>
+        </div>
+
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {stats.map((s) => (
+            <div key={s.label} className="bg-rx-surface border border-rx-border rounded-2xl p-6 md:p-8 text-center hover:border-white/20 transition-colors group">
+              <div className="font-heading font-black text-5xl md:text-6xl gradient-text mb-2 group-hover:scale-110 transition-transform duration-300 inline-block">
+                <CountUp end={s.end} suffix={s.suffix} duration={1800} />
               </div>
-            ))}
-          </div>
-        </section>
+              <div className="text-white font-bold text-sm mb-1">{s.label}</div>
+              <div className="text-rx-muted text-xs">{s.sub}</div>
+            </div>
+          ))}
+        </div>
+      </section>
 
-        {/* CTA */}
-        <section className="px-4 max-w-5xl mx-auto mt-10">
-          <div className="bg-gradient-to-br from-rx-red/20 to-rx-orange/10 border border-rx-red/30 rounded-2xl p-6 text-center">
-            <h2 className="text-xl font-black text-white mb-2">오늘의 WOD를 기록하세요</h2>
-            <p className="text-rx-muted text-sm mb-4">WOD 아카이브에서 오늘 할 운동을 찾고, 타이머로 기록을 측정해보세요.</p>
-            <div className="flex gap-3 justify-center">
-              <Link href="/wod" className="btn-primary text-sm px-5 py-2.5">
-                WOD 보기
-              </Link>
-              <Link href="/timer" className="btn-secondary text-sm px-5 py-2.5">
-                타이머 시작
+      {/* ═══ SECTION 5: CROSSFIT 소개 ═══ */}
+      <section className="px-4 py-16 bg-rx-surface">
+        <div className="max-w-6xl mx-auto">
+          <div ref={r5} className="grid md:grid-cols-2 gap-12 items-start">
+            {/* Text */}
+            <div>
+              <p className="text-rx-muted text-xs tracking-widest uppercase mb-3">소개</p>
+              <h2 className="font-heading font-black text-5xl md:text-6xl uppercase gradient-text tracking-tight mb-6 leading-none">
+                What is<br />CrossFit?
+              </h2>
+              <p className="text-white/70 text-sm md:text-base leading-relaxed mb-8">
+                크로스핏은 <strong className="text-white">기능적 동작</strong>을 <strong className="text-white">끊임없이 변화</strong>하는 방식으로 <strong className="text-white">고강도</strong>로 수행하는 훈련입니다. 체력의 10가지 요소(심폐지구력, 근지구력, 근력, 유연성, 파워, 스피드, 민첩성, 균형, 협응, 정확성)를 골고루 발전시킵니다.
+              </p>
+              <div className="flex flex-col gap-4 mb-8">
+                {crossfitPoints.map((p) => (
+                  <div key={p.title} className="flex items-start gap-4">
+                    <span className="text-2xl">{p.icon}</span>
+                    <div>
+                      <div className="text-white font-bold text-sm mb-0.5">{p.title}</div>
+                      <div className="text-rx-muted text-xs">{p.desc}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <Link href="/about" className="btn-primary px-7 py-3 rounded-xl font-bold inline-flex items-center gap-2">
+                더 알아보기
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                  <path d="M5 12h14M12 5l7 7-7 7" />
+                </svg>
               </Link>
             </div>
+
+            {/* Term cards — no extra row, height matches text naturally */}
+            <div className="grid grid-cols-2 gap-3">
+              {termCards.map((term) => (
+                <div key={term.label} className="bg-rx-card border border-rx-border rounded-2xl p-4 hover:border-white/20 transition-colors">
+                  <div className="font-heading font-black text-2xl gradient-text mb-1">{term.label}</div>
+                  <div className="text-white text-xs font-medium mb-0.5">{term.en}</div>
+                  <div className="text-rx-muted text-xs">{term.ko}</div>
+                </div>
+              ))}
+            </div>
           </div>
-        </section>
-      </main>
+        </div>
+      </section>
+
+      {/* ═══ SECTION 6: TODAY'S WOD BANNER ═══ */}
+      <section className="px-4 py-16">
+        <div ref={r6} className="max-w-6xl mx-auto">
+          <div className="relative rounded-3xl overflow-hidden border border-white/10">
+            <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg, rgba(232,50,26,0.15), rgba(255,45,139,0.12))' }} />
+            <div className="relative px-8 py-12 text-center">
+              <p className="text-rx-muted text-xs tracking-widest uppercase mb-3">오늘도 WOD를</p>
+              <h2 className="font-heading font-black text-4xl md:text-5xl uppercase text-white mb-4 tracking-tight">
+                오늘의 WOD를 기록하세요
+              </h2>
+              <p className="text-white/50 text-sm md:text-base mb-8 max-w-md mx-auto leading-relaxed">
+                WOD Library에서 운동을 찾고, 타이머로 기록을 측정하고,<br className="hidden md:block" />
+                기록 페이지에 저장하세요.
+              </p>
+              <div className="flex gap-4 justify-center flex-wrap">
+                <Link href="/wod" className="btn-primary text-sm px-8 py-3.5 rounded-xl font-bold">
+                  WOD Library
+                </Link>
+                <Link href="/wod/log" className="btn-secondary text-sm px-8 py-3.5 rounded-xl font-bold">
+                  기록하기
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
       <MobileNav />
     </div>

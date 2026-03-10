@@ -11,7 +11,7 @@
 html, body {
   background-color: #0D0D0D;
   color: #FFFFFF;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: var(--font-noto-sans), 'Noto Sans KR', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -20,26 +20,140 @@ html, body {
 ::-webkit-scrollbar-track { background: #0D0D0D; }
 ::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
 
+/* ────────── Animations ────────── */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position:  200% center; }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 20px rgba(232,50,26,0.3); }
+  50%       { box-shadow: 0 0 40px rgba(255,45,139,0.5); }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* Scroll reveal */
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+              transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal { opacity: 1; transform: none; transition: none; }
+  .animate-fade-in-up { animation: none; opacity: 1; transform: none; }
+  * { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+}
+
+/* ────────── Grid hero bg ────────── */
+.hero-grid-bg {
+  background-image:
+    linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+/* ────────── Components ────────── */
 @layer components {
   .btn-primary {
-    @apply bg-rx-red text-white font-bold px-6 py-3 rounded-lg hover:bg-red-600 active:scale-95 transition-all;
+    @apply relative text-white font-bold px-6 py-3 rounded-lg active:scale-95 transition-all inline-flex items-center justify-center overflow-hidden;
+    background: linear-gradient(135deg, #E8321A, #FF2D8B);
   }
+  .btn-primary::after {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent);
+    transition: left 0.5s ease;
+  }
+  .btn-primary:hover::after { left: 100%; }
+  .btn-primary:hover {
+    box-shadow: 0 0 24px rgba(232,50,26,0.4);
+  }
+
   .btn-secondary {
-    @apply bg-rx-card text-white font-bold px-6 py-3 rounded-lg border border-rx-border hover:border-rx-red transition-all;
+    @apply bg-rx-card text-white font-bold px-6 py-3 rounded-lg border border-rx-border hover:border-white/30 transition-all;
   }
+
   .card {
     @apply bg-rx-card border border-rx-border rounded-xl p-4;
   }
+
   .input {
     @apply bg-rx-surface border border-rx-border text-white rounded-lg px-4 py-3 focus:outline-none focus:border-rx-red transition-colors w-full;
   }
+
   .badge {
-    @apply text-xs font-bold px-2 py-1 rounded-full;
+    @apply text-xs font-bold px-2.5 py-1 rounded-full;
   }
+
   .section-title {
-    @apply text-2xl font-black text-white mb-1;
+    @apply text-4xl font-black text-white mb-2 uppercase tracking-tight;
+    font-family: var(--font-noto-sans), system-ui, sans-serif;
+    font-weight: 900;
   }
+
   .section-sub {
     @apply text-rx-muted text-sm mb-6;
   }
+
+  .gradient-text {
+    background: linear-gradient(to right, #E8321A, #FF2D8B);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .gradient-bg {
+    background: linear-gradient(135deg, #E8321A, #FF2D8B);
+  }
+
+  /* Gradient border card */
+  .grad-border {
+    border: 1px solid transparent;
+    background:
+      linear-gradient(#242424, #242424) padding-box,
+      linear-gradient(135deg, #E8321A, #FF2D8B) border-box;
+  }
+
+  /* Tool card hover */
+  .tool-card {
+    @apply bg-rx-card border border-rx-border rounded-2xl transition-all duration-300 cursor-pointer block;
+  }
+  .tool-card:hover {
+    transform: translateY(-4px);
+    border-color: transparent;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+    background:
+      linear-gradient(#242424, #242424) padding-box,
+      linear-gradient(135deg, #E8321A, #FF2D8B) border-box;
+  }
+}
+
+/* ────────── Diagonal divider ────────── */
+.divider-slash {
+  height: 60px;
+  background: #0D0D0D;
+  clip-path: polygon(0 0, 100% 40%, 100% 100%, 0 100%);
+  margin-top: -1px;
+}
+.divider-slash-inv {
+  height: 60px;
+  background: #1A1A1A;
+  clip-path: polygon(0 60%, 100% 0, 100% 100%, 0 100%);
+  margin-top: -1px;
 }
