@@ -32,7 +32,7 @@ function formatTime(seconds: number) {
   return `${pad(m)}:${pad(s)}`
 }
 
-function beep(ctx: AudioContext, freq: number, duration: number, volume = 0.3) {
+function beep(ctx: AudioContext, freq: number, duration: number, volume = 1.0) {
   const oscillator = ctx.createOscillator()
   const gainNode = ctx.createGain()
   oscillator.connect(gainNode)
@@ -46,20 +46,28 @@ function beep(ctx: AudioContext, freq: number, duration: number, volume = 0.3) {
 }
 
 function beepStart(ctx: AudioContext) {
-  beep(ctx, 880, 0.15, 0.4)
+  beep(ctx, 880, 0.2, 1.0)
 }
 
 function beepEnd(ctx: AudioContext) {
-  beep(ctx, 440, 0.3, 0.4)
-  setTimeout(() => beep(ctx, 440, 0.3, 0.4), 350)
+  beep(ctx, 440, 0.35, 1.0)
+  setTimeout(() => beep(ctx, 440, 0.35, 1.0), 400)
 }
 
-function beepCountdown(ctx: AudioContext) {
-  beep(ctx, 880, 0.15, 0.8)
+// 3초, 2초, 1초 구분 비프음
+function beepAtSec(ctx: AudioContext, sec: number) {
+  if (sec === 1) {
+    beep(ctx, 1200, 0.2, 1.0)
+  } else if (sec === 2) {
+    beep(ctx, 1000, 0.2, 1.0)
+  } else {
+    beep(ctx, 880, 0.2, 1.0)
+  }
 }
 
-function beepCountdownFinal(ctx: AudioContext) {
-  beep(ctx, 1200, 0.15, 0.8)
+// 10초 카운트다운 일반 틱
+function beepTick(ctx: AudioContext) {
+  beep(ctx, 660, 0.08, 0.5)
 }
 
 export default function TimerPage() {
@@ -194,7 +202,11 @@ export default function TimerPage() {
       countdownRef.current = setInterval(() => {
         val -= 1
         setCountdownVal(val)
-        beep(ctx, 660, 0.12, 0.25)
+        if (val === 3 || val === 2 || val === 1) {
+          beepAtSec(ctx, val)
+        } else if (val > 0) {
+          beepTick(ctx)
+        }
         if (val <= 0) {
           if (countdownRef.current) clearInterval(countdownRef.current)
           setCountingDown(false)
@@ -218,18 +230,14 @@ export default function TimerPage() {
       setTimeLeft((prev) => {
         const ctx = audioCtxRef.current
 
-        if ((prev === 3 || prev === 2) && ctx) {
-          beepCountdown(ctx)
-        }
-
-        if (prev === 1 && ctx) {
-          beepCountdownFinal(ctx)
+        if ((prev === 3 || prev === 2 || prev === 1) && ctx) {
+          beepAtSec(ctx, prev)
         }
 
         if (prev <= 1) {
-          // Phase end
+          // Phase end — delay so 1-sec beep plays first
           const endCtx = audioCtxRef.current
-          if (endCtx) setTimeout(() => beepEnd(endCtx), 400)
+          if (endCtx) setTimeout(() => beepEnd(endCtx), 500)
 
           const cur = stateRef.current
           const c = config[mode]

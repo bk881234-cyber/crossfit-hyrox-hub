@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import { Noto_Sans_KR } from 'next/font/google'
 import './globals.css'
+import Footer from '@/components/layout/Footer'
 
 const notoSansKR = Noto_Sans_KR({
   weight: ['400', '500', '700', '900'],
@@ -26,6 +27,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="ko" className={notoSansKR.variable}>
       <body className="bg-rx-bg min-h-screen">
         {children}
+        <Footer />
       </body>
     </html>
   )

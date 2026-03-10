@@ -4,6 +4,24 @@ import Link from 'next/link'
 import Header from '@/components/layout/Header'
 import MobileNav from '@/components/layout/MobileNav'
 
+function useFitText(text: string) {
+  const ref = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    const fit = () => {
+      el.style.fontSize = '100px'
+      const ratio = window.innerWidth / el.scrollWidth
+      el.style.fontSize = Math.floor(100 * ratio * 0.99) + 'px'
+    }
+    fit()
+    window.addEventListener('resize', fit)
+    return () => window.removeEventListener('resize', fit)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [text])
+  return ref
+}
+
 /* ─── Scroll Reveal Hook ─── */
 function useReveal(delay = 0) {
   const ref = useRef<HTMLDivElement>(null)
@@ -211,6 +229,7 @@ export default function HomePage() {
   const r3 = useReveal(100)
   const r4 = useReveal(0)
   const r5 = useReveal(0)
+  const brandRef = useFitText('FITTERSSTUDIO')
 
   return (
     <div className="min-h-screen bg-rx-bg overflow-x-hidden">
@@ -337,40 +356,21 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Large Brand Text + Footer */}
-      <footer className="bg-rx-bg" style={{ borderTop: '1px solid #333' }}>
-        {/* FITTERSSTUDIO 100vw watermark text */}
+      {/* Large Brand Text (homepage only) */}
+      <div className="bg-rx-bg overflow-hidden select-none" style={{ lineHeight: 1 }}>
         <div
-          className="select-none overflow-hidden w-full leading-none font-heading font-black uppercase"
+          ref={brandRef}
+          className="font-heading font-black uppercase"
           style={{
-            fontSize: '15vw',
             color: '#2b1119',
-            letterSpacing: '-0.01em',
             whiteSpace: 'nowrap',
-            textAlign: 'center',
+            display: 'block',
             lineHeight: 1,
           }}
         >
           FITTERSSTUDIO
         </div>
-
-        {/* Footer info */}
-        <div className="px-6 pb-8 max-w-6xl mx-auto">
-          <div className="flex flex-col md:flex-row justify-between gap-6 pt-4 border-t border-rx-border">
-            <div>
-              <div className="font-heading font-black text-xl text-white mb-2">FITTERS STUDIO</div>
-              <p className="text-rx-muted text-sm leading-relaxed">
-                상호명: Fitters Studio&nbsp;&nbsp;|&nbsp;&nbsp;대표자: 임병권&nbsp;&nbsp;|&nbsp;&nbsp;이메일: bkbk881234@gmail.com
-              </p>
-            </div>
-            <div className="flex items-center gap-6 flex-shrink-0">
-              <Link href="/terms" className="text-rx-muted text-sm hover:text-white transition-colors">이용약관</Link>
-              <Link href="/privacy" className="text-rx-muted text-sm hover:text-white transition-colors">개인정보 처리방침</Link>
-            </div>
-          </div>
-          <p className="text-rx-muted text-sm text-center mt-4">Copyright © 2026 Fitters Studio. All rights reserved.</p>
-        </div>
-      </footer>
+      </div>
 
       <MobileNav />
     </div>

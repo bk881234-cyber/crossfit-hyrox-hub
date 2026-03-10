@@ -160,16 +160,15 @@ html, body {
   margin-top: -1px;
 }
 
-/* ────────── Minimum font size 14px ────────── */
-.text-xs {
-  font-size: 0.875rem !important; /* 14px */
+/* ────────── Minimum font size 16px (copyright 제외) ────────── */
+.text-xs,
+.text-sm {
+  font-size: 1rem !important; /* 16px minimum */
 }
-.text-\[10px\] {
-  font-size: 0.875rem !important;
-}
-.text-\[11px\] {
-  font-size: 0.875rem !important;
-}
-.text-\[12px\] {
-  font-size: 0.875rem !important;
+.text-\[10px\],
+.text-\[11px\],
+.text-\[12px\],
+.text-\[13px\],
+.text-\[14px\] {
+  font-size: 1rem !important;
 }
