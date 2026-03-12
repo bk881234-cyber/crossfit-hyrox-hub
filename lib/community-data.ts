@@ -39,6 +39,29 @@ export interface BoardPost {
 export const HYROX_EVENTS: HyroxEvent[] = [
   // ===== 2025 Season (한국) =====
   {
+    id: 'hyrox-busan-2026-03',
+    name: 'HYROX Busan 2026 (Spring)',
+    city: '부산',
+    country: '한국',
+    date: '2026-03-21',
+    venue: 'BEXCO 제1전시장, 해운대구',
+    registrationUrl: 'https://hyrox.com/events/busan',
+    isOpen: true,
+    participants: 3000,
+  },
+  {
+    id: 'hyrox-seoul-2025-11',
+    name: 'HYROX Seoul 2025 (November)',
+    city: '서울',
+    country: '한국',
+    date: '2025-11-08',
+    venue: 'COEX 전시관 B홀, 삼성동',
+    registrationUrl: 'https://hyrox.com/events/seoul',
+    isOpen: false,
+    isPast: true,
+    participants: 3800,
+  },
+  {
     id: 'hyrox-seoul-2025-04',
     name: 'HYROX Seoul 2025',
     city: '서울',

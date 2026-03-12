@@ -1,14 +1,27 @@
 'use client'
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect, useRef } from 'react'
+import Script from 'next/script'
 import Header from '@/components/layout/Header'
 import MobileNav from '@/components/layout/MobileNav'
-import { BOXES } from '@/lib/box-data'
+import { BOXES, type CrossFitBox } from '@/lib/box-data'
+
+declare global {
+  interface Window {
+    kakao: any
+  }
+}
 
 const CITIES = ['전체', '서울', '부산', '대구', '인천', '기타']
 
 export default function MapPage() {
   const [selectedCity, setSelectedCity] = useState('전체')
   const [search, setSearch] = useState('')
+  const [mapLoaded, setMapLoaded] = useState(false)
+  const [locating, setLocating] = useState(false)
+  const mapRef = useRef<any>(null)
+  const mapContainerRef = useRef<HTMLDivElement>(null)
+  const markersRef = useRef<any[]>([])
+  const infoWindowRef = useRef<any>(null)
 
   const filtered = useMemo(() => {
     return BOXES.filter((box) => {
@@ -26,37 +39,124 @@ export default function MapPage() {
   const sponsored = filtered.filter((b) => b.sponsored)
   const regular = filtered.filter((b) => !b.sponsored)
 
+  const initMap = () => {
+    if (!window.kakao || !mapContainerRef.current) return
+    window.kakao.maps.load(() => {
+      const options = {
+        center: new window.kakao.maps.LatLng(37.5665, 126.9780),
+        level: 9,
+      }
+      const map = new window.kakao.maps.Map(mapContainerRef.current, options)
+      mapRef.current = map
+
+      // 공유 인포윈도우
+      const infowindow = new window.kakao.maps.InfoWindow({ zIndex: 1 })
+      infoWindowRef.current = infowindow
+
+      // 모든 박스 마커 추가
+      BOXES.forEach((box) => {
+        addMarker(map, box, infowindow)
+      })
+
+      setMapLoaded(true)
+    })
+  }
+
+  const addMarker = (map: any, box: CrossFitBox, infowindow: any) => {
+    const position = new window.kakao.maps.LatLng(box.lat, box.lng)
+    const marker = new window.kakao.maps.Marker({ map, position })
+
+    const content = `
+      <div style="padding:10px 14px;min-width:200px;background:#1A1A1A;border:1px solid rgba(255,255,255,0.15);border-radius:8px;color:#fff;font-family:sans-serif;">
+        <div style="font-weight:900;font-size:14px;margin-bottom:6px;">
+          ${box.name}${box.sponsored ? ' <span style="background:#E8321A22;color:#E8321A;border:1px solid #E8321A44;border-radius:4px;font-size:10px;padding:1px 5px;">SPONSORED</span>' : ''}
+        </div>
+        <div style="color:#999;font-size:12px;margin-bottom:3px;">📍 ${box.address}</div>
+        <div style="color:#999;font-size:12px;margin-bottom:3px;">💰 드랍인: <span style="color:#fff;font-weight:700;">${box.dropinFee}</span></div>
+        <div style="color:#999;font-size:12px;">📞 ${box.phone}</div>
+      </div>
+    `
+
+    window.kakao.maps.event.addListener(marker, 'click', () => {
+      infowindow.setContent(content)
+      infowindow.open(map, marker)
+    })
+
+    markersRef.current.push(marker)
+  }
+
+  const handleFindNearby = () => {
+    if (!mapRef.current || !window.kakao) return
+    setLocating(true)
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const { latitude, longitude } = pos.coords
+        const myPosition = new window.kakao.maps.LatLng(latitude, longitude)
+        mapRef.current.setCenter(myPosition)
+        mapRef.current.setLevel(7)
+
+        // 내 위치 마커
+        const myMarker = new window.kakao.maps.Marker({
+          map: mapRef.current,
+          position: myPosition,
+        })
+        const myInfowindow = new window.kakao.maps.InfoWindow({
+          content: '<div style="padding:6px 10px;background:#1A1A1A;border:1px solid rgba(232,50,26,0.4);border-radius:6px;color:#E8321A;font-weight:700;font-size:12px;">📍 내 위치</div>',
+          zIndex: 2,
+        })
+        myInfowindow.open(mapRef.current, myMarker)
+        setLocating(false)
+      },
+      () => {
+        alert('위치 권한이 필요합니다. 브라우저 설정에서 위치 접근을 허용해주세요.')
+        setLocating(false)
+      }
+    )
+  }
+
   return (
     <div className="min-h-screen bg-rx-bg">
+      <Script
+        src={`//dapi.kakao.com/v2/maps/sdk.js?appkey=2632d2da2c82603a1ee156259458420c&autoload=false`}
+        strategy="afterInteractive"
+        onLoad={initMap}
+      />
       <Header />
       <main className="pt-20 pb-24 md:pb-10">
-        {/* Map Placeholder */}
-        <div className="w-full h-48 md:h-64 bg-rx-surface border-b border-rx-border flex flex-col items-center justify-center gap-3 relative overflow-hidden">
-          {/* Fake map grid */}
-          <div className="absolute inset-0 opacity-10"
-            style={{
-              backgroundImage: 'linear-gradient(#333 1px, transparent 1px), linear-gradient(90deg, #333 1px, transparent 1px)',
-              backgroundSize: '40px 40px'
-            }}
+        {/* Kakao Map */}
+        <div className="relative w-full" style={{ height: '400px' }}>
+          <div
+            ref={mapContainerRef}
+            className="w-full h-full"
+            id="kakao-map"
           />
-          <svg className="text-rx-muted relative z-10" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-            <circle cx="12" cy="10" r="3" />
-          </svg>
-          <div className="text-center relative z-10">
-            <p className="text-white font-bold text-sm">구글 맵 API 연동 예정</p>
-            <p className="text-rx-muted text-xs mt-1">박스 위치를 지도에서 확인할 수 있습니다</p>
-          </div>
-          <div className="flex gap-2 relative z-10">
-            <span className="flex items-center gap-1 px-2 py-1 rounded-full bg-rx-card border border-rx-border text-xs text-rx-muted">
-              <span className="w-2 h-2 rounded-full bg-rx-red" />
-              일반 박스
-            </span>
-            <span className="flex items-center gap-1 px-2 py-1 rounded-full bg-rx-card border border-rx-red/50 text-xs text-rx-muted">
-              <span className="w-2 h-2 rounded-full bg-rx-orange" />
-              스폰서 박스
-            </span>
-          </div>
+          {!mapLoaded && (
+            <div className="absolute inset-0 flex flex-col items-center justify-center bg-rx-surface">
+              <div className="absolute inset-0 opacity-10"
+                style={{
+                  backgroundImage: 'linear-gradient(#333 1px, transparent 1px), linear-gradient(90deg, #333 1px, transparent 1px)',
+                  backgroundSize: '40px 40px'
+                }}
+              />
+              <svg className="text-rx-muted relative z-10 animate-pulse" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                <circle cx="12" cy="10" r="3" />
+              </svg>
+              <p className="text-rx-muted text-sm relative z-10 mt-2">지도 로딩 중...</p>
+            </div>
+          )}
+          {/* 내 주변 박스 찾기 버튼 */}
+          <button
+            onClick={handleFindNearby}
+            disabled={!mapLoaded || locating}
+            className="absolute bottom-4 right-4 z-10 flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-rx-bg/90 backdrop-blur-md border border-white/20 text-white text-sm font-bold hover:border-rx-red/60 transition-all disabled:opacity-50"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+              <circle cx="12" cy="10" r="3" />
+            </svg>
+            {locating ? '위치 확인 중...' : '내 주변 박스 찾기'}
+          </button>
         </div>
 
         <div className="px-4 max-w-5xl mx-auto mt-6">
@@ -142,7 +242,7 @@ export default function MapPage() {
   )
 }
 
-function BoxCard({ box }: { box: import('@/lib/box-data').CrossFitBox }) {
+function BoxCard({ box }: { box: CrossFitBox }) {
   return (
     <div className={`card ${box.sponsored ? 'border-rx-orange/40 bg-rx-orange/5' : ''} hover:border-rx-red/40 transition-all duration-200`}>
       {/* Header */}
@@ -205,13 +305,18 @@ function BoxCard({ box }: { box: import('@/lib/box-data').CrossFitBox }) {
             웹사이트
           </a>
         )}
-        <button className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-rx-surface border border-rx-border text-rx-muted hover:text-white hover:border-rx-red text-xs font-bold transition-colors ml-auto">
+        <a
+          href={`https://map.kakao.com/link/search/${encodeURIComponent(box.name)}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-rx-surface border border-rx-border text-rx-muted hover:text-white hover:border-rx-red text-xs font-bold transition-colors ml-auto"
+        >
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
             <circle cx="12" cy="10" r="3" />
           </svg>
           길찾기
-        </button>
+        </a>
       </div>
     </div>
   )

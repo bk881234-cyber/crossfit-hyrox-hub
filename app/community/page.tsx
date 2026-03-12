@@ -4,7 +4,26 @@ import Header from '@/components/layout/Header'
 import MobileNav from '@/components/layout/MobileNav'
 import { HYROX_EVENTS, COMPETITION_POSTS, BOARD_POSTS, type BoardPost } from '@/lib/community-data'
 
-type Tab = 'hyrox' | 'crossfit' | 'board'
+type Tab = 'hyrox' | 'major' | 'crossfit' | 'board'
+
+interface MajorComp {
+  name: string
+  organizer: string
+  scale: string
+  period: string
+  instagram: string
+}
+
+const MAJOR_COMPS: MajorComp[] = [
+  { name: 'K-Box Rise', organizer: 'CrossFit Korea', scale: '국내 최대 팀 대회', period: '매년 봄', instagram: '@kboxrise' },
+  { name: '팀오프보', organizer: 'OPB', scale: '팀 대회', period: '매년 여름', instagram: '@team_opb' },
+  { name: '마키아', organizer: 'CrossFit Machia', scale: '개인/팀', period: '매년 봄', instagram: '@crossfit_machia' },
+  { name: '서프', organizer: 'Surf CrossFit', scale: '개인/팀 복합', period: '매년 여름', instagram: '@surf_crossfit' },
+  { name: '배틀크루', organizer: 'Battle Crew', scale: '팀 대회', period: '매년 가을', instagram: '@battlecrew_kr' },
+  { name: 'CrossFit Korea Open', organizer: 'CrossFit Korea', scale: '전국 온라인+오프라인', period: '매년 봄', instagram: '@crossfitkoreaopen' },
+  { name: '코리안 챔피언십', organizer: 'CrossFit Korea', scale: '개인 챔피언십', period: '매년 가을', instagram: '@koreancf_champ' },
+  { name: '아이언리그', organizer: 'Iron League', scale: '개인 강자 초청', period: '매년 겨울', instagram: '@ironleague_kr' },
+]
 
 const TODAY = new Date('2026-03-09')
 
@@ -33,10 +52,11 @@ interface CompModalData {
 }
 
 export default function CommunityPage() {
+  const isLoggedIn = false
   const [tab, setTab] = useState<Tab>('hyrox')
   const [likes, setLikes] = useState<Record<string, boolean>>({})
   const [showModal, setShowModal] = useState(false)
-  const [modalData, setModalData] = useState<CompModalData>({
+  const [modalData, setModalData] = useState<CompModalData & { contactName: string; contactEmail: string }>({
     title: '',
     organizer: '',
     city: '',
@@ -45,6 +65,8 @@ export default function CommunityPage() {
     levels: '',
     description: '',
     registrationUrl: '',
+    contactName: '',
+    contactEmail: '',
   })
 
   const toggleLike = (id: string) => {
@@ -68,6 +90,7 @@ export default function CommunityPage() {
         <div className="flex gap-1 bg-rx-surface rounded-xl p-1 mb-6">
           {([
             { id: 'hyrox', label: 'HYROX 대회' },
+            { id: 'major', label: '국내 대형 대회' },
             { id: 'crossfit', label: '크로스핏 대회' },
             { id: 'board', label: '자유게시판' },
           ] as { id: Tab; label: string }[]).map((t) => (
@@ -88,9 +111,20 @@ export default function CommunityPage() {
           <div>
             <div className="flex items-center justify-between mb-4">
               <p className="text-rx-muted text-sm">{HYROX_EVENTS.length}개 대회</p>
-              <span className="badge bg-blue-500/20 text-blue-400 border border-blue-500/30 text-xs">
-                2026 시즌
-              </span>
+              <div className="flex items-center gap-2">
+                <span className="badge bg-blue-500/20 text-blue-400 border border-blue-500/30 text-xs">
+                  2026 시즌
+                </span>
+                <button
+                  onClick={() => setShowModal(true)}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-rx-red text-white text-xs font-bold hover:bg-red-600 transition-colors"
+                >
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                    <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
+                  </svg>
+                  대회 등록 신청
+                </button>
+              </div>
             </div>
             <div className="space-y-3">
               {sortedHyrox.map((event) => {
@@ -142,6 +176,58 @@ export default function CommunityPage() {
                   </div>
                 )
               })}
+            </div>
+          </div>
+        )}
+
+        {/* Major CrossFit Competitions Tab */}
+        {tab === 'major' && (
+          <div>
+            <div className="flex items-center justify-between mb-4">
+              <p className="text-rx-muted text-sm">국내 주요 크로스핏 대회 {MAJOR_COMPS.length}개</p>
+              <button
+                onClick={() => setShowModal(true)}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-rx-red text-white text-xs font-bold hover:bg-red-600 transition-colors"
+              >
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
+                </svg>
+                대회 등록 신청
+              </button>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {MAJOR_COMPS.map((comp) => (
+                <div key={comp.name} className="card hover:border-rx-red/40 transition-all">
+                  <h3 className="font-black text-white text-lg mb-2">{comp.name}</h3>
+                  <div className="space-y-1.5 mb-3">
+                    <div className="flex items-center gap-2">
+                      <span className="text-rx-muted text-sm w-12 flex-shrink-0">주최</span>
+                      <span className="text-white text-sm font-medium">{comp.organizer}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-rx-muted text-sm w-12 flex-shrink-0">규모</span>
+                      <span className="text-white text-sm">{comp.scale}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-rx-muted text-sm w-12 flex-shrink-0">시기</span>
+                      <span className="text-rx-orange text-sm font-bold">{comp.period}</span>
+                    </div>
+                  </div>
+                  <a
+                    href={`https://instagram.com/${comp.instagram.slice(1)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-rx-surface border border-rx-border text-rx-muted hover:text-white hover:border-rx-red text-xs font-bold transition-colors"
+                  >
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                      <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+                    </svg>
+                    {comp.instagram}
+                  </a>
+                </div>
+              ))}
             </div>
           </div>
         )}
@@ -281,6 +367,21 @@ export default function CommunityPage() {
             </div>
 
             <div className="space-y-4">
+              {!isLoggedIn && (
+                <>
+                  <div>
+                    <label className="text-rx-muted text-sm block mb-1">신청자 이름 *</label>
+                    <input type="text" className="input" placeholder="홍길동"
+                      value={modalData.contactName} onChange={e => setModalData(p => ({ ...p, contactName: e.target.value }))} />
+                  </div>
+                  <div>
+                    <label className="text-rx-muted text-sm block mb-1">이메일 *</label>
+                    <input type="email" className="input" placeholder="example@email.com"
+                      value={modalData.contactEmail} onChange={e => setModalData(p => ({ ...p, contactEmail: e.target.value }))} />
+                  </div>
+                  <hr className="border-rx-border" />
+                </>
+              )}
               <div>
                 <label className="text-rx-muted text-sm block mb-1">대회명 *</label>
                 <input type="text" className="input" placeholder="대회 이름을 입력하세요"
@@ -333,7 +434,7 @@ export default function CommunityPage() {
                 </button>
                 <button
                   onClick={() => {
-                    alert('대회 등록 요청이 접수되었습니다. 검토 후 게시됩니다.')
+                    alert('대회 등록 요청이 접수되었습니다. 검토 후 7일 이내에 승인됩니다. 감사합니다!')
                     setShowModal(false)
                   }}
                   className="flex-1 btn-primary text-sm py-3"

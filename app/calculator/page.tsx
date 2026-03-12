@@ -132,8 +132,40 @@ export default function CalculatorPage() {
               )}
             </div>
 
+            {/* Percentage Table — 반복횟수보다 위 */}
+            {rm > 0 && (
+              <div className="card mb-4">
+                <h2 className="font-black text-white mb-4">퍼센트 테이블</h2>
+                <div className="space-y-2">
+                  {PERCENTAGES.map((pct) => {
+                    const pctKg = Math.round(rm * pct / 100 * 10) / 10
+                    const pctDisplay = unit === 'kg'
+                      ? `${pctKg.toFixed(1)} kg`
+                      : `${kgToLb(pctKg).toFixed(1)} lb`
+                    const isMax = pct === 100
+                    return (
+                      <div
+                        key={pct}
+                        className={`flex items-center justify-between px-4 py-3 rounded-lg ${
+                          isMax ? 'bg-rx-red/20 border border-rx-red/40' : 'bg-rx-surface'
+                        }`}
+                      >
+                        <span className={`font-bold ${isMax ? 'text-rx-red' : 'text-rx-muted'}`}>{pct}%</span>
+                        <span className={`font-black text-lg ${isMax ? 'text-white' : 'text-white'}`}>{pctDisplay}</span>
+                        <span className="text-rx-muted text-xs">
+                          {unit === 'kg'
+                            ? `${kgToLb(pctKg).toFixed(0)} lb`
+                            : `${lbToKg(pctKg).toFixed(1)} kg`}
+                        </span>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            )}
+
             {/* Reps Input */}
-            <div className="card mb-6">
+            <div className="card mb-4">
               <label className="text-white font-bold block mb-3">반복 횟수: <span className="text-rx-red">{reps}회</span></label>
               <input
                 type="range"
@@ -163,51 +195,14 @@ export default function CalculatorPage() {
               </div>
             </div>
 
-            {/* 1RM Result */}
+            {/* 1RM Result — 맨 아래, 크기 축소 */}
             {rm > 0 && (
-              <div className="card mb-6 text-center bg-gradient-to-br from-rx-red/20 to-rx-orange/10 border-rx-red/30">
+              <div className="card mb-6 text-center py-3 px-4 bg-gradient-to-br from-rx-red/20 to-rx-orange/10 border-rx-red/30">
                 <p className="text-rx-muted text-sm mb-1">예상 1RM (Epley 공식)</p>
-                <p className="text-5xl font-black text-white">
+                <p className="text-3xl font-black text-white">
                   {unit === 'kg' ? rm.toFixed(1) : kgToLb(rm).toFixed(1)}
-                  <span className="text-2xl text-rx-muted ml-1">{unit}</span>
+                  <span className="text-xl text-rx-muted ml-1">{unit}</span>
                 </p>
-                <p className="text-rx-muted text-xs mt-2">
-                  {unit === 'kg'
-                    ? `≈ ${kgToLb(rm).toFixed(1)} lb`
-                    : `≈ ${lbToKg(rm).toFixed(1)} kg`}
-                </p>
-              </div>
-            )}
-
-            {/* Percentage Table */}
-            {rm > 0 && (
-              <div className="card mb-6">
-                <h2 className="font-black text-white mb-4">퍼센트 테이블</h2>
-                <div className="space-y-2">
-                  {PERCENTAGES.map((pct) => {
-                    const pctKg = Math.round(rm * pct / 100 * 10) / 10
-                    const pctDisplay = unit === 'kg'
-                      ? `${pctKg.toFixed(1)} kg`
-                      : `${kgToLb(pctKg).toFixed(1)} lb`
-                    const isMax = pct === 100
-                    return (
-                      <div
-                        key={pct}
-                        className={`flex items-center justify-between px-4 py-3 rounded-lg ${
-                          isMax ? 'bg-rx-red/20 border border-rx-red/40' : 'bg-rx-surface'
-                        }`}
-                      >
-                        <span className={`font-bold ${isMax ? 'text-rx-red' : 'text-rx-muted'}`}>{pct}%</span>
-                        <span className={`font-black text-lg ${isMax ? 'text-white' : 'text-white'}`}>{pctDisplay}</span>
-                        <span className="text-rx-muted text-xs">
-                          {unit === 'kg'
-                            ? `${kgToLb(pctKg).toFixed(0)} lb`
-                            : `${lbToKg(pctKg).toFixed(1)} kg`}
-                        </span>
-                      </div>
-                    )
-                  })}
-                </div>
               </div>
             )}
           </>

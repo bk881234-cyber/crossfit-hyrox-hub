@@ -330,12 +330,12 @@ export default function TimerPage() {
         <p className="section-sub">운동 모드를 선택하고 타이머를 시작하세요</p>
 
         {/* Mode Tabs */}
-        <div className="flex gap-1 bg-rx-surface rounded-xl p-1 mb-6 overflow-x-auto">
+        <div className="flex gap-1 bg-rx-surface rounded-xl p-1 mb-4 overflow-x-auto">
           {MODES.map((m) => (
             <button
               key={m.id}
               onClick={() => { if (!running) setMode(m.id) }}
-              className={`flex-shrink-0 px-3 py-2 rounded-lg text-xs font-bold transition-colors ${
+              className={`flex-shrink-0 whitespace-nowrap px-3 py-2.5 min-h-[44px] rounded-lg text-xs font-bold transition-colors ${
                 mode === m.id ? 'bg-rx-red text-white' : 'text-rx-muted hover:text-white'
               } ${running ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
@@ -493,7 +493,7 @@ export default function TimerPage() {
         )}
 
         {/* Timer Display */}
-        <div className={`rounded-2xl border-2 ${phaseBorder} ${phaseColor} p-8 mb-6 text-center transition-colors duration-300`}>
+        <div className={`rounded-2xl border-2 ${phaseBorder} ${phaseColor} p-4 md:p-8 mb-4 text-center transition-colors duration-300`}>
           {/* Phase Indicator */}
           {running && (
             <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold mb-4 ${
@@ -557,10 +557,10 @@ export default function TimerPage() {
         )}
 
         {/* Controls */}
-        <div className="flex gap-3 mb-6">
+        <div className="flex gap-3 mb-4">
           <button
             onClick={handleStart}
-            className={`flex-1 h-16 rounded-2xl font-black text-xl transition-all active:scale-95 ${
+            className={`flex-1 h-16 min-h-[56px] rounded-2xl font-black text-xl transition-all active:scale-95 ${
               finished
                 ? 'bg-rx-orange text-white hover:bg-orange-500'
                 : running
@@ -572,7 +572,7 @@ export default function TimerPage() {
           </button>
           <button
             onClick={reset}
-            className="h-16 w-16 rounded-2xl bg-rx-surface border border-rx-border text-rx-muted hover:text-white hover:border-rx-red transition-colors flex items-center justify-center"
+            className="h-16 w-16 min-h-[56px] rounded-2xl bg-rx-surface border border-rx-border text-rx-muted hover:text-white hover:border-rx-red transition-colors flex items-center justify-center"
           >
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
               <polyline points="1 4 1 10 7 10" />

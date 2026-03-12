@@ -5,7 +5,6 @@ import { usePathname } from 'next/navigation'
 import { useState, useEffect } from 'react'
 
 const navItems = [
-  { href: '/', label: '홈' },
   { href: '/calculator', label: '1RM 계산기' },
   { href: '/timer', label: 'WOD 타이머' },
   { href: '/wod', label: 'WOD 라이브러리' },
@@ -31,7 +30,7 @@ export default function Header() {
       <header
         className={`fixed top-0 left-0 right-0 z-50 h-20 flex items-center px-4 transition-all duration-400 relative ${
           scrolled
-            ? 'bg-rx-bg/90 backdrop-blur-xl border-b border-white/8 shadow-lg'
+            ? 'bg-rx-bg/90 backdrop-blur-2xl border-b border-white/10 shadow-lg'
             : 'bg-rx-bg/60 backdrop-blur-md border-b border-transparent'
         }`}
       >
@@ -48,14 +47,14 @@ export default function Header() {
         </Link>
 
         {/* Desktop Nav — absolute center */}
-        <nav className="hidden md:flex absolute left-1/2 -translate-x-1/2 items-center gap-1">
+        <nav className="hidden md:flex absolute left-1/2 -translate-x-1/2 items-center gap-0.5">
           {navItems.map((item) => {
             const isActive = pathname === item.href
             return (
               <Link
                 key={item.href}
                 href={item.href}
-                className={`px-3 py-2 rounded-md text-base font-medium transition-colors ${
+                className={`whitespace-nowrap px-2.5 py-1.5 rounded-md text-sm font-medium transition-colors ${
                   isActive
                     ? 'text-white bg-white/10 font-bold'
                     : 'text-rx-muted hover:text-white hover:bg-rx-card'
