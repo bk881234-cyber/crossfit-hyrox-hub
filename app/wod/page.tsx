@@ -83,7 +83,7 @@ export default function WODPage() {
       <Header />
       <main className="pt-20 pb-24 md:pb-10 px-4 max-w-5xl mx-auto">
         {/* AdSense top */}
-        <div className="mt-4 mb-6 w-full h-16 bg-rx-surface border border-rx-border rounded-lg flex items-center justify-center">
+        <div className="hidden mt-4 mb-6 w-full h-16 bg-rx-surface border border-rx-border rounded-lg flex items-center justify-center">
           <span className="text-rx-muted text-xs">광고 영역 (AdSense)</span>
         </div>
 
@@ -220,7 +220,7 @@ export default function WODPage() {
               </div>
               {/* AdSense between rows */}
               {(index + 1) % 9 === 0 && index < filtered.length - 1 && (
-                <div key={`ad-${index}`} className="sm:col-span-2 lg:col-span-3 w-full h-16 bg-rx-surface border border-rx-border rounded-lg flex items-center justify-center">
+                <div key={`ad-${index}`} className="hidden sm:col-span-2 lg:col-span-3 w-full h-16 bg-rx-surface border border-rx-border rounded-lg flex items-center justify-center">
                   <span className="text-rx-muted text-xs">광고 영역 (AdSense)</span>
                 </div>
               )}

@@ -77,7 +77,7 @@ export default function CalculatorPage() {
       <Header />
       <main className="pt-20 pb-24 md:pb-10 px-4 max-w-2xl mx-auto">
         {/* AdSense Placeholder */}
-        <div className="mt-4 mb-4 w-full h-16 bg-rx-surface border border-rx-border rounded-lg flex items-center justify-center">
+        <div className="hidden mt-4 mb-4 w-full h-16 bg-rx-surface border border-rx-border rounded-lg flex items-center justify-center">
           <span className="text-rx-muted text-xs">광고 영역 (AdSense)</span>
         </div>
 
@@ -266,7 +266,7 @@ export default function CalculatorPage() {
               ? '가변형 덤벨 세트로 다양한 중량을 효율적으로 활용하세요.'
               : '풀업바 + 딥바 세트로 맨몸 운동의 기본을 갖추세요.'}
           </p>
-          <div className="mt-3 h-12 bg-rx-card border border-rx-border rounded-lg flex items-center justify-center">
+          <div className="hidden mt-3 h-12 bg-rx-card border border-rx-border rounded-lg flex items-center justify-center">
             <span className="text-rx-muted text-xs">제휴 광고 영역 (Affiliate)</span>
           </div>
         </div>

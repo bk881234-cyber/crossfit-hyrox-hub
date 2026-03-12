@@ -131,7 +131,7 @@ const emptyPost = {
 export default function CommunityPage() {
   const isLoggedIn = false
 
-  const [tab, setTab] = useState<Tab>('hyrox')
+  const [tab, setTab] = useState<Tab>('major')
   const [likes, setLikes] = useState<Record<string, boolean>>({})
 
   // 국내 대형 대회: 등록된 대회 상태
@@ -218,8 +218,8 @@ export default function CommunityPage() {
         {/* Tab Selector */}
         <div className="flex gap-1 bg-rx-surface rounded-xl p-1 mb-6">
           {([
-            { id: 'hyrox', label: 'HYROX 대회' },
             { id: 'major', label: '국내 대형 대회' },
+            { id: 'hyrox', label: 'HYROX 대회' },
             { id: 'board', label: '자유게시판' },
           ] as { id: Tab; label: string }[]).map((t) => (
             <button
