@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Header from '@/components/layout/Header'
 import MobileNav from '@/components/layout/MobileNav'
 import { HYROX_EVENTS, BOARD_POSTS, type BoardPost } from '@/lib/community-data'
@@ -132,7 +132,10 @@ export default function CommunityPage() {
   const isLoggedIn = false
 
   const [tab, setTab] = useState<Tab>('major')
-  const [likes, setLikes] = useState<Record<string, boolean>>({})
+  const [likes, setLikes] = useState<Record<string, boolean>>(() => {
+    if (typeof window === 'undefined') return {}
+    try { return JSON.parse(localStorage.getItem('board_likes') || '{}') } catch { return {} }
+  })
 
   // 국내 대형 대회: 등록된 대회 상태
   const [registeredComps, setRegisteredComps] = useState<RegisteredComp[]>([])
@@ -140,8 +143,25 @@ export default function CommunityPage() {
   const [compForm, setCompForm] = useState(emptyComp)
   const [compSubmitted, setCompSubmitted] = useState(false)
 
-  // 자유게시판: 작성된 글 상태 (BOARD_POSTS를 초기값으로)
-  const [boardPosts, setBoardPosts] = useState<BoardPost[]>(BOARD_POSTS)
+  // 자유게시판: localStorage에서 사용자 작성 글 복원 후 기본 데이터와 병합
+  const [boardPosts, setBoardPosts] = useState<BoardPost[]>(() => {
+    if (typeof window === 'undefined') return BOARD_POSTS
+    try {
+      const saved: BoardPost[] = JSON.parse(localStorage.getItem('board_posts') || '[]')
+      return [...saved, ...BOARD_POSTS]
+    } catch { return BOARD_POSTS }
+  })
+
+  // boardPosts 변경 시 사용자 작성 글만 localStorage에 저장
+  useEffect(() => {
+    const userPosts = boardPosts.filter(p => p.id.startsWith('post-user-'))
+    localStorage.setItem('board_posts', JSON.stringify(userPosts))
+  }, [boardPosts])
+
+  // likes 변경 시 localStorage에 저장
+  useEffect(() => {
+    localStorage.setItem('board_likes', JSON.stringify(likes))
+  }, [likes])
   const [showWriteModal, setShowWriteModal] = useState(false)
   const [writeForm, setWriteForm] = useState(emptyPost)
   const [writeError, setWriteError] = useState('')

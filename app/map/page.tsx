@@ -1,6 +1,5 @@
 'use client'
 import { useState, useMemo, useRef, useCallback, useEffect } from 'react'
-import Script from 'next/script'
 import Header from '@/components/layout/Header'
 import MobileNav from '@/components/layout/MobileNav'
 import { BOXES, type CrossFitBox } from '@/lib/box-data'
@@ -8,8 +7,6 @@ import { BOXES, type CrossFitBox } from '@/lib/box-data'
 declare global {
   interface Window { kakao: any }
 }
-
-const KAKAO_KEY = process.env.NEXT_PUBLIC_KAKAO_MAP_KEY || '2632d2da2c82603a1ee156259458420c'
 
 // 데이터에 존재하는 도시만 동적으로 추출
 const ALL_CITIES = ['전체', ...Array.from(new Set(BOXES.map((b) => b.city))).sort()]
@@ -95,16 +92,24 @@ export default function MapPage() {
     }
   }, [])
 
-  const initMap = useCallback(() => {
-    if (!window.kakao?.maps) { setMapError(true); return }
-    window.kakao.maps.load(createMap)
-  }, [createMap])
-
-  // 스크립트가 이미 캐시된 경우 자동 초기화
+  // 카카오 지도 SDK 동적 로드
   useEffect(() => {
     if (window.kakao?.maps) {
       window.kakao.maps.load(createMap)
+      return
     }
+    const script = document.createElement('script')
+    script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.NEXT_PUBLIC_KAKAO_MAP_KEY}&autoload=false`
+    script.async = true
+    script.onload = () => {
+      if (window.kakao?.maps) {
+        window.kakao.maps.load(createMap)
+      } else {
+        setMapError(true)
+      }
+    }
+    script.onerror = () => setMapError(true)
+    document.head.appendChild(script)
   }, [createMap])
 
   const addMarker = (map: any, box: CrossFitBox, infowindow: any) => {
@@ -187,57 +192,39 @@ export default function MapPage() {
 
   return (
     <div className="min-h-screen bg-rx-bg">
-      <Script
-        src={`//dapi.kakao.com/v2/maps/sdk.js?appkey=${KAKAO_KEY}&autoload=false`}
-        strategy="afterInteractive"
-        onLoad={initMap}
-        onError={() => setMapError(true)}
-      />
       <Header />
       <main className="pt-20 pb-24 md:pb-10">
 
         {/* 카카오 지도 */}
-        <div className="relative w-full" style={{ height: '400px' }}>
-          <div ref={mapContainerRef} className="w-full h-full" id="kakao-map" />
-          {!mapLoaded && (
-            <div className="absolute inset-0 flex flex-col items-center justify-center bg-rx-surface">
-              <div className="absolute inset-0 opacity-10" style={{
-                backgroundImage: 'linear-gradient(#333 1px,transparent 1px),linear-gradient(90deg,#333 1px,transparent 1px)',
-                backgroundSize: '40px 40px',
-              }} />
-              {mapError ? (
-                <>
-                  <svg className="text-rx-muted relative z-10" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                    <circle cx="12" cy="12" r="10" />
-                    <line x1="12" y1="8" x2="12" y2="12" />
-                    <line x1="12" y1="16" x2="12.01" y2="16" />
-                  </svg>
-                  <p className="text-rx-muted text-sm relative z-10 mt-2">지도를 불러올 수 없습니다</p>
-                  <p className="text-rx-muted/60 text-xs relative z-10 mt-1">네트워크 연결을 확인해주세요</p>
-                </>
-              ) : (
-                <>
-                  <svg className="text-rx-muted relative z-10 animate-pulse" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-                    <circle cx="12" cy="10" r="3" />
-                  </svg>
-                  <p className="text-rx-muted text-sm relative z-10 mt-2">지도 로딩 중...</p>
-                </>
-              )}
-            </div>
-          )}
-          <button
-            onClick={handleFindNearby}
-            disabled={!mapLoaded || locating}
-            className="absolute bottom-4 right-4 z-10 flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-rx-bg/90 backdrop-blur-md border border-white/20 text-white text-sm font-bold hover:border-rx-red/60 transition-all disabled:opacity-50"
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-              <circle cx="12" cy="10" r="3" />
-            </svg>
-            {locating ? '위치 확인 중...' : '내 주변 박스 찾기'}
-          </button>
-        </div>
+        {!mapError && (
+          <div className="relative w-full" style={{ height: '400px' }}>
+            <div ref={mapContainerRef} className="w-full h-full" id="kakao-map" />
+            {!mapLoaded && (
+              <div className="absolute inset-0 flex flex-col items-center justify-center bg-rx-surface">
+                <div className="absolute inset-0 opacity-10" style={{
+                  backgroundImage: 'linear-gradient(#333 1px,transparent 1px),linear-gradient(90deg,#333 1px,transparent 1px)',
+                  backgroundSize: '40px 40px',
+                }} />
+                <svg className="text-rx-muted relative z-10 animate-pulse" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                  <circle cx="12" cy="10" r="3" />
+                </svg>
+                <p className="text-rx-muted text-sm relative z-10 mt-2">지도 로딩 중...</p>
+              </div>
+            )}
+            <button
+              onClick={handleFindNearby}
+              disabled={!mapLoaded || locating}
+              className="absolute bottom-4 right-4 z-10 flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-rx-bg/90 backdrop-blur-md border border-white/20 text-white text-sm font-bold hover:border-rx-red/60 transition-all disabled:opacity-50"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                <circle cx="12" cy="10" r="3" />
+              </svg>
+              {locating ? '위치 확인 중...' : '내 주변 박스 찾기'}
+            </button>
+          </div>
+        )}
 
         <div className="px-4 max-w-5xl mx-auto mt-6">
           <div className="flex items-start justify-between mb-2">

@@ -11,8 +11,22 @@ const notoSansKR = Noto_Sans_KR({
 })
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://www.fittersstudio.com'),
   title: 'FITTERS STUDIO - 크로스피터를 위한 모든 것',
   description: '1RM 계산기, WOD 타이머, WOD Library, 드랍인 지도 - 크로스피터에게 꼭 필요한 기능만',
+  openGraph: {
+    title: 'Fitters Studio',
+    description: '크로스피터를 위한 모든 도구를 한곳에',
+    url: 'https://www.fittersstudio.com',
+    images: [{ url: '/OG_img.png', width: 1200, height: 630 }],
+    siteName: 'Fitters Studio',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Fitters Studio',
+    description: '크로스피터를 위한 모든 도구를 한곳에',
+    images: ['/OG_img.png'],
+  },
 }
 
 export const viewport: Viewport = {
