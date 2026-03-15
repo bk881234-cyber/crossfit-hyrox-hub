@@ -38,8 +38,17 @@ html, body {
   50%       { box-shadow: 0 0 40px rgba(255,45,139,0.5); }
 }
 
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
 .animate-fade-in-up {
   animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.animate-marquee {
+  animation: marquee 60s linear infinite;
 }
 
 /* Scroll reveal */
@@ -156,17 +165,60 @@ html, body {
       linear-gradient(135deg, #E8321A, #FF2D8B) border-box;
   }
 
-  /* Tool card hover */
+  /* Tool card — glassmorphism */
   .tool-card {
-    @apply bg-rx-card border border-rx-border rounded-2xl transition-all duration-300 cursor-pointer block;
+    @apply rounded-2xl transition-transform duration-300 cursor-pointer block;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    background: rgba(255, 255, 255, 0.055);
+    border: 1px solid rgba(255, 255, 255, 0.13);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.12),
+      0 4px 24px rgba(0, 0, 0, 0.35);
+    /* border-color 별도 transition */
+    transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
   }
   .tool-card:hover {
-    transform: translateY(-4px);
-    border-color: transparent;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-    background:
-      linear-gradient(#242424, #242424) padding-box,
-      linear-gradient(135deg, #E8321A, #FF2D8B) border-box;
+    transform: translateY(-4px) scale(1.02);
+    /* 배경은 그대로 반투명 유지, 테두리만 브랜드 핑크로 */
+    border-color: rgba(255, 45, 139, 0.65);
+    box-shadow:
+      0 20px 48px rgba(0, 0, 0, 0.55),
+      inset 0 1px 0 rgba(255, 255, 255, 0.18),
+      0 0 20px rgba(255, 45, 139, 0.12);
+  }
+  /* 텍스트는 항상 흰색 유지 */
+  .tool-card * { color: inherit; }
+
+  /* Glass card — stats / terms / general */
+  .glass-card {
+    @apply rounded-2xl;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    background: rgba(255, 255, 255, 0.055);
+    border: 1px solid rgba(255, 255, 255, 0.13);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.10),
+      0 4px 20px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+  .glass-card:hover {
+    transform: translateY(-3px) scale(1.02);
+    border-color: rgba(255, 45, 139, 0.55);
+    box-shadow:
+      0 12px 40px rgba(0, 0, 0, 0.5),
+      inset 0 1px 0 rgba(255, 255, 255, 0.18),
+      0 0 16px rgba(255, 45, 139, 0.10);
+  }
+  @media (hover: none) {
+    .tool-card:hover,
+    .glass-card:hover {
+      transform: none;
+      border-color: rgba(255, 255, 255, 0.13);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.10),
+        0 4px 20px rgba(0, 0, 0, 0.3);
+    }
   }
 }
 
@@ -195,4 +247,9 @@ html, body {
 .text-\[13px\],
 .text-\[14px\] {
   font-size: 1rem !important;
+}
+
+/* Footer specific font size */
+.text-footer {
+  font-size: 12px !important;
 }

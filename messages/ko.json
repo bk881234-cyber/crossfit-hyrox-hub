@@ -1,0 +1,32 @@
+{
+  "nav": {
+    "calculator": "1RM 계산기",
+    "timer": "WOD 타이머",
+    "wod": "WOD 라이브러리",
+    "community": "커뮤니티",
+    "about": "크로스핏이란?",
+    "map": "드랍인 지도"
+  },
+  "auth": {
+    "login": "로그인",
+    "logout": "로그아웃",
+    "mypage": "마이페이지",
+    "loginWith": "{provider}로 계속하기",
+    "loginTitle": "FITTERS STUDIO",
+    "loginSubtitle": "크로스피터를 위한 모든 것",
+    "loginDesc": "소셜 계정으로 간편하게 시작하세요",
+    "kakao": "카카오로 계속하기",
+    "google": "Google로 계속하기",
+    "loginNote": "계정이 없으면 자동으로 생성됩니다",
+    "terms": "이용약관",
+    "privacy": "개인정보처리방침"
+  },
+  "common": {
+    "loading": "불러오는 중...",
+    "error": "오류가 발생했습니다",
+    "back": "뒤로",
+    "save": "저장",
+    "cancel": "취소",
+    "confirm": "확인"
+  }
+}

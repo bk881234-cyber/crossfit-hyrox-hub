@@ -132,6 +132,14 @@ export default function CommunityPage() {
   const isLoggedIn = false
 
   const [tab, setTab] = useState<Tab>('major')
+
+  // URL 해시(#hyrox 등)로 직접 접근 시 해당 탭 활성화
+  useEffect(() => {
+    const hash = window.location.hash.slice(1) as Tab
+    if (hash === 'hyrox' || hash === 'major' || hash === 'board') {
+      setTab(hash)
+    }
+  }, [])
   const [likes, setLikes] = useState<Record<string, boolean>>(() => {
     if (typeof window === 'undefined') return {}
     try { return JSON.parse(localStorage.getItem('board_likes') || '{}') } catch { return {} }

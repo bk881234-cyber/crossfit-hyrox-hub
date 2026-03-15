@@ -89,7 +89,7 @@ export default function TimerPage() {
   const [elapsed, setElapsed] = useState(0)
   const [finished, setFinished] = useState(false)
 
-  const [countdownEnabled, setCountdownEnabled] = useState(false)
+  const [countdownEnabled, setCountdownEnabled] = useState(true)
   const [countingDown, setCountingDown] = useState(false)
   const [countdownVal, setCountdownVal] = useState(10)
 
@@ -129,9 +129,10 @@ export default function TimerPage() {
     }
   }, [])
 
-  const getInitialState = useCallback(() => {
-    const c = config[mode]
-    switch (mode) {
+  // targetMode를 명시적으로 받아 config 참조 시점 오류 없이 즉시 초기값 반환
+  const getInitialState = useCallback((targetMode: TimerMode) => {
+    const c = config[targetMode]
+    switch (targetMode) {
       case 'amrap':
         return { time: (c as TimerConfig['amrap']).minutes * 60, rounds: 0, phase: 'work' as Phase }
       case 'emom': {
@@ -149,7 +150,7 @@ export default function TimerPage() {
         return { time: iv.workSeconds, rounds: iv.rounds, phase: 'work' as Phase }
       }
     }
-  }, [config, mode])
+  }, [config])
 
   const stop = useCallback(() => {
     if (intervalRef.current) clearInterval(intervalRef.current)
@@ -165,18 +166,41 @@ export default function TimerPage() {
     setFinished(false)
     setElapsed(0)
     setCurrentRound(1)
-    const init = getInitialState()
+    const init = getInitialState(mode)
     setTimeLeft(init.time)
     setTotalTime(init.time)
     setTotalRounds(init.rounds)
     setPhase(init.phase)
-  }, [stop, getInitialState])
+  }, [stop, getInitialState, mode])
 
-  // Reset when mode changes
+  // 모드 변경: useEffect 비동기 없이 클릭 시 즉시 모든 상태를 동시에 갱신
+  const handleModeChange = useCallback((newMode: TimerMode) => {
+    if (running) return
+    if (intervalRef.current) clearInterval(intervalRef.current)
+    if (countdownRef.current) clearInterval(countdownRef.current)
+    setCountingDown(false)
+    setCountdownVal(10)
+    setRunning(false)
+    releaseWakeLock()
+    setMode(newMode)
+    setFinished(false)
+    setElapsed(0)
+    setCurrentRound(1)
+    const init = getInitialState(newMode)
+    setTimeLeft(init.time)
+    setTotalTime(init.time)
+    setTotalRounds(init.rounds)
+    setPhase(init.phase)
+  }, [running, getInitialState, releaseWakeLock])
+
+  // config 값이 바뀔 때 (타이머 미작동 상태) 메인 타이머 표시를 즉시 동기화
   useEffect(() => {
-    reset()
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mode])
+    if (running) return
+    const init = getInitialState(mode)
+    setTimeLeft(init.time)
+    setTotalTime(init.time)
+    setTotalRounds(init.rounds)
+  }, [config, mode, running, getInitialState])
 
   const handleStart = useCallback(async () => {
     if (finished) {
@@ -334,7 +358,7 @@ export default function TimerPage() {
           {MODES.map((m) => (
             <button
               key={m.id}
-              onClick={() => { if (!running) setMode(m.id) }}
+              onClick={() => handleModeChange(m.id)}
               className={`flex-shrink-0 whitespace-nowrap px-3 py-2.5 min-h-[44px] rounded-lg text-xs font-bold transition-colors ${
                 mode === m.id ? 'bg-rx-red text-white' : 'text-rx-muted hover:text-white'
               } ${running ? 'opacity-50 cursor-not-allowed' : ''}`}

@@ -1,0 +1,32 @@
+{
+  "nav": {
+    "calculator": "1RM Calc",
+    "timer": "WOD Timer",
+    "wod": "WOD Library",
+    "community": "Community",
+    "about": "What is CrossFit?",
+    "map": "Drop-in Map"
+  },
+  "auth": {
+    "login": "Login",
+    "logout": "Logout",
+    "mypage": "My Page",
+    "loginWith": "Continue with {provider}",
+    "loginTitle": "FITTERS STUDIO",
+    "loginSubtitle": "Everything for CrossFitters",
+    "loginDesc": "Sign in with your social account",
+    "kakao": "Continue with Kakao",
+    "google": "Continue with Google",
+    "loginNote": "New accounts are created automatically",
+    "terms": "Terms of Service",
+    "privacy": "Privacy Policy"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "back": "Back",
+    "save": "Save",
+    "cancel": "Cancel",
+    "confirm": "Confirm"
+  }
+}

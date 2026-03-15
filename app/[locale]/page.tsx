@@ -4,43 +4,6 @@ import Link from 'next/link'
 import Header from '@/components/layout/Header'
 import MobileNav from '@/components/layout/MobileNav'
 
-function useFitText(text: string) {
-  const ref = useRef<HTMLDivElement>(null)
-  useEffect(() => {
-    const el = ref.current
-    if (!el) return
-
-    const fit = () => {
-      // Measure using a detached span to avoid container constraints
-      const span = document.createElement('span')
-      span.style.cssText = [
-        `font-family:${getComputedStyle(el).fontFamily}`,
-        `font-weight:${getComputedStyle(el).fontWeight}`,
-        `font-size:200px`,
-        `white-space:nowrap`,
-        `position:fixed`,
-        `visibility:hidden`,
-        `top:-9999px`,
-        `left:-9999px`,
-      ].join(';')
-      span.textContent = text
-      document.body.appendChild(span)
-      const textW = span.getBoundingClientRect().width
-      document.body.removeChild(span)
-      if (textW > 0) {
-        el.style.fontSize = Math.floor(200 * (document.documentElement.clientWidth / textW)) + 'px'
-      }
-    }
-
-    // Wait for fonts to load for accurate measurement
-    document.fonts.ready.then(fit)
-    window.addEventListener('resize', fit)
-    return () => window.removeEventListener('resize', fit)
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [text])
-  return ref
-}
-
 /* ─── Scroll Reveal Hook ─── */
 function useReveal(delay = 0) {
   const ref = useRef<HTMLDivElement>(null)
@@ -97,7 +60,7 @@ const allTools = [
     href: '/calculator',
     label: '1RM CALCULATOR',
     desc: '최대 중량 계산 + 훈련 퍼센트 테이블',
-    detail: '바벨·덤벨·맨몸 운동의 최대 중량을 빠르게 계산하세요.',
+    detail: '크로스핏·파워리프팅 1RM(최대 중량)과 훈련 퍼센테이지 테이블을 자동 계산합니다.',
     icon: (
       <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="url(#g1)" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
         <defs>
@@ -248,7 +211,6 @@ export default function HomePage() {
   const r3 = useReveal(100)
   const r4 = useReveal(0)
   const r5 = useReveal(0)
-  const brandRef = useFitText('FITTERSSTUDIO')
 
   return (
     <div className="min-h-screen bg-rx-bg overflow-x-hidden">
@@ -257,13 +219,13 @@ export default function HomePage() {
       {/* ═══ SECTION 1: HERO ═══ */}
       <section className="relative pt-24 pb-6 px-4 overflow-hidden">
         <div className="absolute inset-0 hero-grid-bg opacity-60" />
-        <div className="absolute inset-0" style={{ background: 'radial-gradient(ellipse 80% 60% at 50% 40%, rgba(232,50,26,0.08) 0%, transparent 70%)' }} />
+        <div className="absolute inset-0" style={{ background: 'radial-gradient(ellipse 80% 60% at 50% 40%, rgba(232,50,26,0.14) 0%, transparent 70%)' }} />
         <div className="absolute bottom-0 left-0 right-0 h-16" style={{ background: 'linear-gradient(to bottom, transparent, #0D0D0D)' }} />
 
         <div className="relative text-center max-w-5xl mx-auto">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-white/50 text-xs font-semibold mb-5 tracking-widest uppercase animate-fade-in-up">
             <span className="w-1.5 h-1.5 rounded-full gradient-bg animate-pulse" />
-            CrossFit & HYROX Platform
+            CrossFit &amp; HYROX Platform
           </div>
           <h1
             className="font-heading font-black uppercase tracking-tighter mb-4 leading-none animate-fade-in-up"
@@ -273,17 +235,29 @@ export default function HomePage() {
             <span className="block gradient-text">STUDIO</span>
           </h1>
           <p className="text-rx-muted text-sm md:text-base animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
-            크로스피터를 위한 모든 도구를 한곳에
+            크로스핏 &amp; HYROX 훈련에 필요한 모든 도구 — 1RM 계산기, WOD 타이머, 운동 라이브러리를 무료로 제공합니다.
           </p>
         </div>
       </section>
 
       {/* ═══ SECTION 2: CORE 3 TOOLS ═══ */}
-      <section className="px-4 pt-2 pb-10 max-w-6xl mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {allTools.slice(0, 3).map((tool) => (
-            <ToolCard key={tool.href} tool={tool} />
-          ))}
+      <section aria-label="핵심 훈련 도구" className="relative px-4 pt-2 pb-10">
+        {/* 배경 오브 — 섹션 내부에 완전히 배치, overflow 없이 자연스럽게 페이드 */}
+        <div
+          className="absolute top-1/2 left-[8%] -translate-y-1/2 w-[420px] h-[420px] rounded-full pointer-events-none"
+          style={{ background: 'rgba(232,50,26,0.20)', filter: 'blur(130px)' }}
+        />
+        <div
+          className="absolute top-1/4 right-[8%] w-[340px] h-[340px] rounded-full pointer-events-none"
+          style={{ background: 'rgba(255,45,139,0.16)', filter: 'blur(120px)' }}
+        />
+        <div className="relative z-10 max-w-6xl mx-auto">
+          <h2 className="sr-only">크로스핏 핵심 훈련 도구 — 1RM 계산기, WOD 타이머, WOD 라이브러리</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {allTools.slice(0, 3).map((tool) => (
+              <ToolCard key={tool.href} tool={tool} />
+            ))}
+          </div>
         </div>
       </section>
 
@@ -291,11 +265,12 @@ export default function HomePage() {
       <div className="h-10 bg-rx-bg" />
 
       {/* ═══ SECTION 3: AUX 2 TOOLS ═══ */}
-      <section className="bg-rx-surface px-4 pt-14 pb-14 relative overflow-hidden">
+      <section aria-label="추가 기능" className="bg-rx-surface px-4 pt-14 pb-14 relative overflow-hidden">
         <div className="absolute inset-0 z-0" style={{ backgroundImage: "url('/fittersstudio_img01.png')", backgroundSize: 'cover', backgroundPosition: 'center', opacity: 0.5 }} />
         <div className="max-w-6xl mx-auto relative z-10">
           <div ref={r3} className="text-center mb-8">
             <h2 className="font-heading font-black text-4xl md:text-5xl uppercase text-white tracking-tight">More Features</h2>
+            <p className="text-rx-muted text-sm mt-2">전국 크로스핏 박스 드랍인 지도 &amp; HYROX 대회 커뮤니티</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {allTools.slice(3).map((tool) => (
@@ -309,27 +284,51 @@ export default function HomePage() {
       <div style={{ height: '60px', clipPath: 'polygon(0 0, 100% 60%, 100% 100%, 0 100%)', background: '#0D0D0D', marginTop: '-1px' }} />
 
       {/* ═══ SECTION 4: STATS ═══ */}
-      <section className="px-4 py-16 max-w-6xl mx-auto">
-        <div ref={r4} className="text-center mb-12">
-          <h2 className="font-heading font-black text-4xl md:text-5xl uppercase text-white tracking-tight">By the Numbers</h2>
-        </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {stats.map((s) => (
-            <div key={s.label} className="bg-rx-surface border border-rx-border rounded-2xl p-6 md:p-8 text-center hover:border-white/20 transition-colors group">
-              {/* font-normal = weight 400 */}
-              <div className="font-heading font-normal text-5xl md:text-6xl mb-2 group-hover:scale-110 transition-transform duration-300 inline-block" style={{ color: '#999999' }}>
-                <CountUp end={s.end} suffix={s.suffix} duration={1800} />
+      <section aria-label="FITTERS STUDIO 서비스 현황" className="relative px-4 py-16">
+        {/* 배경 오브 — 섹션 내부에 완전히 배치 */}
+        <div
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[560px] h-[280px] rounded-full pointer-events-none"
+          style={{ background: 'rgba(255,45,139,0.14)', filter: 'blur(140px)' }}
+        />
+        <div
+          className="absolute top-[15%] left-[5%] w-[260px] h-[260px] rounded-full pointer-events-none"
+          style={{ background: 'rgba(232,50,26,0.15)', filter: 'blur(110px)' }}
+        />
+        <div
+          className="absolute bottom-[15%] right-[5%] w-[240px] h-[240px] rounded-full pointer-events-none"
+          style={{ background: 'rgba(232,50,26,0.12)', filter: 'blur(100px)' }}
+        />
+        <div className="relative z-10 max-w-6xl mx-auto">
+          <div ref={r4} className="text-center mb-12">
+            <h2 className="font-heading font-black text-4xl md:text-5xl uppercase text-white tracking-tight">By the Numbers</h2>
+            <p className="text-rx-muted text-sm mt-2">FITTERS STUDIO가 제공하는 크로스핏 & HYROX 훈련 콘텐츠</p>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {stats.map((s) => (
+              <div key={s.label} className="glass-card p-6 md:p-8 text-center group">
+                <div className="font-heading font-normal text-5xl md:text-6xl mb-2 group-hover:scale-110 transition-transform duration-300 inline-block" style={{ color: '#999999' }}>
+                  <CountUp end={s.end} suffix={s.suffix} duration={1800} />
+                </div>
+                <div className="font-bold text-sm mb-1 gradient-text">{s.label}</div>
+                <div className="text-rx-muted text-xs">{s.sub}</div>
               </div>
-              <div className="font-bold text-sm mb-1 gradient-text">{s.label}</div>
-              <div className="text-rx-muted text-xs">{s.sub}</div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </section>
 
       {/* ═══ SECTION 5: CROSSFIT 소개 ═══ */}
-      <section className="px-4 bg-rx-surface" style={{ paddingTop: '80px', paddingBottom: '80px' }}>
-        <div className="max-w-6xl mx-auto">
+      <section aria-label="크로스핏 소개" className="relative px-4 bg-rx-surface" style={{ paddingTop: '80px', paddingBottom: '80px' }}>
+        {/* 배경 오브 — term card 영역 뒤에 은은하게 */}
+        <div
+          className="absolute top-1/2 right-[8%] -translate-y-1/2 w-[380px] h-[380px] rounded-full pointer-events-none"
+          style={{ background: 'rgba(255,45,139,0.14)', filter: 'blur(130px)' }}
+        />
+        <div
+          className="absolute bottom-[10%] right-[28%] w-[260px] h-[260px] rounded-full pointer-events-none"
+          style={{ background: 'rgba(232,50,26,0.12)', filter: 'blur(110px)' }}
+        />
+        <div className="relative z-10 max-w-6xl mx-auto">
           <div ref={r5} className="grid md:grid-cols-2 gap-12">
             {/* Left: Text */}
             <div className="flex flex-col">
@@ -337,7 +336,7 @@ export default function HomePage() {
                 What is<br />CrossFit?
               </h2>
               <p className="text-white/70 md:text-base" style={{ lineHeight: 1.8, marginBottom: '24px' }}>
-                크로스핏은 <strong className="text-white">기능적 동작</strong>을 <strong className="text-white">끊임없이 변화</strong>하는 방식으로 <strong className="text-white">고강도</strong>로 수행하는 훈련입니다. 체력의 10가지 요소(심폐지구력, 근지구력, 근력, 유연성, 파워, 스피드, 민첩성, 균형, 협응, 정확성)를 골고루 발전시킵니다.
+                크로스핏은 <strong className="text-white">기능적 동작(Functional Movement)</strong>을 <strong className="text-white">끊임없이 변화</strong>하는 방식으로 <strong className="text-white">고강도(High Intensity)</strong>로 수행하는 훈련 방법론입니다. 심폐지구력·근력·파워·유연성·민첩성 등 <strong className="text-white">체력의 10가지 요소</strong>를 균형 있게 발전시켜 실생활과 스포츠 퍼포먼스를 향상합니다.
               </p>
               <div className="flex flex-col mb-8" style={{ gap: '20px' }}>
                 {crossfitPoints.map((p) => (
@@ -363,7 +362,7 @@ export default function HomePage() {
             {/* Right: Term cards */}
             <div className="grid grid-cols-2 grid-rows-2 h-full" style={{ gap: '16px' }}>
               {termCards.map((term) => (
-                <div key={term.label} className="bg-rx-card border border-rx-border rounded-2xl hover:border-white/20 transition-colors flex flex-col justify-center" style={{ padding: '24px' }}>
+                <div key={term.label} className="glass-card flex flex-col justify-center" style={{ padding: '24px' }}>
                   <div className="font-heading font-black text-2xl gradient-text" style={{ marginBottom: '8px' }}>{term.label}</div>
                   <div className="text-white font-medium" style={{ lineHeight: 1.6, marginBottom: '4px' }}>{term.en}</div>
                   <div className="text-rx-muted" style={{ lineHeight: 1.6 }}>{term.ko}</div>
@@ -373,27 +372,6 @@ export default function HomePage() {
           </div>
         </div>
       </section>
-
-      {/* Large Brand Text (homepage only) */}
-      <div
-        className="bg-rx-bg select-none"
-        style={{ overflow: 'hidden', lineHeight: 1, width: '100%', padding: 0, margin: 0 }}
-      >
-        <div
-          ref={brandRef}
-          className="font-heading font-black uppercase"
-          style={{
-            color: '#2b1119',
-            whiteSpace: 'nowrap',
-            display: 'block',
-            lineHeight: 1,
-            padding: 0,
-            margin: 0,
-          }}
-        >
-          FITTERSSTUDIO
-        </div>
-      </div>
 
       <MobileNav />
     </div>

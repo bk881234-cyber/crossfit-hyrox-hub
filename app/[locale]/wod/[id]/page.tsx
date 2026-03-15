@@ -5,7 +5,8 @@ import MobileNav from '@/components/layout/MobileNav'
 import { WODS, type WOD } from '@/lib/wod-data'
 
 export function generateStaticParams() {
-  return WODS.map((wod) => ({ id: wod.id }))
+  const locales = ['ko', 'en']
+  return locales.flatMap((locale) => WODS.map((wod) => ({ locale, id: wod.id })))
 }
 
 const TYPE_COLORS: Record<WOD['type'], string> = {
@@ -68,7 +69,7 @@ function EquipmentIcon({ type }: { type: string }) {
 }
 
 interface Props {
-  params: { id: string }
+  params: { locale: string; id: string }
 }
 
 export default function WODDetailPage({ params }: Props) {

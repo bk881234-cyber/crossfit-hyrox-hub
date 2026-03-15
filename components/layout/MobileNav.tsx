@@ -1,10 +1,10 @@
 'use client'
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname } from '@/navigation'
+import { Link } from '@/navigation'
 
 const tabs = [
   {
-    href: '/',
+    href: '/' as const,
     label: '홈',
     icon: (
       <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
@@ -14,7 +14,7 @@ const tabs = [
     ),
   },
   {
-    href: '/timer',
+    href: '/timer' as const,
     label: '타이머',
     icon: (
       <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
@@ -24,7 +24,7 @@ const tabs = [
     ),
   },
   {
-    href: '/wod',
+    href: '/wod' as const,
     label: 'WOD',
     icon: (
       <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
@@ -38,7 +38,7 @@ const tabs = [
     ),
   },
   {
-    href: '/map',
+    href: '/map' as const,
     label: '지도',
     icon: (
       <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
@@ -48,7 +48,7 @@ const tabs = [
     ),
   },
   {
-    href: '/community',
+    href: '/community' as const,
     label: '커뮤니티',
     icon: (
       <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">

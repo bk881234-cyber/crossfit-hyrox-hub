@@ -9,7 +9,16 @@
       "Bash(cd \"C:\\\\Users\\\\bkbk8\\\\Desktop\\\\crossfit-hyrox-hub\" && taskkill /F /IM node.exe 2>nul; rm -rf .next && echo \"cleared\")",
       "Bash(sleep 2 && curl -s -o /dev/null -w \"HTTP %{http_code}\" http://localhost:3003 && curl -s -o /dev/null -w \" | /about HTTP %{http_code}\" http://localhost:3003/about)",
       "Bash(ls C:\\\\Users\\\\bkbk8\\\\Desktop\\\\crossfit-hyrox-hub\\\\.env* 2>/dev/null || echo \"no env files\")",
-      "Bash(echo \"NEXT_PUBLIC_KAKAO_MAP_KEY=2632d2da2c82603a1ee156259458420c\" > \"C:\\\\Users\\\\bkbk8\\\\Desktop\\\\crossfit-hyrox-hub\\\\.env.local\")"
+      "Bash(echo \"NEXT_PUBLIC_KAKAO_MAP_KEY=2632d2da2c82603a1ee156259458420c\" > \"C:\\\\Users\\\\bkbk8\\\\Desktop\\\\crossfit-hyrox-hub\\\\.env.local\")",
+      "Bash(cd \"C:\\\\Users\\\\bkbk8\\\\Desktop\\\\crossfit-hyrox-hub\" && npx tsc --noEmit 2>&1 | head -30)",
+      "Bash(cd \"C:\\\\Users\\\\bkbk8\\\\Desktop\\\\crossfit-hyrox-hub\" && npx tsc --noEmit 2>&1)",
+      "WebSearch",
+      "Bash(cd \"C:\\\\Users\\\\bkbk8\\\\Desktop\\\\crossfit-hyrox-hub\" && npx tsc --noEmit 2>&1 | head -40)",
+      "Bash(cd \"C:\\\\Users\\\\bkbk8\\\\Desktop\\\\crossfit-hyrox-hub\" && taskkill /F /IM node.exe 2>&1; echo \"done\")",
+      "Bash(taskkill /F /IM node.exe 2>&1; echo \"kill done\")",
+      "Bash(Get-Process node:*)",
+      "Bash(pkill -f \"next dev\" 2>/dev/null; pkill -f \"node\" 2>/dev/null; echo \"killed\")",
+      "Bash(cd:*)"
     ]
   }
 }

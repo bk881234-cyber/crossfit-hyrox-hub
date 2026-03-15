@@ -29,12 +29,32 @@ function lbToKg(lb: number): number {
   return Math.round(lb / 2.2046 * 10) / 10
 }
 
+type WeightTabState = { weightInput: string; reps: number }
+
 export default function CalculatorPage() {
   const [tab, setTab] = useState<Tab>('barbell')
   const [unit, setUnit] = useState<Unit>('lb')
-  const [weightInput, setWeightInput] = useState('')
-  const [reps, setReps] = useState(1)
+  // 바벨·덤벨 탭 각각 독립적인 상태
+  const [tabStates, setTabStates] = useState<Record<'barbell' | 'dumbbell', WeightTabState>>({
+    barbell: { weightInput: '', reps: 1 },
+    dumbbell: { weightInput: '', reps: 1 },
+  })
   const [bodyweight, setBodyweight] = useState('')
+
+  // 현재 탭의 중량·반복 값 (바디웨이트 탭은 사용 안 함)
+  const currentKey = tab as 'barbell' | 'dumbbell'
+  const weightInput = tab !== 'bodyweight' ? tabStates[currentKey].weightInput : ''
+  const reps       = tab !== 'bodyweight' ? tabStates[currentKey].reps : 1
+
+  const handleWeightChange = (val: string) => {
+    if (tab === 'bodyweight') return
+    setTabStates(prev => ({ ...prev, [currentKey]: { ...prev[currentKey], weightInput: val } }))
+  }
+
+  const handleRepsChange = (val: number) => {
+    if (tab === 'bodyweight') return
+    setTabStates(prev => ({ ...prev, [currentKey]: { ...prev[currentKey], reps: val } }))
+  }
 
   const weightKg = useCallback(() => {
     const w = parseFloat(weightInput)
@@ -53,18 +73,10 @@ export default function CalculatorPage() {
     return `${kgToLb(kg).toFixed(1)} lb`
   }
 
-  const handleWeightChange = (val: string) => {
-    setWeightInput(val)
-  }
-
   const toggleUnit = () => {
     const current = parseFloat(weightInput)
     if (!isNaN(current) && current > 0) {
-      if (unit === 'kg') {
-        setWeightInput(kgToLb(current).toFixed(1))
-      } else {
-        setWeightInput(lbToKg(current).toFixed(1))
-      }
+      handleWeightChange(unit === 'kg' ? kgToLb(current).toFixed(1) : lbToKg(current).toFixed(1))
     }
     setUnit(unit === 'kg' ? 'lb' : 'kg')
   }
@@ -172,7 +184,7 @@ export default function CalculatorPage() {
                 min={1}
                 max={30}
                 value={reps}
-                onChange={(e) => setReps(parseInt(e.target.value))}
+                onChange={(e) => handleRepsChange(parseInt(e.target.value))}
                 className="w-full accent-rx-red h-2"
               />
               <div className="flex justify-between text-rx-muted text-xs mt-1">
@@ -184,7 +196,7 @@ export default function CalculatorPage() {
                 {[1, 2, 3, 5, 8, 10, 12, 15, 20, 30].map((r) => (
                   <button
                     key={r}
-                    onClick={() => setReps(r)}
+                    onClick={() => handleRepsChange(r)}
                     className={`py-1.5 rounded-lg text-xs font-bold transition-colors ${
                       reps === r ? 'bg-rx-red text-white' : 'bg-rx-surface text-rx-muted hover:text-white'
                     }`}

@@ -94,16 +94,21 @@ export default function WODPage() {
 
         {/* Sticky Search + Filters */}
         <div
-          className="sticky top-20 z-20 relative"
-          style={{ background: '#0D0D0D', paddingBottom: '4px' }}
+          className="sticky top-20 z-40 -mx-4 px-4"
+          style={{
+            background: '#0A0A0A',
+            paddingTop: '10px',
+            paddingBottom: '8px',
+            borderBottom: '1px solid rgba(255,255,255,0.08)',
+          }}
         >
           {/* gradient fade below sticky area */}
           <div
             className="pointer-events-none absolute left-0 right-0"
             style={{
               top: '100%',
-              height: '32px',
-              background: 'linear-gradient(to bottom, #0D0D0D 0%, transparent 100%)',
+              height: '28px',
+              background: 'linear-gradient(to bottom, rgba(13,13,13,0.7) 0%, transparent 100%)',
               zIndex: 1,
             }}
           />
@@ -159,27 +164,34 @@ export default function WODPage() {
         </div>
 
         {/* Results count */}
-        <p className="text-rx-muted text-sm mb-4">{filtered.length}개의 WOD</p>
+        <p className="text-rx-muted text-sm mt-6 mb-4">{filtered.length}개의 WOD</p>
 
         {/* WOD Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {(showAll ? filtered : filtered.slice(0, 36)).map((wod, index) => (
             <React.Fragment key={wod.id}>
-              <div className="group relative bg-rx-card border border-rx-border rounded-2xl p-5 hover:-translate-y-1 transition-all duration-200 hover:border-white/20">
+              <Link
+              href={`/wod/${wod.id}`}
+              className="group relative block bg-rx-card border border-rx-border rounded-2xl p-5 hover:-translate-y-1 transition-all duration-200 hover:border-white/20 hover:shadow-lg"
+            >
                 {/* Type Badge */}
                 <div className="flex items-start justify-between mb-3">
                   <span className={`badge border ${TYPE_COLORS[wod.type]}`}>
                     {TYPE_LABELS[wod.type]}
                   </span>
+                  <span className="text-xs text-rx-muted group-hover:text-white transition-colors flex items-center gap-0.5">
+                    자세히
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
+                      <path d="M9 18l6-6-6-6" />
+                    </svg>
+                  </span>
                 </div>
 
                 {/* Name */}
-                <Link href={`/wod/${wod.id}`}>
-                  <h3 className="font-black text-white text-2xl mb-2 hover:gradient-text transition-all">{wod.name}</h3>
-                </Link>
+                <h3 className="font-black text-white text-2xl mb-2 group-hover:gradient-text transition-all leading-tight">{wod.name}</h3>
 
                 {/* Equipment icons */}
-                <div className="flex gap-1.5 mb-3">
+                <div className="flex flex-wrap gap-1.5 mb-3">
                   {wod.equipment.map((eq) => (
                     <span key={eq} className="text-xs bg-rx-surface px-2 py-0.5 rounded-full text-rx-muted border border-rx-border flex items-center gap-1">
                       {EQUIPMENT_ICONS[eq]}
@@ -189,7 +201,7 @@ export default function WODPage() {
                 </div>
 
                 {/* Movements preview */}
-                <div className="mb-3">
+                <div className="mb-3 min-h-[1.25rem]">
                   {wod.movements.slice(0, 3).map((m, i) => (
                     <span key={i} className="text-rx-muted text-xs mr-2 font-medium">· {m}</span>
                   ))}
@@ -199,25 +211,14 @@ export default function WODPage() {
                 </div>
 
                 {/* Target time */}
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-1 text-xs text-rx-muted font-medium">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
-                      <circle cx="12" cy="12" r="10" />
-                      <polyline points="12 6 12 12 16 14" />
-                    </svg>
-                    {wod.timeTarget.split('(')[0].trim()}
-                  </div>
-                  <Link
-                    href={`/wod/${wod.id}`}
-                    className="text-xs text-rx-muted hover:text-white transition-colors flex items-center gap-0.5"
-                  >
-                    자세히
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
-                      <path d="M9 18l6-6-6-6" />
-                    </svg>
-                  </Link>
+                <div className="flex items-center gap-1 text-xs text-rx-muted font-medium">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
+                    <circle cx="12" cy="12" r="10" />
+                    <polyline points="12 6 12 12 16 14" />
+                  </svg>
+                  {wod.timeTarget.split('(')[0].trim()}
                 </div>
-              </div>
+            </Link>
               {/* AdSense between rows */}
               {(index + 1) % 9 === 0 && index < filtered.length - 1 && (
                 <div key={`ad-${index}`} className="hidden sm:col-span-2 lg:col-span-3 w-full h-16 bg-rx-surface border border-rx-border rounded-lg flex items-center justify-center">
