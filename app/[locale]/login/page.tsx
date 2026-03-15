@@ -83,8 +83,6 @@ export default function LoginPage() {
     <>
       <Script
         src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.4/kakao.min.js"
-        integrity="sha384-TiCUE00h649CAMonG018J2ujOgDKW/kVWlChEuu4jK2vxfAAD0eZxzCKakxg55G4A"
-        crossOrigin="anonymous"
         onLoad={initKakao}
         strategy="afterInteractive"
       />
@@ -140,7 +138,7 @@ export default function LoginPage() {
             {/* Kakao login button */}
             <button
               onClick={handleKakaoLogin}
-              disabled={loading !== null}
+              disabled={loading !== null || !kakaoReady}
               className="w-full flex items-center justify-center gap-3 px-5 py-3.5 rounded-xl font-bold text-sm mb-3 transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed hover:scale-[1.02] active:scale-[0.98]"
               style={{
                 background: '#FEE500',
