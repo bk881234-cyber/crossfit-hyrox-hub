@@ -1,6 +1,6 @@
 'use client'
 import Image from 'next/image'
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import { useLocale, useTranslations } from 'next-intl'
 import { Link, usePathname, useRouter } from '@/navigation'
 import { createClient } from '@/lib/supabase/client'
@@ -28,7 +28,7 @@ export default function Header() {
   const [userMenuOpen, setUserMenuOpen] = useState(false)
   const [authLoading, setAuthLoading] = useState(true)
 
-  const supabase = createClient()
+  const supabase = useMemo(() => createClient(), [])
 
   // Scroll handler
   useEffect(() => {
@@ -137,7 +137,7 @@ export default function Header() {
                     className="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-white/5 transition-colors"
                   >
                     {avatarUrl ? (
-                      <img src={avatarUrl} alt={displayName} className="w-7 h-7 rounded-full object-cover" />
+                      <Image src={avatarUrl} alt={displayName} width={28} height={28} className="w-7 h-7 rounded-full object-cover" unoptimized />
                     ) : (
                       <div
                         className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-black text-white"
@@ -238,7 +238,7 @@ export default function Header() {
           {!authLoading && (user ? (
             <div className="flex items-center gap-3">
               {avatarUrl ? (
-                <img src={avatarUrl} alt={displayName} className="w-9 h-9 rounded-full object-cover flex-shrink-0" />
+                <Image src={avatarUrl} alt={displayName} width={36} height={36} className="w-9 h-9 rounded-full object-cover flex-shrink-0" unoptimized />
               ) : (
                 <div
                   className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-black text-white flex-shrink-0"
