@@ -21,7 +21,10 @@ export default function LoginPage() {
     const redirectTo = `${window.location.origin}/auth/callback?next=${encodeURIComponent(callbackUrl)}&locale=${locale}`
     await supabase.auth.signInWithOAuth({
       provider,
-      options: { redirectTo },
+      options: {
+        redirectTo,
+        ...(provider === 'kakao' && { scopes: 'profile_nickname profile_image' }),
+      },
     })
   }
 
