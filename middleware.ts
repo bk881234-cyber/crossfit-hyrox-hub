@@ -13,7 +13,8 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   // /auth/* 또는 /api/* 경로는 무조건 통과 – OAuth 콜백에 locale 리다이렉트 금지
-  if (pathname.startsWith('/auth/') || pathname.startsWith('/api/')) {
+  // .html 파일(웹마스터 인증 등)도 통과
+  if (pathname.startsWith('/auth/') || pathname.startsWith('/api/') || pathname.endsWith('.html')) {
     return NextResponse.next()
   }
 
