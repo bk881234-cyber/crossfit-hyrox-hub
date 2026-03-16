@@ -14,7 +14,7 @@ export async function middleware(request: NextRequest) {
 
   // /auth/* 또는 /api/* 경로는 무조건 통과 – OAuth 콜백에 locale 리다이렉트 금지
   // .html 파일(웹마스터 인증 등)도 통과
-  if (pathname.startsWith('/auth/') || pathname.startsWith('/api/') || pathname.endsWith('.html')) {
+  if (pathname.startsWith('/auth/') || pathname.startsWith('/api/') || pathname.endsWith('.html') || pathname.endsWith('.txt')) {
     return NextResponse.next()
   }
 
@@ -61,6 +61,6 @@ export async function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     // /auth/* 와 /api/* 는 matcher에서도 제외 (이중 보호)
-    '/((?!auth|api|_next/static|_next/image|favicon\\.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|mp4|woff2?|ttf|otf|html)).*)',
+    '/((?!auth|api|_next/static|_next/image|favicon\\.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|mp4|woff2?|ttf|otf|html|txt)).*)',
   ],
 }
