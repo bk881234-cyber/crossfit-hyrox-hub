@@ -40,7 +40,7 @@ export const metadata: Metadata = {
   ],
   verification: {
     other: {
-      'naver-site-verification': '2681da9e9f1013a8a47193aaff8acd03f63d39d5',
+      'naver-site-verification': '9f167b2764552644b1b0e0795a770734d8564d2f',
     },
   },
   openGraph: {
