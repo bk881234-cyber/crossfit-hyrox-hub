@@ -69,11 +69,10 @@ export default function Header() {
   return (
     <>
       <header
-        className={`fixed top-0 left-0 right-0 z-50 h-20 flex items-center px-4 transition-all duration-300 ${
-          scrolled
+        className={`fixed top-0 left-0 right-0 z-50 h-20 flex items-center px-4 transition-all duration-300 ${scrolled
             ? 'bg-[#0a0a0a] border-b border-white/10 shadow-lg'
             : 'bg-[#0a0a0a] border-b border-transparent'
-        }`}
+          }`}
       >
         {/* Logo */}
         <Link href="/" className="flex items-center flex-shrink-0">
@@ -95,11 +94,10 @@ export default function Header() {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`whitespace-nowrap px-2.5 py-1.5 rounded-md text-sm font-medium transition-colors ${
-                  isActive
+                className={`whitespace-nowrap px-2.5 py-1.5 rounded-md text-sm font-medium transition-colors ${isActive
                     ? 'text-white bg-white/10 font-bold'
                     : 'text-rx-muted hover:text-white hover:bg-rx-card'
-                }`}
+                  }`}
               >
                 {isActive
                   ? <span className="gradient-text">{tNav(item.labelKey)}</span>
@@ -162,7 +160,7 @@ export default function Header() {
                           className="flex items-center gap-2 px-4 py-3 text-sm text-white hover:bg-white/5 transition-colors"
                         >
                           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" />
                           </svg>
                           {tAuth('mypage')}
                         </Link>
@@ -172,7 +170,7 @@ export default function Header() {
                           className="w-full flex items-center gap-2 px-4 py-3 text-sm text-rx-muted hover:text-white hover:bg-white/5 transition-colors"
                         >
                           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
+                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><polyline points="16 17 21 12 16 7" /><line x1="21" y1="12" x2="9" y2="12" />
                           </svg>
                           {tAuth('logout')}
                         </button>
@@ -214,9 +212,8 @@ export default function Header() {
 
       {/* Drawer */}
       <div
-        className={`fixed top-0 right-0 z-50 h-full w-72 bg-rx-surface/95 backdrop-blur-xl border-l border-rx-border transform transition-transform duration-300 ${
-          menuOpen ? 'translate-x-0' : 'translate-x-full'
-        }`}
+        className={`fixed top-0 right-0 z-50 h-full w-72 bg-rx-surface/95 backdrop-blur-xl border-l border-rx-border transform transition-transform duration-300 ${menuOpen ? 'translate-x-0' : 'translate-x-full'
+          }`}
       >
         <div className="flex items-center justify-between px-4 h-20 border-b border-rx-border">
           <Image
@@ -277,9 +274,8 @@ export default function Header() {
                 key={item.href}
                 href={item.href}
                 onClick={() => setMenuOpen(false)}
-                className={`px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
-                  isActive ? 'bg-white/5 border border-white/10' : 'text-rx-muted hover:text-white hover:bg-rx-card'
-                }`}
+                className={`px-4 py-3 rounded-lg text-sm font-medium transition-colors ${isActive ? 'bg-white/5 border border-white/10' : 'text-rx-muted hover:text-white hover:bg-rx-card'
+                  }`}
               >
                 {isActive ? <span className="gradient-text font-bold">{tNav(item.labelKey)}</span> : tNav(item.labelKey)}
               </Link>
