@@ -12,7 +12,7 @@ export default function LoginPage() {
   const callbackUrl = searchParams.get('callbackUrl') ?? `/${locale}`
   const errorParam = searchParams.get('error')
 
-  const [loading, setLoading] = useState<'kakao' | 'google' | null>(null)
+  const [loading, setLoading] = useState<'google' | null>(null)
 
   const supabase = createClient()
 
@@ -22,20 +22,6 @@ export default function LoginPage() {
     await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: { redirectTo },
-    })
-  }
-
-  const handleKakaoLogin = async () => {
-    setLoading('kakao')
-    // 복귀 경로와 언어를 localStorage에 저장 – redirectTo URL을 순수 절대경로로 유지
-    localStorage.setItem('auth_redirect_to', callbackUrl)
-    localStorage.setItem('auth_locale', locale)
-    await supabase.auth.signInWithOAuth({
-      provider: 'kakao',
-      options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
-        scopes: 'profile_nickname profile_image',
-      },
     })
   }
 
@@ -90,27 +76,6 @@ export default function LoginPage() {
                 {isKo ? '로그인 중 오류가 발생했습니다. 다시 시도해주세요.' : 'Login failed. Please try again.'}
               </div>
             )}
-
-            {/* Kakao login button */}
-            <button
-              onClick={handleKakaoLogin}
-              disabled={loading !== null}
-              className="w-full flex items-center justify-center gap-3 px-5 py-3.5 rounded-xl font-bold text-sm mb-3 transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed hover:scale-[1.02] active:scale-[0.98]"
-              style={{
-                background: '#FEE500',
-                color: '#3C1E1E',
-                boxShadow: loading === 'kakao' ? 'none' : '0 2px 12px rgba(254,229,0,0.25)',
-              }}
-            >
-              {loading === 'kakao' ? (
-                <span className="inline-block w-4 h-4 border-2 border-[#3C1E1E]/40 border-t-[#3C1E1E] rounded-full animate-spin" />
-              ) : (
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 3C6.48 3 2 6.69 2 11.24c0 2.9 1.9 5.44 4.74 6.92l-.86 3.18a.5.5 0 0 0 .73.55l3.87-2.54A12.22 12.22 0 0 0 12 19.5c5.52 0 10-3.69 10-8.26S17.52 3 12 3z" />
-                </svg>
-              )}
-              {isKo ? '카카오로 계속하기' : 'Continue with Kakao'}
-            </button>
 
             {/* Google login button */}
             <button
