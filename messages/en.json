@@ -28,5 +28,60 @@
     "save": "Save",
     "cancel": "Cancel",
     "confirm": "Confirm"
+  },
+  "home": {
+    "heroBadge": "CrossFit & HYROX Platform",
+    "heroTitle1": "FITTERS",
+    "heroTitle2": "STUDIO",
+    "heroDesc": "All the tools you need for CrossFit & HYROX training — 1RM Calculator, WOD Timer, and Workout Library, provided for free.",
+    "tools": {
+      "calculatorLabel": "1RM CALCULATOR",
+      "calculatorDesc": "Max Weight Calc + Training % Table",
+      "calculatorDetail": "Automatically calculate your CrossFit/Powerlifting 1RM and percentage tables.",
+      "timerLabel": "WOD TIMER",
+      "timerDesc": "AMRAP · EMOM · Tabata · For Time · HIIT",
+      "timerDetail": "5 modes, sound alerts + screen stays on.",
+      "wodLabel": "WOD LIBRARY",
+      "wodDesc": "37+ Benchmark WOD Collection",
+      "wodDetail": "Girl · Hero · Open WODs. Includes scaling options.",
+      "mapLabel": "DROP-IN MAP",
+      "mapDesc": "CrossFit Boxes Drop-in Map",
+      "mapDetail": "Check drop-in prices and info for CrossFit boxes across the country at a glance.",
+      "communityLabel": "COMMUNITY",
+      "communityDesc": "HYROX Schedule · Local Comps · Board",
+      "communityDetail": "HYROX Schedule · Local Comps · Discussion Board"
+    },
+    "toolShortcut": "Go to Tool →",
+    "featuresTitle": "More Features",
+    "featuresDesc": "CrossFit Box Drop-in Map & HYROX Competition Community",
+    "statsTitle": "By the Numbers",
+    "statsDesc": "CrossFit & HYROX training contents provided by FITTERS STUDIO",
+    "stats": {
+      "wods": "WODs",
+      "wodsSub": "Girl · Hero · Open",
+      "boxes": "Boxes Nationwide",
+      "boxesSub": "Drop-in Info",
+      "timer": "Timer Modes",
+      "timerSub": "AMRAP · EMOM · Tabata",
+      "free": "Free",
+      "freeSub": "Ad-free tools"
+    },
+    "aboutTitle": "What is CrossFit?",
+    "aboutDesc": "CrossFit is a training methodology that performs <strong>Functional Movements</strong> that are <strong>Constantly Varied</strong> at <strong>High Intensity</strong>. It improves real-life and sports performance by balancing the <strong>10 elements of fitness</strong>, including cardiovascular endurance, strength, power, flexibility, and agility.",
+    "points": {
+      "p1Title": "Functional Movement",
+      "p1Desc": "Practical exercises based on everyday movements.",
+      "p2Title": "High-Intensity Interval",
+      "p2Desc": "Maximum efficiency training with short, intense WODs.",
+      "p3Title": "Constant Variance",
+      "p3Desc": "No boredom with a different WOD every day."
+    },
+    "terms": {
+      "t1Ko": "Workout of the Day",
+      "t2Ko": "As Many Rounds As Possible",
+      "t3Ko": "Every Minute on the Minute",
+      "t4Ko": "As Prescribed"
+    },
+    "learnMore": "Learn More"
   }
 }

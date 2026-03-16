@@ -28,5 +28,60 @@
     "save": "저장",
     "cancel": "취소",
     "confirm": "확인"
+  },
+  "home": {
+    "heroBadge": "CrossFit & HYROX Platform",
+    "heroTitle1": "FITTERS",
+    "heroTitle2": "STUDIO",
+    "heroDesc": "크로스핏 & HYROX 훈련에 필요한 모든 도구 — 1RM 계산기, WOD 타이머, 운동 라이브러리를 무료로 제공합니다.",
+    "tools": {
+      "calculatorLabel": "1RM CALCULATOR",
+      "calculatorDesc": "최대 중량 계산 + 훈련 퍼센트 테이블",
+      "calculatorDetail": "크로스핏·파워리프팅 1RM(최대 중량)과 훈련 퍼센테이지 테이블을 자동 계산합니다.",
+      "timerLabel": "WOD TIMER",
+      "timerDesc": "AMRAP · EMOM · Tabata · For Time · HIIT",
+      "timerDetail": "5가지 모드, 소리 알림 + 화면 켜짐 유지.",
+      "wodLabel": "WOD LIBRARY",
+      "wodDesc": "37개+ 벤치마크 WOD 컬렉션",
+      "wodDetail": "Girl · Hero · Open WOD. 스케일링 옵션 포함.",
+      "mapLabel": "DROP-IN MAP",
+      "mapDesc": "전국 크로스핏 박스 드랍인 요금·정보",
+      "mapDetail": "전국 크로스핏 박스 드랍인 요금·정보를 한눈에 확인하세요.",
+      "communityLabel": "COMMUNITY",
+      "communityDesc": "HYROX 대회 일정 · 국내 크로스핏 대회 · 자유게시판",
+      "communityDetail": "HYROX 대회 일정 · 국내 크로스핏 대회 · 자유게시판"
+    },
+    "toolShortcut": "바로가기 →",
+    "featuresTitle": "More Features",
+    "featuresDesc": "전국 크로스핏 박스 드랍인 지도 & HYROX 대회 커뮤니티",
+    "statsTitle": "By the Numbers",
+    "statsDesc": "FITTERS STUDIO가 제공하는 크로스핏 & HYROX 훈련 콘텐츠",
+    "stats": {
+      "wods": "WODs",
+      "wodsSub": "Girl · Hero · Open",
+      "boxes": "전국 박스",
+      "boxesSub": "드랍인 정보",
+      "timer": "타이머 모드",
+      "timerSub": "AMRAP · EMOM · Tabata",
+      "free": "무료",
+      "freeSub": "광고 없는 도구"
+    },
+    "aboutTitle": "What is CrossFit?",
+    "aboutDesc": "크로스핏은 <strong>기능적 동작(Functional Movement)</strong>을 <strong>끊임없이 변화</strong>하는 방식으로 <strong>고강도(High Intensity)</strong>로 수행하는 훈련 방법론입니다. 심폐지구력·근력·파워·유연성·민첩성 등 <strong>체력의 10가지 요소</strong>를 균형 있게 발전시켜 실생활과 스포츠 퍼포먼스를 향상합니다.",
+    "points": {
+      "p1Title": "기능적 동작",
+      "p1Desc": "일상의 움직임을 기반으로 한 실용적 운동",
+      "p2Title": "고강도 인터벌",
+      "p2Desc": "짧고 강렬한 WOD로 최대 효율의 훈련",
+      "p3Title": "끝없는 가변성",
+      "p3Desc": "매일 다른 WOD로 지루함 없는 훈련"
+    },
+    "terms": {
+      "t1Ko": "오늘의 운동",
+      "t2Ko": "최대 라운드 수행",
+      "t3Ko": "매 분 시작",
+      "t4Ko": "정규 무게/기준"
+    },
+    "learnMore": "더 알아보기"
   }
 }
