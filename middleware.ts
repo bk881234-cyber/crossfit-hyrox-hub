@@ -60,6 +60,6 @@ export async function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     // /auth/* 와 /api/* 는 matcher에서도 제외 (이중 보호)
-    '/((?!auth|api|_next/static|_next/image|favicon\\.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|mp4|woff2?|ttf|otf)).*)',
+    '/((?!auth|api|_next/static|_next/image|favicon\\.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|mp4|woff2?|ttf|otf|html)).*)',
   ],
 }
