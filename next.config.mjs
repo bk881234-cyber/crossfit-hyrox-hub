@@ -4,6 +4,14 @@ const withNextIntl = createNextIntlPlugin('./i18n/request.ts')
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  async rewrites() {
+    return [
+      {
+        source: '/robots.txt',
+        destination: '/api/robots',
+      },
+    ]
+  },
   images: {
     remotePatterns: [
       {
