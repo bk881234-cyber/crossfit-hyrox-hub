@@ -20,10 +20,11 @@ export const metadata: Metadata = {
     '1RM 계산기·WOD 타이머·WOD 라이브러리·드랍인 지도·대회 일정을 한곳에 — 크로스핏·HYROX 커뮤니티 플랫폼 FITTERS STUDIO',
   icons: {
     icon: [
+      { url: '/fittersstudio_symbol.png', type: 'image/png' },
       { url: '/fittersstudio_symbol.ico', sizes: 'any' },
     ],
-    shortcut: '/fittersstudio_symbol.ico',
-    apple: '/fittersstudio_symbol.ico',
+    shortcut: '/fittersstudio_symbol.png',
+    apple: '/fittersstudio_symbol.png',
   },
 
   keywords: [
