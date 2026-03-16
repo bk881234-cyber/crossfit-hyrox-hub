@@ -3,24 +3,9 @@ import { useState } from 'react'
 import { useParams, useSearchParams } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
-import Script from 'next/script'
 import { createClient } from '@/lib/supabase/client'
 
-declare global {
-  interface Window {
-    Kakao: {
-      isInitialized: () => boolean
-      init: (key: string) => void
-      Auth: {
-        login: (options: {
-          scope?: string
-          success?: (authObj: { id_token: string; access_token: string }) => void
-          fail?: (err: unknown) => void
-        }) => void
-      }
-    }
-  }
-}
+const KAKAO_REST_API_KEY = 'aaabffa226fc652b4faedaec8af04582'
 
 export default function LoginPage() {
   const params = useParams()
@@ -30,16 +15,8 @@ export default function LoginPage() {
   const errorParam = searchParams.get('error')
 
   const [loading, setLoading] = useState<'kakao' | 'google' | null>(null)
-  const [kakaoReady, setKakaoReady] = useState(false)
 
   const supabase = createClient()
-
-  const initKakao = () => {
-    if (window.Kakao && !window.Kakao.isInitialized()) {
-      window.Kakao.init(process.env.NEXT_PUBLIC_KAKAO_MAP_KEY!)
-    }
-    setKakaoReady(true)
-  }
 
   const handleGoogleLogin = async () => {
     setLoading('google')
@@ -51,42 +28,23 @@ export default function LoginPage() {
   }
 
   const handleKakaoLogin = () => {
-    if (!window.Kakao || !window.Kakao.isInitialized()) {
-      alert('카카오 SDK 초기화 중입니다. 잠시 후 다시 시도해주세요.')
-      return
-    }
     setLoading('kakao')
-    window.Kakao.Auth.login({
+    // locale과 callbackUrl을 state 파라미터로 전달해 콜백에서 복원
+    const state = encodeURIComponent(JSON.stringify({ locale, callbackUrl }))
+    const oauthParams = new URLSearchParams({
+      client_id: KAKAO_REST_API_KEY,
+      redirect_uri: `${window.location.origin}/api/auth/kakao`,
+      response_type: 'code',
       scope: 'openid profile_nickname profile_image',
-      success: async (authObj) => {
-        const { error } = await supabase.auth.signInWithIdToken({
-          provider: 'kakao',
-          token: authObj.id_token,
-        })
-        if (!error) {
-          window.location.href = callbackUrl
-        } else {
-          console.error('Supabase Kakao login error:', error)
-          setLoading(null)
-        }
-      },
-      fail: (err) => {
-        console.error('Kakao login failed:', err)
-        setLoading(null)
-      },
+      state,
     })
+    window.location.href = `https://kauth.kakao.com/oauth/authorize?${oauthParams}`
   }
 
   const isKo = locale === 'ko'
 
   return (
-    <>
-      <Script
-        src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.4/kakao.min.js"
-        onLoad={initKakao}
-        strategy="afterInteractive"
-      />
-      <div className="min-h-screen bg-rx-bg flex items-center justify-center px-4 relative overflow-hidden">
+    <div className="min-h-screen bg-rx-bg flex items-center justify-center px-4 relative overflow-hidden">
         {/* Background glow effects */}
         <div
           className="absolute top-1/4 left-1/2 -translate-x-1/2 w-96 h-96 rounded-full opacity-10 blur-3xl pointer-events-none"
@@ -138,7 +96,7 @@ export default function LoginPage() {
             {/* Kakao login button */}
             <button
               onClick={handleKakaoLogin}
-              disabled={loading !== null || !kakaoReady}
+              disabled={loading !== null}
               className="w-full flex items-center justify-center gap-3 px-5 py-3.5 rounded-xl font-bold text-sm mb-3 transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed hover:scale-[1.02] active:scale-[0.98]"
               style={{
                 background: '#FEE500',
@@ -207,6 +165,5 @@ export default function LoginPage() {
           </div>
         </div>
       </div>
-    </>
   )
 }

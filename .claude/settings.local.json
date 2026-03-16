@@ -18,7 +18,8 @@
       "Bash(taskkill /F /IM node.exe 2>&1; echo \"kill done\")",
       "Bash(Get-Process node:*)",
       "Bash(pkill -f \"next dev\" 2>/dev/null; pkill -f \"node\" 2>/dev/null; echo \"killed\")",
-      "Bash(cd:*)"
+      "Bash(cd:*)",
+      "Bash(powershell -Command \"Get-Process node -ErrorAction SilentlyContinue | Stop-Process -Force; Write-Host 'killed'\")"
     ]
   }
 }
