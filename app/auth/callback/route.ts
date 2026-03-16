@@ -5,8 +5,6 @@ import { NextRequest, NextResponse } from 'next/server'
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url)
   const code = searchParams.get('code')
-  const next = searchParams.get('next') ?? '/'
-  const locale = searchParams.get('locale') ?? 'ko'
 
   if (code) {
     const cookieStore = await cookies()
@@ -27,11 +25,11 @@ export async function GET(request: NextRequest) {
 
     const { error } = await supabase.auth.exchangeCodeForSession(code)
     if (!error) {
-      const redirectTo = next.startsWith('/') ? `${origin}${next}` : `${origin}/${locale}`
-      return NextResponse.redirect(redirectTo)
+      // 복귀 경로는 /auth/complete 클라이언트 페이지에서 localStorage로 복원
+      return NextResponse.redirect(`${origin}/auth/complete`)
     }
   }
 
-  // 오류 시 로그인 페이지로
+  // 오류 시 로그인 페이지로 (locale은 /auth/complete에서 읽으므로 기본값 ko 사용)
   return NextResponse.redirect(`${origin}/ko/login?error=auth_callback_failed`)
 }

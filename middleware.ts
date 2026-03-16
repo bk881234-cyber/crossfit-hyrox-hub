@@ -12,6 +12,11 @@ const intlMiddleware = createIntlMiddleware(routing)
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
+  // /auth/* 또는 /api/* 경로는 무조건 통과 – OAuth 콜백에 locale 리다이렉트 금지
+  if (pathname.startsWith('/auth/') || pathname.startsWith('/api/')) {
+    return NextResponse.next()
+  }
+
   // locale prefix를 제거한 실제 경로 추출 (/ko/timer → /timer)
   const localeMatch = pathname.match(/^\/(ko|en)(\/.*)?$/)
   const pathnameWithoutLocale = localeMatch ? (localeMatch[2] || '/') : pathname
@@ -54,6 +59,7 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    '/((?!api|auth|_next/static|_next/image|favicon\\.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|mp4|woff2?|ttf|otf)).*)',
+    // /auth/* 와 /api/* 는 matcher에서도 제외 (이중 보호)
+    '/((?!auth|api|_next/static|_next/image|favicon\\.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|mp4|woff2?|ttf|otf)).*)',
   ],
 }

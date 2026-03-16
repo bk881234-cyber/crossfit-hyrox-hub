@@ -5,8 +5,6 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 
-const KAKAO_REST_API_KEY = 'aaabffa226fc652b4faedaec8af04582'
-
 export default function LoginPage() {
   const params = useParams()
   const searchParams = useSearchParams()
@@ -27,18 +25,18 @@ export default function LoginPage() {
     })
   }
 
-  const handleKakaoLogin = () => {
+  const handleKakaoLogin = async () => {
     setLoading('kakao')
-    // locale과 callbackUrl을 state 파라미터로 전달해 콜백에서 복원
-    const state = encodeURIComponent(JSON.stringify({ locale, callbackUrl }))
-    const oauthParams = new URLSearchParams({
-      client_id: KAKAO_REST_API_KEY,
-      redirect_uri: `${window.location.origin}/api/auth/kakao`,
-      response_type: 'code',
-      scope: 'openid profile_nickname profile_image',
-      state,
+    // 복귀 경로와 언어를 localStorage에 저장 – redirectTo URL을 순수 절대경로로 유지
+    localStorage.setItem('auth_redirect_to', callbackUrl)
+    localStorage.setItem('auth_locale', locale)
+    await supabase.auth.signInWithOAuth({
+      provider: 'kakao',
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback`,
+        scopes: 'profile_nickname profile_image',
+      },
     })
-    window.location.href = `https://kauth.kakao.com/oauth/authorize?${oauthParams}`
   }
 
   const isKo = locale === 'ko'
