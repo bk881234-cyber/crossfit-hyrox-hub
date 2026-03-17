@@ -147,6 +147,8 @@ function WodLogContent() {
   const [difficulty, setDifficulty] = useState(3)
   const [notes, setNotes] = useState('')
   const [saved, setSaved] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
 
   // Calendar
   const [calDate, setCalDate] = useState(new Date())
@@ -199,50 +201,63 @@ function WodLogContent() {
     const wodName = selectedWod === 'custom'
       ? customWodName
       : (selectedWodInfo?.name || selectedWod)
-    if (!wodName) return
+    setLoading(true)
+    setError(null)
 
-    if (user) {
-      // Save to Supabase
-      const { data, error } = await supabase
-        .from('wod_logs')
-        .insert({
-          user_id:   user.id,
-          wod_id:    selectedWod && selectedWod !== 'custom' ? selectedWod : null,
-          wod_name:  wodName,
-          wod_type:  wodType,
+    try {
+      if (user) {
+        // Save to Supabase
+        const { data, error: dbError } = await supabase
+          .from('wod_logs')
+          .insert({
+            user_id:   user.id,
+            wod_id:    selectedWod && selectedWod !== 'custom' ? selectedWod : null,
+            wod_name:  wodName,
+            wod_type:  wodType,
+            date,
+            time:      time   || null,
+            rounds:    rounds || null,
+            weight:    weight || null,
+            difficulty,
+            notes:     notes  || null,
+          })
+          .select()
+          .single()
+        
+        if (dbError) throw dbError
+        if (data) {
+          setLogs([rowToLocal(data as Record<string, unknown>), ...logs])
+        }
+      } else {
+        // Save to localStorage
+        const newLog: WodLog = {
+          id: Date.now().toString(),
+          wodId: selectedWod,
+          wodName,
+          wodType,
           date,
-          time:      time   || null,
-          rounds:    rounds || null,
-          weight:    weight || null,
+          time,
+          rounds,
+          weight,
           difficulty,
-          notes:     notes  || null,
-        })
-        .select()
-        .single()
-      if (!error && data) {
-        setLogs([rowToLocal(data as Record<string, unknown>), ...logs])
+          notes,
+          createdAt: new Date().toISOString(),
+        }
+        const updated = [newLog, ...logs]
+        setLogs(updated)
+        localStorage.setItem('wod-logs-v2', JSON.stringify(updated))
       }
-    } else {
-      // Save to localStorage
-      const newLog: WodLog = {
-        id: Date.now().toString(),
-        wodId: selectedWod,
-        wodName,
-        wodType,
-        date,
-        time,
-        rounds,
-        weight,
-        difficulty,
-        notes,
-        createdAt: new Date().toISOString(),
-      }
-      saveLogs([newLog, ...logs])
-    }
 
-    setTime(''); setWeight(''); setRounds(''); setNotes(''); setDifficulty(3)
-    setSaved(true)
-    setTimeout(() => setSaved(false), 3000)
+      // Success cleanup
+      setTime(''); setWeight(''); setRounds(''); setNotes(''); setDifficulty(3)
+      setSaved(true)
+      setTimeout(() => setSaved(false), 3000)
+    } catch (err: any) {
+      console.error('Save error:', err)
+      setError(err.message || '저장 중 오류가 발생했습니다.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   const handleDelete = async (id: string) => {
@@ -388,12 +403,18 @@ function WodLogContent() {
               <textarea className="input min-h-[80px] resize-none" placeholder="오늘 컨디션, 느낀 점, 다음 목표..." value={notes} onChange={e => setNotes(e.target.value)} />
             </div>
 
+            {error && (
+              <div className="mb-4 p-3 bg-red-500/10 border border-red-500/30 rounded-xl text-red-400 text-xs">
+                ⚠️ {error}
+              </div>
+            )}
+
             <button
               onClick={handleSave}
-              disabled={!selectedWod || (selectedWod === 'custom' && !customWodName)}
+              disabled={loading || !selectedWod || (selectedWod === 'custom' && !customWodName)}
               className="w-full btn-primary py-3.5 rounded-xl font-bold text-base disabled:opacity-40 disabled:cursor-not-allowed"
             >
-              {saved ? (
+              {loading ? '저장 중...' : saved ? (
                 <span className="flex items-center justify-center gap-2">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="20 6 9 17 4 12" /></svg>
                   저장 완료!

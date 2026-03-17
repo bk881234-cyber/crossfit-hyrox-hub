@@ -257,7 +257,7 @@ export default function MovementDetailPage({ params }: Props) {
                 <Link
                   key={m.slug}
                   href={`../${m.slug}`}
-                  className="tool-card group flex items-center justify-between hover:border-rx-red/60 transition-colors py-3"
+                  className="tool-card group flex items-center justify-between hover:border-rx-red/60 transition-colors py-3 px-5"
                 >
                   <div>
                     <p className="text-white font-bold text-sm group-hover:text-rx-red transition-colors">
