@@ -61,58 +61,83 @@ function CountUp({ end, suffix = '', duration = 1800 }: { end: number; suffix?: 
   return <span ref={ref}>{count}{suffix}</span>
 }
 
-/* ─── Character Reveal with Gradient Cursor ─── */
-function CharacterReveal({ text, delay = 0 }: { text: string; delay?: number }) {
-  const chars = text.split('')
-  // Cursor blinks during typing, then stays solid
-  const typingMs = delay * 1000 + chars.length * 28 + 200
-  const [done, setDone] = useState(false)
+/* ─── Character Reveal with Gradient Cursor ───
+ *  Renders a growing text *string* (not per-char spans) so background-clip:text
+ *  on the gradient wrapper always has a real text node to paint through.
+ *  A visibility:hidden placeholder sibling holds the full dimensions from frame 0
+ *  so the h1 never reflows as characters appear.
+ * ─── */
+function CharacterReveal({
+  text,
+  delay = 0,
+  gradient = false,
+}: {
+  text: string
+  delay?: number
+  gradient?: boolean
+}) {
+  const chars = Array.from(text) // Unicode-safe split (handles Korean, emoji)
+  const [visibleCount, setVisibleCount] = useState(0)
+  const [showCursor, setShowCursor] = useState(true)
+
   useEffect(() => {
-    const id = setTimeout(() => setDone(true), typingMs)
-    return () => clearTimeout(id)
-  }, [typingMs])
+    setVisibleCount(0)
+    setShowCursor(true)
+    let interval: ReturnType<typeof setInterval>
+    const startId = setTimeout(() => {
+      let n = 0
+      interval = setInterval(() => {
+        n += 1
+        setVisibleCount(n)
+        if (n >= chars.length) {
+          clearInterval(interval)
+          setTimeout(() => setShowCursor(false), 1200)
+        }
+      }, 40)
+    }, delay * 1000)
+    return () => { clearTimeout(startId); clearInterval(interval) }
+  }, [text, chars.length, delay])
+
+  // Gradient applied directly here so it's never dependent on ancestor inheritance
+  const visibleStyle: React.CSSProperties = gradient
+    ? {
+        background: 'linear-gradient(90deg, #E8321A 0%, #FF2D8B 100%)',
+        WebkitBackgroundClip: 'text',
+        WebkitTextFillColor: 'transparent',
+        backgroundClip: 'text',
+      }
+    : {}
 
   return (
-    <span aria-label={text}>
-      {chars.map((char, i) => (
+    <span aria-label={text} style={{ position: 'relative', display: 'inline-block' }}>
+      {/* Visible, growing text — gradient (or plain) applied directly, no ancestor dependency */}
+      <span style={visibleStyle}>
+        {chars.slice(0, visibleCount).join('')}
+      </span>
+
+      {/* Invisible placeholder — takes up exactly the remaining space so layout never shifts */}
+      <span aria-hidden style={{ opacity: 0, pointerEvents: 'none' }}>
+        {chars.slice(visibleCount).join('')}
+      </span>
+
+      {/* Brand gradient cursor — blinks while typing */}
+      {showCursor && (
         <motion.span
-          key={i}
           aria-hidden
-          initial={{ opacity: 0, y: 6 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{
-            delay: delay + i * 0.028,
-            duration: 0.14,
-            ease: 'easeOut',
+          animate={{ opacity: [1, 0, 1] }}
+          transition={{ duration: 0.85, repeat: Infinity, ease: 'linear' }}
+          style={{
+            display: 'inline-block',
+            width: '3px',
+            height: '0.82em',
+            marginLeft: '5px',
+            verticalAlign: 'middle',
+            background: 'linear-gradient(180deg, #E8321A 0%, #FF2D8B 100%)',
+            borderRadius: '1.5px',
+            boxShadow: '0 0 14px rgba(232,50,26,0.65)',
           }}
-          style={{ display: 'inline' }}
-        >
-          {char === ' ' ? '\u00A0' : char}
-        </motion.span>
-      ))}
-      {/* Brand gradient cursor — blinks while typing, fades out when done */}
-      <motion.span
-        aria-hidden
-        animate={done
-          ? { opacity: 0, scaleY: 0.5, transition: { duration: 0.4, delay: 0.6 } }
-          : { opacity: [1, 0, 1] }
-        }
-        transition={done ? {} : {
-          duration: 0.85,
-          repeat: Infinity,
-          ease: 'linear',
-        }}
-        style={{
-          display: 'inline-block',
-          width: '2px',
-          height: '0.88em',
-          marginLeft: '3px',
-          verticalAlign: 'middle',
-          background: 'linear-gradient(180deg, #E8321A 0%, #FF2D8B 100%)',
-          borderRadius: '1px',
-          transformOrigin: 'center',
-        }}
-      />
+        />
+      )}
     </span>
   )
 }
@@ -150,34 +175,36 @@ function ToolCard({
     rotYRaw.set(cx * 7)   // max ±7 degrees — subtle, anti-tacky
     rotXRaw.set(-cy * 7)
   }
-  const handleLeave = () => { rotXRaw.set(0); rotYRaw.set(0) }
+  const handleLeave = () => { 
+    rotXRaw.set(0)
+    rotYRaw.set(0) 
+  }
 
   return (
-    <div style={{ perspective: '900px' }}>
+    <div style={{ perspective: '900px', height: '100%', display: 'flex' }}>
       <motion.div
         onMouseMove={handleMove}
         onMouseLeave={handleLeave}
+        className="flex-1 flex"
         style={{
           rotateX: rotX,
           rotateY: rotY,
           position: 'relative',
-          // radius matches rounded-2xl but on wrapper for shine clipping
           borderRadius: '1rem',
-          // willChange for GPU compositing
           willChange: 'transform',
         }}
       >
         <Link
           href={href}
-          className="tool-card group p-6 md:p-8 flex flex-row md:flex-col gap-4 md:gap-5 items-center md:items-start"
-          style={{ display: 'flex' }}
+          className="tool-card group p-6 md:p-8 flex flex-row md:flex-col gap-4 md:gap-5 items-center md:items-start flex-1"
+          style={{ display: 'flex', width: '100%' }}
         >
           <div className="flex-shrink-0">{icon}</div>
           <div className="flex-1 min-w-0">
-            <div className="font-heading font-black text-xl md:text-2xl text-white uppercase tracking-tight mb-0.5 md:mb-1 group-hover:gradient-text transition-all leading-tight">
+            <div className="font-heading font-black text-xl md:text-2xl text-white uppercase tracking-tight mb-2 group-hover:gradient-text transition-all leading-tight">
               {label}
             </div>
-            <p className="text-rx-muted text-xs md:text-sm leading-relaxed hidden md:block">{detail}</p>
+            <p className="text-rx-muted text-sm leading-relaxed hidden md:block">{detail}</p>
             <p className="text-rx-muted text-xs leading-relaxed md:hidden">{desc}</p>
           </div>
           <span className="flex-shrink-0 text-xs font-bold gradient-text md:hidden whitespace-nowrap">{shortcut}</span>
@@ -245,23 +272,29 @@ export default function HomePage() {
   const r4 = useReveal(0)
   const r5 = useReveal(0)
 
-  // ─── Hero Parallax — useSpring stiffness:50 damping:30 for heavy, smooth feel ───
+  // Mouse following particles logic
+  const mouseX = useMotionValue(0)
+  const mouseY = useMotionValue(0)
+  const springX = useSpring(mouseX, { stiffness: 40, damping: 25 })
+  const springY = useSpring(mouseY, { stiffness: 40, damping: 25 })
+
+  useEffect(() => {
+    const handleGlobalMouseMove = (e: MouseEvent) => {
+      mouseX.set(e.clientX)
+      mouseY.set(e.clientY)
+    }
+    window.addEventListener('mousemove', handleGlobalMouseMove)
+    return () => window.removeEventListener('mousemove', handleGlobalMouseMove)
+  }, [mouseX, mouseY])
+
+  // Parallax elements tracking mouse relative to center
   const heroMouseX = useMotionValue(0)
   const heroMouseY = useMotionValue(0)
   const heroSpringX = useSpring(heroMouseX, { stiffness: 50, damping: 30 })
   const heroSpringY = useSpring(heroMouseY, { stiffness: 50, damping: 30 })
 
-  // Grid shifts OPPOSITE to cursor (background parallax) — max 20px
-  const gridX = useTransform(heroSpringX, [-1, 1], [20, -20])
-  const gridY = useTransform(heroSpringY, [-1, 1], [20, -20])
-
-  // Blob1 (red, bottom-left) — opposite, 14px — slightly "closer" than grid
-  const blob1X = useTransform(heroSpringX, [-1, 1], [14, -14])
-  const blob1Y = useTransform(heroSpringY, [-1, 1], [10, -10])
-
-  // Blob2 (pink radial centre) — same direction as cursor, 10px — appears "in front"
-  const blob2X = useTransform(heroSpringX, [-1, 1], [-10, 10])
-  const blob2Y = useTransform(heroSpringY, [-1, 1], [-7, 7])
+  const gridX = useTransform(heroSpringX, [-1, 1], [40, -40])
+  const gridY = useTransform(heroSpringY, [-1, 1], [30, -30])
 
   const handleHeroMouse = (e: React.MouseEvent<HTMLElement>) => {
     const rect = e.currentTarget.getBoundingClientRect()
@@ -305,64 +338,75 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-rx-bg overflow-x-hidden">
+      {/* ─── Global cursor-following glow (Antigravity style) ───
+          position:fixed so it escapes every overflow:hidden ancestor.
+          hidden on touch devices (no cursor). ─── */}
+      <motion.div
+        aria-hidden
+        className="hidden md:block fixed rounded-full pointer-events-none"
+        style={{
+          width: 600,
+          height: 600,
+          left: springX,
+          top: springY,
+          x: '-50%',
+          y: '-50%',
+          background: 'radial-gradient(circle, rgba(232,50,26,0.18) 0%, rgba(232,50,26,0.04) 45%, transparent 70%)',
+          filter: 'blur(60px)',
+          zIndex: 9998,
+          opacity: 0.9,
+        }}
+      />
+
       <Header />
 
       {/* ═══ SECTION 1: HERO with Parallax ═══ */}
       <section
-        className="relative pt-24 pb-6 px-4 overflow-hidden"
+        className="relative pt-32 pb-9 px-4 overflow-hidden flex flex-col justify-center min-h-[50vh] md:min-h-[60vh]"
         onMouseMove={handleHeroMouse}
         onMouseLeave={handleHeroLeave}
       >
-        {/* Grid — scale 1.08 so edges never show during parallax shift */}
+        {/* Grid Background — scale 1.1 so edges never show during parallax shift */}
         <motion.div
-          className="absolute inset-0 hero-grid-bg opacity-60 pointer-events-none"
-          style={{ x: gridX, y: gridY, scale: 1.08 }}
+          className="absolute inset-0 hero-grid-bg opacity-20 pointer-events-none"
+          style={{ x: gridX, y: gridY, scale: 1.1 }}
         />
 
-        {/* Red radial blob — parallax layer 1 */}
-        <motion.div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            x: blob1X,
-            y: blob1Y,
-            background: 'radial-gradient(ellipse 80% 60% at 50% 40%, rgba(232,50,26,0.14) 0%, transparent 70%)',
-          }}
-        />
+        {/* Static ambient blobs — no JS needed, CSS blur is GPU-composited */}
+        <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse 70% 55% at 50% 45%, rgba(232,50,26,0.12) 0%, transparent 70%)' }} />
 
-        {/* Pink radial blob — parallax layer 2 (moves toward cursor) */}
-        <motion.div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            x: blob2X,
-            y: blob2Y,
-            background: 'radial-gradient(ellipse 60% 40% at 70% 30%, rgba(255,45,139,0.09) 0%, transparent 65%)',
-          }}
-        />
-
-        <div className="absolute bottom-0 left-0 right-0 h-16" style={{ background: 'linear-gradient(to bottom, transparent, #0D0D0D)' }} />
-
-        <div className="relative text-center max-w-5xl mx-auto">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-white/50 text-xs font-semibold mb-5 tracking-widest uppercase animate-fade-in-up">
-            <span className="w-1.5 h-1.5 rounded-full gradient-bg animate-pulse" />
+        <div className="relative text-center max-w-5xl mx-auto z-10 w-full">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-white/40 text-[10px] font-bold mb-6 tracking-widest uppercase animate-fade-in-up">
+            <span className="w-1 h-1 rounded-full gradient-bg animate-pulse" />
             {t('heroBadge')}
           </div>
+
           <h1
-            className="font-heading font-black uppercase tracking-tighter mb-4 leading-none animate-fade-in-up"
-            style={{ fontSize: 'clamp(3rem, 10vw, 7rem)', animationDelay: '0.1s', letterSpacing: '0.02em' }}
+            className="font-heading font-black uppercase tracking-tighter mb-6 leading-[0.9]"
+            style={{ fontSize: 'clamp(2.5rem, 11vw, 7.5rem)', letterSpacing: '-0.02em' }}
           >
-            <span className="block text-white">{t('heroTitle1')}</span>
-            <span className="block gradient-text">{t('heroTitle2')}</span>
+            {/* FITTERS — plain white, delay 0.2s */}
+            <span className="block text-white" style={{ minHeight: '1.05em' }}>
+              <CharacterReveal text={t('heroTitle1')} delay={0.2} />
+            </span>
+            {/* STUDIO — gradient applied inside CharacterReveal, NOT via gradient-text class
+                so background-clip:text always has a real rendered text node */}
+            <span className="block drop-shadow-[0_0_24px_rgba(232,50,26,0.3)]" style={{ minHeight: '1.05em' }}>
+              <CharacterReveal text={t('heroTitle2')} delay={0.8} gradient />
+            </span>
           </h1>
 
-          {/* Subtitle — CharacterReveal starts after h1 fade-in (0.7s delay) */}
-          <p className="text-rx-muted text-sm md:text-base" style={{ minHeight: '1.6em' }}>
-            <CharacterReveal text={t('heroDesc')} delay={0.7} />
+          <p
+            className="text-rx-muted text-sm md:text-lg max-w-2xl mx-auto leading-relaxed opacity-60 animate-fade-in-up"
+            style={{ animationDelay: '1.8s' }}
+          >
+            {t('heroDesc')}
           </p>
         </div>
       </section>
 
       {/* ═══ SECTION 2: CORE 3 TOOLS ═══ */}
-      <section aria-label="core tools" className="relative px-4 pt-2 pb-10">
+      <section aria-label="core tools" className="relative px-4 pb-16 pt-9">
         <div className="absolute top-1/2 left-[8%] -translate-y-1/2 w-[420px] h-[420px] rounded-full pointer-events-none" style={{ background: 'rgba(232,50,26,0.20)', filter: 'blur(130px)' }} />
         <div className="absolute top-1/4 right-[8%] w-[340px] h-[340px] rounded-full pointer-events-none" style={{ background: 'rgba(255,45,139,0.16)', filter: 'blur(120px)' }} />
         <div className="relative z-10 max-w-6xl mx-auto">

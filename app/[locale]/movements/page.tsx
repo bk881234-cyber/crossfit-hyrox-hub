@@ -89,15 +89,15 @@ export default function MovementsIndexPage() {
               </div>
               <p className="text-rx-muted text-sm mb-4">{CATEGORY_DESCRIPTIONS[cat]}</p>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {movements.map((m) => (
                   <Link
                     key={m.slug}
                     href={`movements/${m.slug}`}
-                    className="tool-card group flex flex-col gap-2 hover:border-rx-red/60 transition-colors"
+                    className="tool-card group p-6 flex flex-col gap-3 hover:border-rx-red/60 transition-colors"
                   >
                     <div className="flex items-start justify-between gap-2">
-                      <h3 className="text-white font-bold text-base leading-tight group-hover:text-rx-red transition-colors">
+                      <h3 className="text-white font-bold text-lg leading-tight group-hover:text-rx-red transition-colors">
                         {m.name}
                       </h3>
                       <span className={`text-xs font-bold flex-shrink-0 ${DIFFICULTY_COLORS[m.difficulty]}`}>
@@ -105,32 +105,32 @@ export default function MovementsIndexPage() {
                       </span>
                     </div>
 
-                    <div className="flex flex-wrap gap-1">
+                    <div className="flex flex-wrap gap-2">
                       {m.equipment.map((eq) => (
                         <span
                           key={eq}
-                          className="px-2 py-0.5 rounded-md bg-rx-surface text-rx-muted text-xs border border-rx-border"
+                          className="px-2 py-0.5 rounded-md bg-white/5 text-rx-muted text-xs border border-white/10"
                         >
                           {eq}
                         </span>
                       ))}
                     </div>
 
-                    <p className="text-rx-muted text-xs line-clamp-2">
+                    <p className="text-rx-muted text-sm line-clamp-2 leading-relaxed">
                       {m.primaryMuscles.join(' · ')}
                     </p>
 
-                    <div className="flex items-center justify-between mt-auto pt-1">
+                    <div className="flex items-center justify-between mt-auto pt-3 border-t border-white/5">
                       <span className="text-rx-muted text-xs">
                         기술기준 {m.technicalStandards.length}개 · 스케일링 {m.scaling.length}단계
                       </span>
                       <svg
-                        width="14"
-                        height="14"
+                        width="16"
+                        height="16"
                         viewBox="0 0 24 24"
                         fill="none"
                         stroke="currentColor"
-                        strokeWidth="1"
+                        strokeWidth="1.5"
                         className="text-rx-muted group-hover:text-rx-red group-hover:translate-x-1 transition-all flex-shrink-0"
                       >
                         <path d="M5 12h14M12 5l7 7-7 7" />

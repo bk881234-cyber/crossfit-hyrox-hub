@@ -146,11 +146,11 @@ export default function MovementDetailPage({ params }: Props) {
         </div>
 
         {/* Overview */}
-        <section className="mb-6">
-          <h2 className="text-lg font-black text-white mb-3">동작 개요</h2>
-          <div className="card">
+        <section className="mb-10">
+          <h2 className="text-xl font-black text-white mb-4">동작 개요</h2>
+          <div className="space-y-4">
             {movement.overview.split('\n\n').map((para, i) => (
-              <p key={i} className={`text-rx-muted text-sm leading-relaxed ${i > 0 ? 'mt-3' : ''}`}>
+              <p key={i} className="text-white/70 text-base leading-relaxed">
                 {para}
               </p>
             ))}
@@ -158,17 +158,17 @@ export default function MovementDetailPage({ params }: Props) {
         </section>
 
         {/* How To Steps */}
-        <section className="mb-6">
-          <h2 className="text-lg font-black text-white mb-3">단계별 수행 방법</h2>
-          <div className="card space-y-3">
+        <section className="mb-10">
+          <h2 className="text-xl font-black text-white mb-5">단계별 수행 방법</h2>
+          <div className="space-y-6">
             {movement.howToSteps.map((step, i) => (
-              <div key={i} className="flex gap-3">
-                <div className="flex-shrink-0 w-7 h-7 rounded-full bg-rx-red/20 border border-rx-red/40 flex items-center justify-center text-xs font-black text-rx-red">
+              <div key={i} className="flex gap-4">
+                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-rx-red/10 border border-rx-red/30 flex items-center justify-center text-sm font-black text-rx-red shadow-[0_0_10px_rgba(232,50,26,0.2)]">
                   {i + 1}
                 </div>
                 <div>
-                  <h3 className="text-white font-bold text-sm">{step.name}</h3>
-                  <p className="text-rx-muted text-sm leading-relaxed">{step.text}</p>
+                  <h3 className="text-white font-bold text-base mb-1">{step.name}</h3>
+                  <p className="text-white/60 text-base leading-relaxed">{step.text}</p>
                 </div>
               </div>
             ))}
@@ -176,53 +176,53 @@ export default function MovementDetailPage({ params }: Props) {
         </section>
 
         {/* Technical Standards */}
-        <section className="mb-6">
-          <h2 className="text-lg font-black text-white mb-3">기술 기준 (Technical Standards)</h2>
-          <div className="card space-y-2">
+        <section className="mb-10">
+          <h2 className="text-xl font-black text-white mb-4">기술 기준 (Technical Standards)</h2>
+          <div className="space-y-3">
             {movement.technicalStandards.map((std, i) => (
-              <div key={i} className="flex gap-2.5 items-start">
+              <div key={i} className="flex gap-3 items-start p-4 rounded-xl bg-white/[0.03] border border-white/5">
                 <svg
-                  className="flex-shrink-0 mt-0.5 text-rx-red"
-                  width="14"
-                  height="14"
+                  className="flex-shrink-0 mt-1 text-rx-red"
+                  width="18"
+                  height="18"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
-                  strokeWidth="1.5"
+                  strokeWidth="2"
                 >
                   <path d="M20 6L9 17l-5-5" />
                 </svg>
-                <p className="text-rx-muted text-sm leading-relaxed">{std}</p>
+                <p className="text-white/70 text-base leading-relaxed">{std}</p>
               </div>
             ))}
           </div>
         </section>
 
         {/* Common Faults */}
-        <section className="mb-6">
-          <h2 className="text-lg font-black text-white mb-3">일반적 실수 (Common Faults)</h2>
-          <div className="card space-y-3">
+        <section className="mb-10">
+          <h2 className="text-xl font-black text-white mb-4">일반적 실수 (Common Faults)</h2>
+          <div className="space-y-4">
             {movement.commonFaults.map((fault, i) => {
               const [title, ...rest] = fault.split(':')
               return (
-                <div key={i} className="flex gap-2.5 items-start">
+                <div key={i} className="flex gap-3 items-start">
                   <svg
-                    className="flex-shrink-0 mt-0.5 text-rx-orange"
-                    width="14"
-                    height="14"
+                    className="flex-shrink-0 mt-1 text-rx-pink"
+                    width="18"
+                    height="18"
                     viewBox="0 0 24 24"
                     fill="none"
                     stroke="currentColor"
-                    strokeWidth="1.5"
+                    strokeWidth="2"
                   >
                     <circle cx="12" cy="12" r="10" />
                     <line x1="12" y1="8" x2="12" y2="12" />
                     <line x1="12" y1="16" x2="12.01" y2="16" />
                   </svg>
-                  <p className="text-sm leading-relaxed">
+                  <p className="text-base leading-relaxed">
                     <span className="text-white font-bold">{title}</span>
                     {rest.length > 0 && (
-                      <span className="text-rx-muted">:{rest.join(':')}</span>
+                      <span className="text-white/60">:{rest.join(':')}</span>
                     )}
                   </p>
                 </div>
@@ -232,17 +232,17 @@ export default function MovementDetailPage({ params }: Props) {
         </section>
 
         {/* Scaling */}
-        <section className="mb-6">
-          <h2 className="text-lg font-black text-white mb-3">스케일링 (Scaling)</h2>
-          <div className="space-y-3">
+        <section className="mb-12">
+          <h2 className="text-xl font-black text-white mb-5">스케일링 (Scaling)</h2>
+          <div className="grid gap-4">
             {movement.scaling.map((s, i) => (
-              <div key={i} className="card">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold ${SCALING_COLORS[i]}`}>
+              <div key={i} className="p-5 rounded-2xl bg-white/[0.03] border border-white/5 hover:border-white/10 transition-colors">
+                <div className="flex items-center gap-2 mb-3">
+                  <span className={`px-3 py-1 rounded-full text-xs font-black tracking-tight ${SCALING_COLORS[i]}`}>
                     {s.level}
                   </span>
                 </div>
-                <p className="text-rx-muted text-sm leading-relaxed">{s.description}</p>
+                <p className="text-white/60 text-base leading-relaxed">{s.description}</p>
               </div>
             ))}
           </div>
