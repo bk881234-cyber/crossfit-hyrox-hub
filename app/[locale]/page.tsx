@@ -1,6 +1,12 @@
 'use client'
 import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
+import {
+  motion,
+  useMotionValue,
+  useSpring,
+  useTransform,
+} from 'framer-motion'
 import Header from '@/components/layout/Header'
 import MobileNav from '@/components/layout/MobileNav'
 import { useTranslations, useLocale } from 'next-intl'
@@ -55,7 +61,63 @@ function CountUp({ end, suffix = '', duration = 1800 }: { end: number; suffix?: 
   return <span ref={ref}>{count}{suffix}</span>
 }
 
-/* ─── Shared Tool Card ─── */
+/* ─── Character Reveal with Gradient Cursor ─── */
+function CharacterReveal({ text, delay = 0 }: { text: string; delay?: number }) {
+  const chars = text.split('')
+  // Cursor blinks during typing, then stays solid
+  const typingMs = delay * 1000 + chars.length * 28 + 200
+  const [done, setDone] = useState(false)
+  useEffect(() => {
+    const id = setTimeout(() => setDone(true), typingMs)
+    return () => clearTimeout(id)
+  }, [typingMs])
+
+  return (
+    <span aria-label={text}>
+      {chars.map((char, i) => (
+        <motion.span
+          key={i}
+          aria-hidden
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{
+            delay: delay + i * 0.028,
+            duration: 0.14,
+            ease: 'easeOut',
+          }}
+          style={{ display: 'inline' }}
+        >
+          {char === ' ' ? '\u00A0' : char}
+        </motion.span>
+      ))}
+      {/* Brand gradient cursor — blinks while typing, fades out when done */}
+      <motion.span
+        aria-hidden
+        animate={done
+          ? { opacity: 0, scaleY: 0.5, transition: { duration: 0.4, delay: 0.6 } }
+          : { opacity: [1, 0, 1] }
+        }
+        transition={done ? {} : {
+          duration: 0.85,
+          repeat: Infinity,
+          ease: 'linear',
+        }}
+        style={{
+          display: 'inline-block',
+          width: '2px',
+          height: '0.88em',
+          marginLeft: '3px',
+          verticalAlign: 'middle',
+          background: 'linear-gradient(180deg, #E8321A 0%, #FF2D8B 100%)',
+          borderRadius: '1px',
+          transformOrigin: 'center',
+        }}
+      />
+    </span>
+  )
+}
+
+/* ─── High-End Tilt Card ─── */
 function ToolCard({
   href,
   label,
@@ -71,22 +133,74 @@ function ToolCard({
   shortcut: string
   icon: React.ReactNode
 }) {
+  // Per-instance spring motion values — spring physics for a premium feel
+  const rotXRaw = useMotionValue(0)
+  const rotYRaw = useMotionValue(0)
+  const rotX = useSpring(rotXRaw, { stiffness: 140, damping: 18, mass: 0.6 })
+  const rotY = useSpring(rotYRaw, { stiffness: 140, damping: 18, mass: 0.6 })
+
+  // Shine moves OPPOSITE to tilt — simulates glass/specular reflection
+  const shineX = useTransform(rotY, [-7, 7], [22, -22])
+  const shineY = useTransform(rotX, [-7, 7], [-16, 16])
+
+  const handleMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect()
+    const cx = (e.clientX - rect.left - rect.width / 2) / (rect.width / 2)
+    const cy = (e.clientY - rect.top - rect.height / 2) / (rect.height / 2)
+    rotYRaw.set(cx * 7)   // max ±7 degrees — subtle, anti-tacky
+    rotXRaw.set(-cy * 7)
+  }
+  const handleLeave = () => { rotXRaw.set(0); rotYRaw.set(0) }
+
   return (
-    <Link
-      href={href}
-      className="tool-card group p-6 md:p-8 flex flex-row md:flex-col gap-4 md:gap-5 items-center md:items-start"
-    >
-      <div className="flex-shrink-0">{icon}</div>
-      <div className="flex-1 min-w-0">
-        <div className="font-heading font-black text-xl md:text-2xl text-white uppercase tracking-tight mb-0.5 md:mb-1 group-hover:gradient-text transition-all leading-tight">
-          {label}
-        </div>
-        <p className="text-rx-muted text-xs md:text-sm leading-relaxed hidden md:block">{detail}</p>
-        <p className="text-rx-muted text-xs leading-relaxed md:hidden">{desc}</p>
-      </div>
-      <span className="flex-shrink-0 text-xs font-bold gradient-text md:hidden whitespace-nowrap">{shortcut}</span>
-      <span className="hidden md:block mt-auto text-sm font-bold gradient-text pt-2">{shortcut}</span>
-    </Link>
+    <div style={{ perspective: '900px' }}>
+      <motion.div
+        onMouseMove={handleMove}
+        onMouseLeave={handleLeave}
+        style={{
+          rotateX: rotX,
+          rotateY: rotY,
+          position: 'relative',
+          // radius matches rounded-2xl but on wrapper for shine clipping
+          borderRadius: '1rem',
+          // willChange for GPU compositing
+          willChange: 'transform',
+        }}
+      >
+        <Link
+          href={href}
+          className="tool-card group p-6 md:p-8 flex flex-row md:flex-col gap-4 md:gap-5 items-center md:items-start"
+          style={{ display: 'flex' }}
+        >
+          <div className="flex-shrink-0">{icon}</div>
+          <div className="flex-1 min-w-0">
+            <div className="font-heading font-black text-xl md:text-2xl text-white uppercase tracking-tight mb-0.5 md:mb-1 group-hover:gradient-text transition-all leading-tight">
+              {label}
+            </div>
+            <p className="text-rx-muted text-xs md:text-sm leading-relaxed hidden md:block">{detail}</p>
+            <p className="text-rx-muted text-xs leading-relaxed md:hidden">{desc}</p>
+          </div>
+          <span className="flex-shrink-0 text-xs font-bold gradient-text md:hidden whitespace-nowrap">{shortcut}</span>
+          <span className="hidden md:block mt-auto text-sm font-bold gradient-text pt-2">{shortcut}</span>
+        </Link>
+
+        {/* Glossy shine overlay — glass reflection moving opposite to tilt */}
+        <motion.div
+          aria-hidden
+          style={{
+            position: 'absolute',
+            inset: 0,
+            borderRadius: '1rem',
+            pointerEvents: 'none',
+            // Radial highlight centered at upper-30% — like a ceiling light reflection
+            background: 'radial-gradient(circle at 50% 30%, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0) 65%)',
+            x: shineX,
+            y: shineY,
+            zIndex: 2,
+          }}
+        />
+      </motion.div>
+    </div>
   )
 }
 
@@ -131,6 +245,31 @@ export default function HomePage() {
   const r4 = useReveal(0)
   const r5 = useReveal(0)
 
+  // ─── Hero Parallax — useSpring stiffness:50 damping:30 for heavy, smooth feel ───
+  const heroMouseX = useMotionValue(0)
+  const heroMouseY = useMotionValue(0)
+  const heroSpringX = useSpring(heroMouseX, { stiffness: 50, damping: 30 })
+  const heroSpringY = useSpring(heroMouseY, { stiffness: 50, damping: 30 })
+
+  // Grid shifts OPPOSITE to cursor (background parallax) — max 20px
+  const gridX = useTransform(heroSpringX, [-1, 1], [20, -20])
+  const gridY = useTransform(heroSpringY, [-1, 1], [20, -20])
+
+  // Blob1 (red, bottom-left) — opposite, 14px — slightly "closer" than grid
+  const blob1X = useTransform(heroSpringX, [-1, 1], [14, -14])
+  const blob1Y = useTransform(heroSpringY, [-1, 1], [10, -10])
+
+  // Blob2 (pink radial centre) — same direction as cursor, 10px — appears "in front"
+  const blob2X = useTransform(heroSpringX, [-1, 1], [-10, 10])
+  const blob2Y = useTransform(heroSpringY, [-1, 1], [-7, 7])
+
+  const handleHeroMouse = (e: React.MouseEvent<HTMLElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect()
+    heroMouseX.set((e.clientX - rect.left - rect.width / 2) / (rect.width / 2))
+    heroMouseY.set((e.clientY - rect.top - rect.height / 2) / (rect.height / 2))
+  }
+  const handleHeroLeave = () => { heroMouseX.set(0); heroMouseY.set(0) }
+
   const coreTools = [
     { href: `/${locale}/calculator`, label: t('tools.calculatorLabel'), desc: t('tools.calculatorDesc'), detail: t('tools.calculatorDetail'), icon: icons.calculator },
     { href: `/${locale}/timer`, label: t('tools.timerLabel'), desc: t('tools.timerDesc'), detail: t('tools.timerDetail'), icon: icons.timer },
@@ -168,10 +307,38 @@ export default function HomePage() {
     <div className="min-h-screen bg-rx-bg overflow-x-hidden">
       <Header />
 
-      {/* ═══ SECTION 1: HERO ═══ */}
-      <section className="relative pt-24 pb-6 px-4 overflow-hidden">
-        <div className="absolute inset-0 hero-grid-bg opacity-60" />
-        <div className="absolute inset-0" style={{ background: 'radial-gradient(ellipse 80% 60% at 50% 40%, rgba(232,50,26,0.14) 0%, transparent 70%)' }} />
+      {/* ═══ SECTION 1: HERO with Parallax ═══ */}
+      <section
+        className="relative pt-24 pb-6 px-4 overflow-hidden"
+        onMouseMove={handleHeroMouse}
+        onMouseLeave={handleHeroLeave}
+      >
+        {/* Grid — scale 1.08 so edges never show during parallax shift */}
+        <motion.div
+          className="absolute inset-0 hero-grid-bg opacity-60 pointer-events-none"
+          style={{ x: gridX, y: gridY, scale: 1.08 }}
+        />
+
+        {/* Red radial blob — parallax layer 1 */}
+        <motion.div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            x: blob1X,
+            y: blob1Y,
+            background: 'radial-gradient(ellipse 80% 60% at 50% 40%, rgba(232,50,26,0.14) 0%, transparent 70%)',
+          }}
+        />
+
+        {/* Pink radial blob — parallax layer 2 (moves toward cursor) */}
+        <motion.div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            x: blob2X,
+            y: blob2Y,
+            background: 'radial-gradient(ellipse 60% 40% at 70% 30%, rgba(255,45,139,0.09) 0%, transparent 65%)',
+          }}
+        />
+
         <div className="absolute bottom-0 left-0 right-0 h-16" style={{ background: 'linear-gradient(to bottom, transparent, #0D0D0D)' }} />
 
         <div className="relative text-center max-w-5xl mx-auto">
@@ -186,8 +353,10 @@ export default function HomePage() {
             <span className="block text-white">{t('heroTitle1')}</span>
             <span className="block gradient-text">{t('heroTitle2')}</span>
           </h1>
-          <p className="text-rx-muted text-sm md:text-base animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
-            {t('heroDesc')}
+
+          {/* Subtitle — CharacterReveal starts after h1 fade-in (0.7s delay) */}
+          <p className="text-rx-muted text-sm md:text-base" style={{ minHeight: '1.6em' }}>
+            <CharacterReveal text={t('heroDesc')} delay={0.7} />
           </p>
         </div>
       </section>

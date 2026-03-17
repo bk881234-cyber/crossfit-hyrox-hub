@@ -5,6 +5,7 @@
     "wod": "WOD Library",
     "community": "Community",
     "about": "What is CrossFit?",
+    "movements": "Movements",
     "map": "Drop-in Map"
   },
   "auth": {
@@ -83,5 +84,26 @@
       "t4Ko": "As Prescribed"
     },
     "learnMore": "Learn More"
+  },
+  "mypage": {
+    "member": "FITTERS STUDIO Member",
+    "totalWods": "Total WODs",
+    "todayGoal": "Today's Goal",
+    "goalComplete": "Done Today!",
+    "goalDesc": "Log 1 WOD",
+    "streak": "Current Streak",
+    "streakUnit": "days",
+    "thisMonth": "This Month",
+    "thisMonthUnit": "",
+    "logWodPrompt": "Record today's workout",
+    "logWod": "+ Log",
+    "heatmapTitle": "Activity Heatmap",
+    "heatmapDesc": "Last 12 months of training",
+    "less": "Less",
+    "more": "More",
+    "recentTitle": "Recent Activity",
+    "noActivity": "No records yet",
+    "browseWods": "Browse WOD Library",
+    "noResult": "No result"
   }
 }

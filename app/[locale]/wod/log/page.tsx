@@ -1,10 +1,12 @@
 'use client'
-import { useState, useEffect, Suspense } from 'react'
+import { useState, useEffect, useMemo, Suspense } from 'react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import Header from '@/components/layout/Header'
 import MobileNav from '@/components/layout/MobileNav'
 import { WODS } from '@/lib/wod-data'
+import { createClient } from '@/lib/supabase/client'
+import type { User } from '@supabase/supabase-js'
 
 interface WodLog {
   id: string
@@ -106,10 +108,30 @@ function StarRating({ value, onChange }: { value: number; onChange: (v: number) 
   )
 }
 
+// Map a Supabase row → local WodLog format for display
+function rowToLocal(row: Record<string, unknown>): WodLog {
+  return {
+    id:         row.id         as string,
+    wodId:      (row.wod_id    as string) || '',
+    wodName:    row.wod_name   as string,
+    wodType:    (row.wod_type  as string) || 'For Time',
+    date:       row.date       as string,
+    time:       (row.time      as string) || '',
+    rounds:     (row.rounds    as string) || '',
+    weight:     (row.weight    as string) || '',
+    difficulty: (row.difficulty as number) || 3,
+    notes:      (row.notes     as string) || '',
+    createdAt:  (row.created_at as string) || new Date().toISOString(),
+  }
+}
+
 /* ─── Main Content ─── */
 function WodLogContent() {
   const searchParams = useSearchParams()
   const preWodId = searchParams.get('wod') || ''
+
+  const supabase = useMemo(() => createClient(), [])
+  const [user, setUser] = useState<User | null>(null)
 
   const [logs, setLogs] = useState<WodLog[]>([])
   const [view, setView] = useState<'form' | 'list' | 'calendar'>('form')
@@ -131,57 +153,106 @@ function WodLogContent() {
   const [filterDate, setFilterDate] = useState('')
 
   useEffect(() => {
-    const stored = localStorage.getItem('wod-logs-v2')
-    if (stored) {
-      try { setLogs(JSON.parse(stored)) } catch {}
-    } else {
-      // Migrate from old format
-      const old = localStorage.getItem('wod-logs')
-      if (old) {
-        try {
-          const migrated: WodLog[] = JSON.parse(old).map((l: Record<string, string>) => ({
-            ...l, wodType: 'For Time', difficulty: 3,
-          }))
-          setLogs(migrated)
-          localStorage.setItem('wod-logs-v2', JSON.stringify(migrated))
-        } catch {}
+    async function init() {
+      const { data: { user } } = await supabase.auth.getUser()
+      setUser(user)
+
+      if (user) {
+        // Logged in: load from Supabase
+        const { data } = await supabase
+          .from('wod_logs')
+          .select('*')
+          .eq('user_id', user.id)
+          .order('date', { ascending: false })
+        setLogs((data ?? []).map(r => rowToLocal(r as Record<string, unknown>)))
+      } else {
+        // Guest: load from localStorage (with v1→v2 migration)
+        const stored = localStorage.getItem('wod-logs-v2')
+        if (stored) {
+          try { setLogs(JSON.parse(stored)) } catch {}
+        } else {
+          const old = localStorage.getItem('wod-logs')
+          if (old) {
+            try {
+              const migrated: WodLog[] = JSON.parse(old).map((l: Record<string, string>) => ({
+                ...l, wodType: 'For Time', difficulty: 3,
+              }))
+              setLogs(migrated)
+              localStorage.setItem('wod-logs-v2', JSON.stringify(migrated))
+            } catch {}
+          }
+        }
       }
     }
-  }, [])
+    init()
+  }, [supabase])
 
+  // Guest-only localStorage write; Supabase users don't write to localStorage
   const saveLogs = (updated: WodLog[]) => {
     setLogs(updated)
-    localStorage.setItem('wod-logs-v2', JSON.stringify(updated))
+    if (!user) localStorage.setItem('wod-logs-v2', JSON.stringify(updated))
   }
 
   const selectedWodInfo = WODS.find(w => w.id === selectedWod)
 
-  const handleSave = () => {
+  const handleSave = async () => {
     const wodName = selectedWod === 'custom'
       ? customWodName
       : (selectedWodInfo?.name || selectedWod)
     if (!wodName) return
 
-    const newLog: WodLog = {
-      id: Date.now().toString(),
-      wodId: selectedWod,
-      wodName,
-      wodType,
-      date,
-      time,
-      rounds,
-      weight,
-      difficulty,
-      notes,
-      createdAt: new Date().toISOString(),
+    if (user) {
+      // Save to Supabase
+      const { data, error } = await supabase
+        .from('wod_logs')
+        .insert({
+          user_id:   user.id,
+          wod_id:    selectedWod && selectedWod !== 'custom' ? selectedWod : null,
+          wod_name:  wodName,
+          wod_type:  wodType,
+          date,
+          time:      time   || null,
+          rounds:    rounds || null,
+          weight:    weight || null,
+          difficulty,
+          notes:     notes  || null,
+        })
+        .select()
+        .single()
+      if (!error && data) {
+        setLogs([rowToLocal(data as Record<string, unknown>), ...logs])
+      }
+    } else {
+      // Save to localStorage
+      const newLog: WodLog = {
+        id: Date.now().toString(),
+        wodId: selectedWod,
+        wodName,
+        wodType,
+        date,
+        time,
+        rounds,
+        weight,
+        difficulty,
+        notes,
+        createdAt: new Date().toISOString(),
+      }
+      saveLogs([newLog, ...logs])
     }
-    saveLogs([newLog, ...logs])
+
     setTime(''); setWeight(''); setRounds(''); setNotes(''); setDifficulty(3)
     setSaved(true)
     setTimeout(() => setSaved(false), 3000)
   }
 
-  const handleDelete = (id: string) => saveLogs(logs.filter(l => l.id !== id))
+  const handleDelete = async (id: string) => {
+    if (user) {
+      await supabase.from('wod_logs').delete().eq('id', id)
+      setLogs(logs.filter(l => l.id !== id))
+    } else {
+      saveLogs(logs.filter(l => l.id !== id))
+    }
+  }
 
   // Grouped list
   const filteredLogs = filterDate ? logs.filter(l => l.date === filterDate) : logs

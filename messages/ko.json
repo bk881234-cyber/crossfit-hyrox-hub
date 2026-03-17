@@ -5,6 +5,7 @@
     "wod": "WOD 라이브러리",
     "community": "커뮤니티",
     "about": "크로스핏이란?",
+    "movements": "무브먼트",
     "map": "드랍인 지도"
   },
   "auth": {
@@ -83,5 +84,26 @@
       "t4Ko": "정규 무게/기준"
     },
     "learnMore": "더 알아보기"
+  },
+  "mypage": {
+    "member": "FITTERS STUDIO 회원",
+    "totalWods": "Total WODs",
+    "todayGoal": "오늘의 목표",
+    "goalComplete": "오늘 완료!",
+    "goalDesc": "WOD 1회 기록하기",
+    "streak": "현재 스트릭",
+    "streakUnit": "일",
+    "thisMonth": "이번 달",
+    "thisMonthUnit": "회",
+    "logWodPrompt": "오늘의 훈련을 남겨보세요",
+    "logWod": "+ 기록",
+    "heatmapTitle": "활동 히트맵",
+    "heatmapDesc": "최근 12개월 훈련 기록",
+    "less": "적음",
+    "more": "많음",
+    "recentTitle": "최근 활동",
+    "noActivity": "아직 기록이 없습니다",
+    "browseWods": "WOD 라이브러리 보기",
+    "noResult": "기록 없음"
   }
 }

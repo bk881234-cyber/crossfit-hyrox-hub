@@ -10,6 +10,7 @@ const navItems = [
   { href: '/calculator', labelKey: 'calculator' },
   { href: '/timer', labelKey: 'timer' },
   { href: '/wod', labelKey: 'wod' },
+  { href: '/movements', labelKey: 'movements' },
   { href: '/community', labelKey: 'community' },
   { href: '/about', labelKey: 'about' },
   { href: '/map', labelKey: 'map' },
@@ -155,7 +156,7 @@ export default function Header() {
                       <div className="fixed inset-0 z-30" onClick={() => setUserMenuOpen(false)} />
                       <div className="absolute right-0 top-full mt-1 z-40 w-40 bg-rx-surface border border-rx-border rounded-xl shadow-xl overflow-hidden">
                         <Link
-                          href="/community"
+                          href="/mypage"
                           onClick={() => setUserMenuOpen(false)}
                           className="flex items-center gap-2 px-4 py-3 text-sm text-white hover:bg-white/5 transition-colors"
                         >
@@ -234,25 +235,31 @@ export default function Header() {
         <div className="px-4 py-3 border-b border-rx-border">
           {!authLoading && (user ? (
             <div className="flex items-center gap-3">
-              {avatarUrl ? (
-                <Image src={avatarUrl} alt={displayName} width={36} height={36} className="w-9 h-9 rounded-full object-cover flex-shrink-0" unoptimized />
-              ) : (
-                <div
-                  className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-black text-white flex-shrink-0"
-                  style={{ background: 'linear-gradient(135deg, #E8321A, #FF2D8B)' }}
-                >
-                  {displayName.charAt(0).toUpperCase()}
+              <Link href="/mypage" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 flex-1 min-w-0">
+                {avatarUrl ? (
+                  <Image src={avatarUrl} alt={displayName} width={36} height={36} className="w-9 h-9 rounded-full object-cover flex-shrink-0" unoptimized />
+                ) : (
+                  <div
+                    className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-black text-white flex-shrink-0"
+                    style={{ background: 'linear-gradient(135deg, #E8321A, #FF2D8B)' }}
+                  >
+                    {displayName.charAt(0).toUpperCase()}
+                  </div>
+                )}
+                <div className="flex-1 min-w-0">
+                  <p className="text-white text-sm font-bold truncate">{displayName}</p>
+                  <p className="text-rx-muted" style={{ fontSize: 12 }}>{tAuth('mypage')} →</p>
                 </div>
-              )}
-              <div className="flex-1 min-w-0">
-                <p className="text-white text-sm font-bold truncate">{displayName}</p>
-                <button
-                  onClick={handleLogout}
-                  className="text-rx-muted text-xs hover:text-white transition-colors"
-                >
-                  {tAuth('logout')}
-                </button>
-              </div>
+              </Link>
+              <button
+                onClick={handleLogout}
+                className="text-rx-muted hover:text-white transition-colors p-1 flex-shrink-0"
+                title={tAuth('logout')}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><polyline points="16 17 21 12 16 7" /><line x1="21" y1="12" x2="9" y2="12" />
+                </svg>
+              </button>
             </div>
           ) : (
             <Link

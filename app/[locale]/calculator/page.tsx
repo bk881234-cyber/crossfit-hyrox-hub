@@ -96,6 +96,28 @@ export default function CalculatorPage() {
         <h1 className="section-title mt-2">1RM 계산기</h1>
         <p className="section-sub">최대 중량을 계산하고 퍼센트 테이블을 확인하세요</p>
 
+        {/* Strength Hub CTA */}
+        <a
+          href="calculator/1rm"
+          className="flex items-center justify-between gap-3 mb-5 p-4 rounded-2xl group"
+          style={{
+            background: 'linear-gradient(135deg, rgba(232,50,26,0.10), rgba(255,45,139,0.10))',
+            border: '1px solid rgba(232,50,26,0.35)',
+          }}
+        >
+          <div className="flex items-center gap-3">
+            <span className="text-2xl">💪</span>
+            <div>
+              <p className="text-white font-black" style={{ fontSize: 16 }}>STRENGTH HUB</p>
+              <p className="text-rx-muted" style={{ fontSize: 16 }}>7가지 리프트 PR 추적 · 성장 차트 · 공유</p>
+            </div>
+          </div>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"
+            className="text-rx-muted group-hover:text-white group-hover:translate-x-1 transition-all flex-shrink-0">
+            <path d="M5 12h14M12 5l7 7-7 7" />
+          </svg>
+        </a>
+
         {/* Tab Selector */}
         <div className="flex gap-1 bg-rx-surface rounded-xl p-1 mb-6">
           {(['barbell', 'dumbbell', 'bodyweight'] as Tab[]).map((t) => (

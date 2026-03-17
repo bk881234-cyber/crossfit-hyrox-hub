@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import Header from '@/components/layout/Header'
 import MobileNav from '@/components/layout/MobileNav'
 import { WODS, type WOD } from '@/lib/wod-data'
+import WodHistoryPanel from '@/components/wod/WodHistoryPanel'
 
 export function generateStaticParams() {
   const locales = ['ko', 'en']
@@ -196,6 +197,9 @@ export default function WODDetailPage({ params }: Props) {
             </span>
           ))}
         </div>
+
+        {/* Personal History & Re-challenge (client component, auth-aware) */}
+        <WodHistoryPanel wodId={wod.id} />
 
         {/* CTA Row */}
         <div className="grid grid-cols-2 gap-3 mb-6">
