@@ -336,7 +336,7 @@ function InteractiveHeroGrid() {
         const isNear = dist < radius
         // Ultra-low base opacity (8%), interaction is 50% max
         ctx.fillStyle = isNear ? p.color : 'rgba(255, 255, 255, 0.08)' 
-        const size = isNear ? (1.0 + (1 - dist / radius) * 0.7) : 1.0 // base 1.0, hover max 1.7
+        const size = isNear ? (1.3 + (1 - dist / radius) * 0.7) : 1.3 // base 1.3, hover max 2.0
         ctx.beginPath()
         ctx.arc(p.x, p.y, size, 0, Math.PI * 2)
         ctx.fill()
@@ -449,7 +449,7 @@ export default function HomePage() {
       >
         {/* Grid Background — scale 1.1 so edges never show during parallax shift */}
         <motion.div
-          className="absolute inset-0 hero-grid-bg opacity-20 pointer-events-none"
+          className="absolute inset-0 hero-grid-bg opacity-60 pointer-events-none"
           style={{ x: gridX, y: gridY, scale: 1.1 }}
         />
 
