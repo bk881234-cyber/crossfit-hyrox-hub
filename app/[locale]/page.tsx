@@ -84,7 +84,7 @@ function HeroTypeTitle({ line1, line2 }: { line1: string; line2: string }) {
           clearInterval(interval)
           setTimeout(() => setShowCursor(false), 1200)
         }
-      }, 38)
+      }, 47)
     }, 200)
     return () => { clearTimeout(startId); clearInterval(interval) }
   }, [total])
