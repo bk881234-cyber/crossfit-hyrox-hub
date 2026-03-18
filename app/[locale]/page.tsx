@@ -290,7 +290,7 @@ function InteractiveHeroGrid() {
     let w = 0, h = 0
     const gap = 52 // Significantly wider gap for a clean, minimalist feel
     const radius = 280 // Slightly tighter radius
-    const strength = 50 // Gentle repulsion
+    const strength = 35 // Gentle repulsion
 
     // Even more subtle colors (0.5 opacity for interaction)
     const colors = ['rgba(232, 50, 26, 0.5)', 'rgba(255, 45, 139, 0.5)', 'rgba(255, 255, 255, 0.4)']
@@ -328,8 +328,8 @@ function InteractiveHeroGrid() {
           p.y = p.oy - Math.sin(angle) * force * strength
         } else {
           // Smooth return to original position
-          p.x += (p.ox - p.x) * 0.07 // Slower, more fluid return
-          p.y += (p.oy - p.y) * 0.07
+          p.x += (p.ox - p.x) * 0.04 // Slower, more fluid return
+          p.y += (p.oy - p.y) * 0.04
         }
 
         // Draw point
@@ -359,7 +359,7 @@ function InteractiveHeroGrid() {
     <canvas
       ref={canvasRef}
       className="fixed inset-0 pointer-events-none z-0"
-      style={{ opacity: 0.8 }}
+      style={{ opacity: 0.6 }}
     />
   )
 }
