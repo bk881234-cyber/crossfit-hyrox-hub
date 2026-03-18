@@ -262,12 +262,12 @@ export default function StrengthHubClient() {
   const [user,     setUser]     = useState<User | null>(null)
   const [records,  setRecords]  = useState<Record<LiftType, OneRmRecord[]>>(emptyRecords)
   const [loading,  setLoading]  = useState(true)
-  const [dispUnit, setDispUnit] = useState<WeightUnit>('kg')
+  const [dispUnit, setDispUnit] = useState<WeightUnit>('lbs')
   const [selected, setSelected] = useState<LiftType | null>(null)
 
   // Log-form state
   const [logW,    setLogW]    = useState('')
-  const [logUnit, setLogUnit] = useState<WeightUnit>('kg')
+  const [logUnit, setLogUnit] = useState<WeightUnit>('lbs')
   const [logDate, setLogDate] = useState(new Date().toISOString().split('T')[0])
   const [saving,  setSaving]  = useState(false)
   const [saved,   setSaved]   = useState(false)
