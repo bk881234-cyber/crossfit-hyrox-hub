@@ -288,11 +288,12 @@ function InteractiveHeroGrid() {
     if (!ctx) return
 
     let w = 0, h = 0
-    const gap = 36 // Slightly wider gap for a cleaner look
-    const radius = 320 // Increased repulsion radius
-    const strength = 65 // Increased strength for a more dramatic push
+    const gap = 52 // Significantly wider gap for a clean, minimalist feel
+    const radius = 280 // Slightly tighter radius
+    const strength = 50 // Gentle repulsion
 
-    const colors = ['#E8321A', '#FF2D8B', '#FFFFFFAA'] // Added more white opacity
+    // Even more subtle colors (0.5 opacity for interaction)
+    const colors = ['rgba(232, 50, 26, 0.5)', 'rgba(255, 45, 139, 0.5)', 'rgba(255, 255, 255, 0.4)']
 
     const init = () => {
       w = canvas.width = window.innerWidth
@@ -327,15 +328,15 @@ function InteractiveHeroGrid() {
           p.y = p.oy - Math.sin(angle) * force * strength
         } else {
           // Smooth return to original position
-          p.x += (p.ox - p.x) * 0.08 // Slightly more springy return
-          p.y += (p.oy - p.y) * 0.08
+          p.x += (p.ox - p.x) * 0.07 // Slower, more fluid return
+          p.y += (p.oy - p.y) * 0.07
         }
 
         // Draw point
         const isNear = dist < radius
-        // Base opacity is now higher (around 30-40%), interaction reaches 70-100%
-        ctx.fillStyle = isNear ? p.color : 'rgba(255, 255, 255, 0.35)' 
-        const size = isNear ? (1.2 + (1 - dist / radius) * 1.5) : 0.8 // Smaller dots
+        // Ultra-low base opacity (8%), interaction is 50% max
+        ctx.fillStyle = isNear ? p.color : 'rgba(255, 255, 255, 0.08)' 
+        const size = isNear ? (0.3 + (1 - dist / radius) * 0.4) : 0.25 // Reduced dot size
         ctx.beginPath()
         ctx.arc(p.x, p.y, size, 0, Math.PI * 2)
         ctx.fill()
@@ -358,7 +359,7 @@ function InteractiveHeroGrid() {
     <canvas
       ref={canvasRef}
       className="fixed inset-0 pointer-events-none z-0"
-      style={{ opacity: 0.7 }}
+      style={{ opacity: 0.8 }}
     />
   )
 }
