@@ -336,7 +336,7 @@ function InteractiveHeroGrid() {
         const isNear = dist < radius
         // Ultra-low base opacity (8%), interaction is 50% max
         ctx.fillStyle = isNear ? p.color : 'rgba(255, 255, 255, 0.08)' 
-        const size = isNear ? (0.3 + (1 - dist / radius) * 0.4) : 0.25 // Reduced dot size
+        const size = isNear ? (0.3 + (1 - dist / radius) * 0.7) : 0.3 // base 0.3, hover max 1.0
         ctx.beginPath()
         ctx.arc(p.x, p.y, size, 0, Math.PI * 2)
         ctx.fill()
@@ -359,7 +359,7 @@ function InteractiveHeroGrid() {
     <canvas
       ref={canvasRef}
       className="fixed inset-0 pointer-events-none z-0"
-      style={{ opacity: 0.8 }}
+      style={{ opacity: 0.5 }}
     />
   )
 }
