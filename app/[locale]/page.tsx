@@ -345,8 +345,10 @@ function InteractiveHeroGrid() {
         if (dist < radius) {
           const force = (radius - dist) / radius
           const angle = Math.atan2(dy, dx)
-          p.x = p.ox - Math.cos(angle) * force * strength
-          p.y = p.oy - Math.sin(angle) * force * strength
+          const targetX = p.ox - Math.cos(angle) * force * strength
+          const targetY = p.oy - Math.sin(angle) * force * strength
+          p.x += (targetX - p.x) * 0.06 // Lerp toward repulsion target — slow follow
+          p.y += (targetY - p.y) * 0.06
         } else {
           // Smooth return to original position
           p.x += (p.ox - p.x) * 0.02 // Slower, more fluid return
@@ -380,7 +382,7 @@ function InteractiveHeroGrid() {
     <canvas
       ref={canvasRef}
       className="fixed inset-0 pointer-events-none z-0"
-      style={{ opacity: 0.8 }}
+      style={{ opacity: 0.5 }}
     />
   )
 }
@@ -470,7 +472,7 @@ export default function HomePage() {
       >
         {/* Grid Background — scale 1.1 so edges never show during parallax shift */}
         <motion.div
-          className="absolute inset-0 hero-grid-bg opacity-60 pointer-events-none"
+          className="absolute inset-0 hero-grid-bg opacity-90 pointer-events-none"
           style={{ x: gridX, y: gridY, scale: 1.1 }}
         />
 
