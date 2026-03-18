@@ -272,6 +272,98 @@ const icons = {
   ),
 }
 
+/* ─── Antigravity-style Interactive Hero Grid ───
+ * A dense grid of particles that "repel" from the cursor.
+ * Uses Canvas for 60fps performance with hundreds of reactive points.
+ * ─── */
+function InteractiveHeroGrid() {
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const mouse = useRef({ x: -1000, y: -1000 })
+  const points = useRef<{ x: number; y: number; ox: number; oy: number; color: string }[]>([])
+
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
+
+    let w = 0, h = 0
+    const gap = 34
+    const radius = 220 // Increased repulsion radius for a more "airy" feel
+    const strength = 55 // Increased repulsion strength
+
+    const colors = ['#E8321A', '#FF2D8B', '#FFFFFF70']
+
+    const init = () => {
+      w = canvas.width = window.innerWidth
+      h = canvas.height = window.innerHeight
+      points.current = []
+      for (let x = gap / 2; x < w; x += gap) {
+        for (let y = gap / 2; y < h; y += gap) {
+          points.current.push({
+            x, y, ox: x, oy: y,
+            color: colors[Math.floor(Math.random() * colors.length)]
+          })
+        }
+      }
+    }
+
+    const onMouseMove = (e: MouseEvent) => {
+      mouse.current = { x: e.clientX, y: e.clientY }
+    }
+
+    const render = () => {
+      ctx.clearRect(0, 0, w, h)
+      points.current.forEach(p => {
+        const dx = mouse.current.x - p.ox
+        const dy = mouse.current.y - p.oy
+        const dist = Math.sqrt(dx * dx + dy * dy)
+        
+        // Repulsion logic
+        if (dist < radius) {
+          const force = (radius - dist) / radius
+          const angle = Math.atan2(dy, dx)
+          // Repel from cursor
+          p.x = p.ox - Math.cos(angle) * force * strength
+          p.y = p.oy - Math.sin(angle) * force * strength
+        } else {
+          // Smooth return to original position
+          p.x += (p.ox - p.x) * 0.1
+          p.y += (p.oy - p.y) * 0.1
+        }
+
+        // Color and size react to proximity
+        const isNear = dist < radius
+        ctx.fillStyle = isNear ? p.color : '#FFFFFF12'
+        const size = isNear ? (2 + (1 - dist / radius) * 2) : 1.2
+        
+        ctx.beginPath()
+        ctx.arc(p.x, p.y, size, 0, Math.PI * 2)
+        ctx.fill()
+      })
+      requestAnimationFrame(render)
+    }
+
+    window.addEventListener('mousemove', onMouseMove)
+    window.addEventListener('resize', init)
+    init()
+    render()
+
+    return () => {
+      window.removeEventListener('mousemove', onMouseMove)
+      window.removeEventListener('resize', init)
+    }
+  }, [])
+
+  return (
+    <canvas
+      ref={canvasRef}
+      className="fixed inset-0 pointer-events-none z-0"
+      style={{ opacity: 0.7 }}
+    />
+  )
+}
+
 export default function HomePage() {
   const t = useTranslations('home')
   const locale = useLocale()
@@ -279,7 +371,7 @@ export default function HomePage() {
   const r4 = useReveal(0)
   const r5 = useReveal(0)
 
-  // Antigravity-style cursor: very large, very soft neutral spotlight
+  // Cursor following values (can still be used for other parallax if needed)
   const mouseX = useMotionValue(typeof window !== 'undefined' ? window.innerWidth / 2 : 0)
   const mouseY = useMotionValue(typeof window !== 'undefined' ? window.innerHeight / 2 : 0)
   const springX = useSpring(mouseX, { stiffness: 60, damping: 28, mass: 1.2 })
@@ -345,26 +437,7 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-rx-bg overflow-x-hidden">
-      {/* ─── Antigravity-style ambient spotlight ───
-          Very large, very soft neutral white glow — like a ceiling light source.
-          Barely perceptible: illuminates the dark canvas without calling attention to itself.
-          Hidden on touch devices (no cursor). ─── */}
-      <motion.div
-        aria-hidden
-        className="hidden md:block fixed rounded-full pointer-events-none"
-        style={{
-          width: 1000,
-          height: 1000,
-          left: springX,
-          top: springY,
-          x: '-50%',
-          y: '-50%',
-          background: 'radial-gradient(circle, rgba(255,255,255,0.055) 0%, rgba(255,255,255,0.018) 40%, transparent 68%)',
-          filter: 'blur(0px)',
-          zIndex: 9998,
-          mixBlendMode: 'screen',
-        }}
-      />
+      <InteractiveHeroGrid />
 
       <Header />
 
