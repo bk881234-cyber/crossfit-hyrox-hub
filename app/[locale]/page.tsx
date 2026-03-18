@@ -69,11 +69,11 @@ function CountUp({ end, suffix = '', duration = 1800 }: { end: number; suffix?: 
 function HeroTypeTitle({ line1, line2 }: { line1: string; line2: string }) {
   const total = line1.length + line2.length
   const [count, setCount] = useState(0)
-  const [showCursor, setShowCursor] = useState(true)
+  const [cursorDone, setCursorDone] = useState(false)
 
   useEffect(() => {
     setCount(0)
-    setShowCursor(true)
+    setCursorDone(false)
     let interval: ReturnType<typeof setInterval>
     const startId = setTimeout(() => {
       let n = 0
@@ -82,7 +82,7 @@ function HeroTypeTitle({ line1, line2 }: { line1: string; line2: string }) {
         setCount(n)
         if (n >= total) {
           clearInterval(interval)
-          setTimeout(() => setShowCursor(false), 1200)
+          setTimeout(() => setCursorDone(true), 1200)
         }
       }, 70)
     }, 200)
@@ -104,23 +104,44 @@ function HeroTypeTitle({ line1, line2 }: { line1: string; line2: string }) {
     backgroundClip: 'text',
   }
 
-  const cursor = showCursor ? (
+  const cursorStyle: React.CSSProperties = {
+    display: 'inline-block',
+    width: '3px',
+    height: '0.82em',
+    marginLeft: '4px',
+    verticalAlign: 'middle',
+    background: 'linear-gradient(180deg, #E8321A 0%, #FF2D8B 100%)',
+    borderRadius: '1.5px',
+    boxShadow: '0 0 14px rgba(232,50,26,0.65)',
+  }
+
+  // Line 1 cursor: conditionally rendered (disappears when cursor moves to line 2, no jump)
+  const line1Cursor = !cursorOnLine2 && !cursorDone ? (
     <motion.span
       aria-hidden
       animate={{ opacity: [1, 0, 1] }}
       transition={{ duration: 0.85, repeat: Infinity, ease: 'linear' }}
-      style={{
-        display: 'inline-block',
-        width: '3px',
-        height: '0.82em',
-        marginLeft: '4px',
-        verticalAlign: 'middle',
-        background: 'linear-gradient(180deg, #E8321A 0%, #FF2D8B 100%)',
-        borderRadius: '1.5px',
-        boxShadow: '0 0 14px rgba(232,50,26,0.65)',
-      }}
+      style={cursorStyle}
     />
   ) : null
+
+  // Line 2 cursor: always in DOM to prevent layout shift — opacity only
+  const line2Cursor = (
+    <motion.span
+      aria-hidden
+      animate={
+        cursorDone ? { opacity: 0 }
+        : cursorOnLine2 ? { opacity: [1, 0, 1] }
+        : { opacity: 0 }
+      }
+      transition={
+        cursorDone
+          ? { duration: 0.6, ease: 'easeOut' }
+          : { duration: 0.85, repeat: Infinity, ease: 'linear' }
+      }
+      style={cursorStyle}
+    />
+  )
 
   return (
     <>
@@ -129,7 +150,7 @@ function HeroTypeTitle({ line1, line2 }: { line1: string; line2: string }) {
         <span aria-label={line1} style={{ position: 'relative', display: 'inline-block' }}>
           <span>{l1Visible}</span>
           <span aria-hidden style={{ opacity: 0, pointerEvents: 'none' }}>{l1Hidden}</span>
-          {!cursorOnLine2 && cursor}
+          {line1Cursor}
         </span>
       </span>
 
@@ -142,7 +163,7 @@ function HeroTypeTitle({ line1, line2 }: { line1: string; line2: string }) {
           <span aria-hidden style={{ opacity: 0, pointerEvents: 'none', ...gradientStyle }}>
             {l2Hidden}
           </span>
-          {cursorOnLine2 && cursor}
+          {line2Cursor}
         </span>
       </span>
     </>
@@ -328,8 +349,8 @@ function InteractiveHeroGrid() {
           p.y = p.oy - Math.sin(angle) * force * strength
         } else {
           // Smooth return to original position
-          p.x += (p.ox - p.x) * 0.04 // Slower, more fluid return
-          p.y += (p.oy - p.y) * 0.04
+          p.x += (p.ox - p.x) * 0.02 // Slower, more fluid return
+          p.y += (p.oy - p.y) * 0.02
         }
 
         // Draw point
@@ -359,7 +380,7 @@ function InteractiveHeroGrid() {
     <canvas
       ref={canvasRef}
       className="fixed inset-0 pointer-events-none z-0"
-      style={{ opacity: 0.6 }}
+      style={{ opacity: 0.8 }}
     />
   )
 }
