@@ -61,84 +61,91 @@ function CountUp({ end, suffix = '', duration = 1800 }: { end: number; suffix?: 
   return <span ref={ref}>{count}{suffix}</span>
 }
 
-/* ─── Character Reveal with Gradient Cursor ───
- *  Renders a growing text *string* (not per-char spans) so background-clip:text
- *  on the gradient wrapper always has a real text node to paint through.
- *  A visibility:hidden placeholder sibling holds the full dimensions from frame 0
- *  so the h1 never reflows as characters appear.
+/* ─── Hero Two-Line Typing — single continuous sequence, one cursor ───
+ *  Types line1 (plain white) then immediately continues on line2 (gradient).
+ *  A single blinking cursor sits at the current character position across both lines.
+ *  Invisible placeholders prevent layout shifts throughout.
  * ─── */
-function CharacterReveal({
-  text,
-  delay = 0,
-  gradient = false,
-}: {
-  text: string
-  delay?: number
-  gradient?: boolean
-}) {
-  const chars = Array.from(text) // Unicode-safe split (handles Korean, emoji)
-  const [visibleCount, setVisibleCount] = useState(0)
+function HeroTypeTitle({ line1, line2 }: { line1: string; line2: string }) {
+  const total = line1.length + line2.length
+  const [count, setCount] = useState(0)
   const [showCursor, setShowCursor] = useState(true)
 
   useEffect(() => {
-    setVisibleCount(0)
+    setCount(0)
     setShowCursor(true)
     let interval: ReturnType<typeof setInterval>
     const startId = setTimeout(() => {
       let n = 0
       interval = setInterval(() => {
         n += 1
-        setVisibleCount(n)
-        if (n >= chars.length) {
+        setCount(n)
+        if (n >= total) {
           clearInterval(interval)
           setTimeout(() => setShowCursor(false), 1200)
         }
-      }, 40)
-    }, delay * 1000)
+      }, 38)
+    }, 200)
     return () => { clearTimeout(startId); clearInterval(interval) }
-  }, [text, chars.length, delay])
+  }, [total])
 
-  // Gradient applied directly here so it's never dependent on ancestor inheritance
-  const visibleStyle: React.CSSProperties = gradient
-    ? {
-        background: 'linear-gradient(90deg, #E8321A 0%, #FF2D8B 100%)',
-        WebkitBackgroundClip: 'text',
-        WebkitTextFillColor: 'transparent',
-        backgroundClip: 'text',
-      }
-    : {}
+  const l1Visible = line1.slice(0, Math.min(count, line1.length))
+  const l1Hidden  = line1.slice(Math.min(count, line1.length))
+  const l2Count   = Math.max(0, count - line1.length)
+  const l2Visible = line2.slice(0, l2Count)
+  const l2Hidden  = line2.slice(l2Count)
+
+  const cursorOnLine2 = count > line1.length
+
+  const gradientStyle: React.CSSProperties = {
+    background: 'linear-gradient(90deg, #E8321A 0%, #FF2D8B 100%)',
+    WebkitBackgroundClip: 'text',
+    WebkitTextFillColor: 'transparent',
+    backgroundClip: 'text',
+  }
+
+  const cursor = showCursor ? (
+    <motion.span
+      aria-hidden
+      animate={{ opacity: [1, 0, 1] }}
+      transition={{ duration: 0.85, repeat: Infinity, ease: 'linear' }}
+      style={{
+        display: 'inline-block',
+        width: '3px',
+        height: '0.82em',
+        marginLeft: '4px',
+        verticalAlign: 'middle',
+        background: 'linear-gradient(180deg, #E8321A 0%, #FF2D8B 100%)',
+        borderRadius: '1.5px',
+        boxShadow: '0 0 14px rgba(232,50,26,0.65)',
+      }}
+    />
+  ) : null
 
   return (
-    <span aria-label={text} style={{ position: 'relative', display: 'inline-block' }}>
-      {/* Visible, growing text — gradient (or plain) applied directly, no ancestor dependency */}
-      <span style={visibleStyle}>
-        {chars.slice(0, visibleCount).join('')}
+    <>
+      {/* Line 1: FITTERS — plain white */}
+      <span className="block text-white" style={{ minHeight: '1.05em' }}>
+        <span aria-label={line1} style={{ position: 'relative', display: 'inline-block' }}>
+          <span>{l1Visible}</span>
+          <span aria-hidden style={{ opacity: 0, pointerEvents: 'none' }}>{l1Hidden}</span>
+          {!cursorOnLine2 && cursor}
+        </span>
       </span>
 
-      {/* Invisible placeholder — takes up exactly the remaining space so layout never shifts */}
-      <span aria-hidden style={{ opacity: 0, pointerEvents: 'none' }}>
-        {chars.slice(visibleCount).join('')}
+      {/* Line 2: STUDIO — gradient */}
+      <span className="block drop-shadow-[0_0_24px_rgba(232,50,26,0.3)]" style={{ minHeight: '1.05em' }}>
+        <span aria-label={line2} style={{ position: 'relative', display: 'inline-block' }}>
+          <span style={l2Visible.length > 0 ? gradientStyle : {}}>
+            {l2Visible || '\u200B'}
+          </span>
+          <span aria-hidden style={{ opacity: 0, pointerEvents: 'none', ...gradientStyle }}>
+            {l2Hidden}
+          </span>
+          {cursorOnLine2 && cursor}
+        </span>
       </span>
-
-      {/* Brand gradient cursor — blinks while typing */}
-      {showCursor && (
-        <motion.span
-          aria-hidden
-          animate={{ opacity: [1, 0, 1] }}
-          transition={{ duration: 0.85, repeat: Infinity, ease: 'linear' }}
-          style={{
-            display: 'inline-block',
-            width: '3px',
-            height: '0.82em',
-            marginLeft: '5px',
-            verticalAlign: 'middle',
-            background: 'linear-gradient(180deg, #E8321A 0%, #FF2D8B 100%)',
-            borderRadius: '1.5px',
-            boxShadow: '0 0 14px rgba(232,50,26,0.65)',
-          }}
-        />
-      )}
-    </span>
+    </>
   )
 }
 
@@ -272,11 +279,11 @@ export default function HomePage() {
   const r4 = useReveal(0)
   const r5 = useReveal(0)
 
-  // Mouse following particles logic
-  const mouseX = useMotionValue(0)
-  const mouseY = useMotionValue(0)
-  const springX = useSpring(mouseX, { stiffness: 40, damping: 25 })
-  const springY = useSpring(mouseY, { stiffness: 40, damping: 25 })
+  // Antigravity-style cursor: very large, very soft neutral spotlight
+  const mouseX = useMotionValue(typeof window !== 'undefined' ? window.innerWidth / 2 : 0)
+  const mouseY = useMotionValue(typeof window !== 'undefined' ? window.innerHeight / 2 : 0)
+  const springX = useSpring(mouseX, { stiffness: 60, damping: 28, mass: 1.2 })
+  const springY = useSpring(mouseY, { stiffness: 60, damping: 28, mass: 1.2 })
 
   useEffect(() => {
     const handleGlobalMouseMove = (e: MouseEvent) => {
@@ -338,23 +345,24 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-rx-bg overflow-x-hidden">
-      {/* ─── Global cursor-following glow (Antigravity style) ───
-          position:fixed so it escapes every overflow:hidden ancestor.
-          hidden on touch devices (no cursor). ─── */}
+      {/* ─── Antigravity-style ambient spotlight ───
+          Very large, very soft neutral white glow — like a ceiling light source.
+          Barely perceptible: illuminates the dark canvas without calling attention to itself.
+          Hidden on touch devices (no cursor). ─── */}
       <motion.div
         aria-hidden
         className="hidden md:block fixed rounded-full pointer-events-none"
         style={{
-          width: 600,
-          height: 600,
+          width: 1000,
+          height: 1000,
           left: springX,
           top: springY,
           x: '-50%',
           y: '-50%',
-          background: 'radial-gradient(circle, rgba(232,50,26,0.18) 0%, rgba(232,50,26,0.04) 45%, transparent 70%)',
-          filter: 'blur(60px)',
+          background: 'radial-gradient(circle, rgba(255,255,255,0.055) 0%, rgba(255,255,255,0.018) 40%, transparent 68%)',
+          filter: 'blur(0px)',
           zIndex: 9998,
-          opacity: 0.9,
+          mixBlendMode: 'screen',
         }}
       />
 
@@ -385,15 +393,7 @@ export default function HomePage() {
             className="font-heading font-black uppercase tracking-tighter mb-6 leading-[0.9]"
             style={{ fontSize: 'clamp(2.5rem, 11vw, 7.5rem)', letterSpacing: '-0.02em' }}
           >
-            {/* FITTERS — plain white, delay 0.2s */}
-            <span className="block text-white" style={{ minHeight: '1.05em' }}>
-              <CharacterReveal text={t('heroTitle1')} delay={0.2} />
-            </span>
-            {/* STUDIO — gradient applied inside CharacterReveal, NOT via gradient-text class
-                so background-clip:text always has a real rendered text node */}
-            <span className="block drop-shadow-[0_0_24px_rgba(232,50,26,0.3)]" style={{ minHeight: '1.05em' }}>
-              <CharacterReveal text={t('heroTitle2')} delay={0.8} gradient />
-            </span>
+            <HeroTypeTitle line1={t('heroTitle1')} line2={t('heroTitle2')} />
           </h1>
 
           <p
