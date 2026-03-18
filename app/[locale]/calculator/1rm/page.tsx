@@ -2,13 +2,13 @@ import type { Metadata } from 'next'
 import StrengthHubClient from '@/components/calculator/StrengthHubClient'
 
 export const metadata: Metadata = {
-  title: '1RM Strength Hub — 나의 최대 중량 추적',
+  title: '나의 PR 기록하기 — 1RM 성장 추적',
   description:
-    '데드리프트, 백 스쿼트, 벤치프레스 등 7가지 리프트의 1RM 기록을 추적하고 6개월 성장 차트를 확인하세요.',
+    '나의 데드리프트, 백 스쿼트, 벤치프레스 등 PR을 기록하고 관리하며 성장과정을 공유하세요.',
   openGraph: {
-    title: 'FITTERS STUDIO — 1RM Strength Hub',
+    title: 'FITTERS STUDIO — 나의 PR 기록하기',
     description:
-      '나의 데드리프트, 백 스쿼트, 벤치프레스 PR을 추적하는 강력한 강도 허브. 6개월 트렌드 차트와 소셜 공유 기능 포함.',
+      '나의 PR을 기록하고 관리하며 성장과정을 공유하세요. 6개월 트렌드 차트와 소셜 공유 기능 포함.',
     url: 'https://www.fittersstudio.com/calculator/1rm',
     siteName: 'FITTERS STUDIO',
     type: 'website',
@@ -16,8 +16,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'FITTERS STUDIO — 1RM Strength Hub',
-    description: '나의 1RM을 추적하고 강해지세요',
+    title: 'FITTERS STUDIO — 나의 PR 기록하기',
+    description: '나의 PR을 기록하고 관리하며 성장과정을 공유하세요.',
   },
   alternates: {
     canonical: 'https://www.fittersstudio.com/calculator/1rm',

@@ -256,7 +256,7 @@ export default function MovementDetailPage({ params }: Props) {
               {categoryMovements.map((m) => (
                 <Link
                   key={m.slug}
-                  href={`../${m.slug}`}
+                  href={m.slug}
                   className="tool-card group flex items-center justify-between hover:border-rx-red/60 transition-colors py-3 px-5"
                 >
                   <div>

@@ -84,7 +84,7 @@ async function sharePR(
   const text = `🔥 ${liftNameEn} PR UPDATED: ${weight}${unit} on FITTERS STUDIO! 🚀 Track yours: ${url}`
   try {
     if (typeof navigator !== 'undefined' && navigator.share) {
-      await navigator.share({ title: 'FITTERS STUDIO — Strength Hub', text, url })
+      await navigator.share({ title: 'FITTERS STUDIO — 나의 PR 기록하기', text, url })
       return 'shared'
     }
     await navigator.clipboard.writeText(text)
@@ -249,7 +249,7 @@ function ShareBtn({ onClick, state }: { onClick: () => void; state: 'idle' | 'co
             <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
             <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
           </svg>
-          Share PR
+          나의 PR 공유하기
         </>
       )}
     </button>
@@ -387,9 +387,9 @@ export default function StrengthHubClient() {
               </Link>
             </div>
             <h1 className="font-black text-white uppercase tracking-tight" style={{ fontSize: 38, lineHeight: 1 }}>
-              STRENGTH <span className="gradient-text">HUB</span>
+              나의 PR <span className="gradient-text">기록하기</span>
             </h1>
-            <p className="text-rx-muted mt-1" style={{ fontSize: 16 }}>7가지 리프트 1RM 기록 추적 & 성장 분석</p>
+            <p className="text-rx-muted mt-1" style={{ fontSize: 16 }}>나의 PR을 기록하고 관리하며 성장과정을 공유하세요.</p>
           </div>
 
           {/* kg / lbs toggle */}

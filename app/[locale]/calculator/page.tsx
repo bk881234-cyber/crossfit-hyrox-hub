@@ -108,8 +108,8 @@ export default function CalculatorPage() {
           <div className="flex items-center gap-3">
             <span className="text-2xl">💪</span>
             <div>
-              <p className="text-white font-black" style={{ fontSize: 16 }}>STRENGTH HUB</p>
-              <p className="text-rx-muted" style={{ fontSize: 16 }}>7가지 리프트 PR 추적 · 성장 차트 · 공유</p>
+              <p className="text-white font-black" style={{ fontSize: 16 }}>나의 PR 기록하기</p>
+              <p className="text-rx-muted" style={{ fontSize: 16 }}>나의 PR을 기록하고 관리하며 성장과정을 공유하세요.</p>
             </div>
           </div>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"

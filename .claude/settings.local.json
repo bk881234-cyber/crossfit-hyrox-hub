@@ -26,7 +26,8 @@
       "WebFetch(domain:fittersstudio.com)",
       "Bash(curl:*)",
       "Bash(ls:*)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(npx tsc:*)"
     ]
   }
 }

@@ -197,6 +197,28 @@ function WodLogContent() {
 
   const selectedWodInfo = WODS.find(w => w.id === selectedWod)
 
+  // Auto-update wodType when WOD selection changes
+  useEffect(() => {
+    if (!selectedWod) return
+    if (selectedWod === 'custom') {
+      setWodType('Custom')
+      return
+    }
+    const wod = WODS.find(w => w.id === selectedWod)
+    if (!wod) return
+    const desc = wod.description.toUpperCase()
+    const tagStr = wod.tags.join(' ').toUpperCase()
+    if (desc.includes('AMRAP') || tagStr.includes('AMRAP')) {
+      setWodType('AMRAP')
+    } else if (desc.includes('EMOM') || tagStr.includes('EMOM')) {
+      setWodType('EMOM')
+    } else if (desc.includes('TABATA') || tagStr.includes('TABATA')) {
+      setWodType('Tabata')
+    } else {
+      setWodType('For Time')
+    }
+  }, [selectedWod])
+
   const handleSave = async () => {
     const wodName = selectedWod === 'custom'
       ? customWodName
