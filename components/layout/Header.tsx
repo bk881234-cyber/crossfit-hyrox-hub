@@ -109,22 +109,15 @@ export default function Header() {
           })}
         </nav>
 
-        {/* Right side: language toggle + auth */}
+        {/* Right side: actions + auth + language */}
         <div className="flex items-center gap-2 ml-auto">
-          {/* Language toggle */}
-          <button
-            onClick={handleLocaleSwitch}
-            className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-bold border border-rx-border text-rx-muted hover:text-white hover:border-white/30 transition-colors"
-            title={locale === 'ko' ? 'Switch to English' : '한국어로 변경'}
+          {/* Add Record Button */}
+          <Link
+            href="/wod/log"
+            className="hidden md:flex px-4 py-1.5 rounded-lg text-xs font-black text-white bg-white/5 border border-white/10 hover:bg-white/10 transition-colors mr-1"
           >
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="12" cy="12" r="10" />
-              <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
-            </svg>
-            <span className={locale === 'ko' ? 'text-white' : 'text-rx-muted'}>KO</span>
-            <span className="text-rx-border">/</span>
-            <span className={locale === 'en' ? 'text-white' : 'text-rx-muted'}>EN</span>
-          </button>
+            {locale === 'ko' ? '+ 기록 추가' : '+ Add Log'}
+          </Link>
 
           {/* Auth area — desktop */}
           {!authLoading && (
@@ -138,41 +131,25 @@ export default function Header() {
                     {avatarUrl ? (
                       <Image src={avatarUrl} alt={displayName} width={28} height={28} className="w-7 h-7 rounded-full object-cover" unoptimized />
                     ) : (
-                      <div
-                        className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-black text-white"
-                        style={{ background: 'linear-gradient(135deg, #E8321A, #FF2D8B)' }}
-                      >
-                        {displayName.charAt(0).toUpperCase()}
-                      </div>
+                      <span className="text-white text-xs font-bold max-w-[80px] truncate">{displayName}</span>
                     )}
-                    <span className="text-white text-xs font-bold max-w-[80px] truncate">{displayName}</span>
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-rx-muted">
-                      <polyline points="6 9 12 15 18 9" />
-                    </svg>
                   </button>
 
                   {userMenuOpen && (
                     <>
                       <div className="fixed inset-0 z-30" onClick={() => setUserMenuOpen(false)} />
-                      <div className="absolute right-0 top-full mt-1 z-40 w-40 bg-rx-surface border border-rx-border rounded-xl shadow-xl overflow-hidden">
+                      <div className="absolute right-0 top-full mt-1 z-40 w-32 bg-rx-surface border border-rx-border rounded-xl shadow-xl overflow-hidden py-1">
                         <Link
                           href="/mypage"
                           onClick={() => setUserMenuOpen(false)}
-                          className="flex items-center gap-2 px-4 py-3 text-sm text-white hover:bg-white/5 transition-colors"
+                          className="block w-full text-left px-4 py-2 text-sm font-bold text-white hover:bg-white/5 transition-colors"
                         >
-                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" />
-                          </svg>
                           {tAuth('mypage')}
                         </Link>
-                        <hr className="border-rx-border" />
                         <button
                           onClick={handleLogout}
-                          className="w-full flex items-center gap-2 px-4 py-3 text-sm text-rx-muted hover:text-white hover:bg-white/5 transition-colors"
+                          className="block w-full text-left px-4 py-2 text-sm font-bold text-rx-muted hover:text-white hover:bg-white/5 transition-colors"
                         >
-                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><polyline points="16 17 21 12 16 7" /><line x1="21" y1="12" x2="9" y2="12" />
-                          </svg>
                           {tAuth('logout')}
                         </button>
                       </div>
@@ -191,17 +168,22 @@ export default function Header() {
             </div>
           )}
 
+          {/* Language toggle */}
+          <button
+            onClick={handleLocaleSwitch}
+            className="hidden md:flex items-center justify-center w-8 h-8 rounded-md text-xs font-bold border border-rx-border text-rx-muted hover:text-white hover:border-white/30 transition-colors"
+            title={locale === 'ko' ? 'Switch to English' : '한국어로 변경'}
+          >
+            {locale === 'ko' ? 'EN' : 'KO'}
+          </button>
+
           {/* Mobile hamburger */}
           <button
             onClick={() => setMenuOpen(true)}
-            className="md:hidden p-2 text-rx-muted hover:text-white"
+            className="md:hidden p-2 text-rx-muted hover:text-white text-xs font-black uppercase"
             aria-label="메뉴 열기"
           >
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="3" y1="6" x2="21" y2="6" />
-              <line x1="3" y1="12" x2="21" y2="12" />
-              <line x1="3" y1="18" x2="21" y2="18" />
-            </svg>
+            MENU
           </button>
         </div>
       </header>
@@ -224,10 +206,8 @@ export default function Header() {
             width={120}
             className="h-6 w-auto"
           />
-          <button onClick={() => setMenuOpen(false)} className="p-2 text-rx-muted hover:text-white">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
-            </svg>
+          <button onClick={() => setMenuOpen(false)} className="p-2 text-rx-muted hover:text-white font-black text-xs uppercase">
+            CLOSE
           </button>
         </div>
 
@@ -238,14 +218,7 @@ export default function Header() {
               <Link href="/mypage" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 flex-1 min-w-0">
                 {avatarUrl ? (
                   <Image src={avatarUrl} alt={displayName} width={36} height={36} className="w-9 h-9 rounded-full object-cover flex-shrink-0" unoptimized />
-                ) : (
-                  <div
-                    className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-black text-white flex-shrink-0"
-                    style={{ background: 'linear-gradient(135deg, #E8321A, #FF2D8B)' }}
-                  >
-                    {displayName.charAt(0).toUpperCase()}
-                  </div>
-                )}
+                ) : null}
                 <div className="flex-1 min-w-0">
                   <p className="text-white text-sm font-bold truncate">{displayName}</p>
                   <p className="text-rx-muted" style={{ fontSize: 12 }}>{tAuth('mypage')} →</p>
@@ -253,12 +226,10 @@ export default function Header() {
               </Link>
               <button
                 onClick={handleLogout}
-                className="text-rx-muted hover:text-white transition-colors p-1 flex-shrink-0"
+                className="text-rx-muted hover:text-white transition-colors p-1 flex-shrink-0 text-xs font-bold"
                 title={tAuth('logout')}
               >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><polyline points="16 17 21 12 16 7" /><line x1="21" y1="12" x2="9" y2="12" />
-                </svg>
+                {tAuth('logout')}
               </button>
             </div>
           ) : (
@@ -294,13 +265,9 @@ export default function Header() {
         <div className="px-4 mt-2">
           <button
             onClick={() => { handleLocaleSwitch(); setMenuOpen(false) }}
-            className="flex items-center gap-2 px-4 py-3 rounded-lg text-sm font-bold border border-rx-border text-rx-muted hover:text-white hover:border-white/30 transition-colors w-full"
+            className="flex items-center justify-center gap-2 px-4 py-3 rounded-lg text-sm font-bold border border-rx-border text-rx-muted hover:text-white hover:border-white/30 transition-colors w-full"
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="12" cy="12" r="10" />
-              <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
-            </svg>
-            {locale === 'ko' ? '🇺🇸 Switch to English' : '🇰🇷 한국어로 변경'}
+            {locale === 'ko' ? 'Switch to English' : '한국어로 변경'}
           </button>
         </div>
       </div>

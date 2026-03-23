@@ -305,10 +305,7 @@ function WodLogContent() {
         {/* ─ Header ─ */}
         <div className="mt-6 mb-6">
           <Link href="/wod" className="flex items-center gap-1 text-rx-muted text-sm hover:text-white transition-colors mb-4">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M15 18l-6-6 6-6" />
-            </svg>
-            WOD Library
+            <span className="font-bold">&lt;</span> WOD Library
           </Link>
           <h1 className="font-heading font-black text-5xl uppercase tracking-tight gradient-text">WOD LOG</h1>
           <p className="text-rx-muted text-sm mt-1">운동 기록을 저장하고 성장을 추적하세요</p>
@@ -349,6 +346,7 @@ function WodLogContent() {
               <label className="text-rx-muted text-xs font-bold mb-2 block uppercase tracking-wider">WOD 선택</label>
               <select className="input" value={selectedWod} onChange={e => setSelectedWod(e.target.value)}>
                 <option value="">WOD를 선택하세요</option>
+                <option value="custom">── 직접 입력 ──</option>
                 <optgroup label="── Girl WODs ──">
                   {WODS.filter(w => w.type === 'girl').map(w => <option key={w.id} value={w.id}>{w.name}</option>)}
                 </optgroup>
@@ -358,7 +356,6 @@ function WodLogContent() {
                 <optgroup label="── CrossFit Open ──">
                   {WODS.filter(w => w.type === 'open').map(w => <option key={w.id} value={w.id}>{w.name}</option>)}
                 </optgroup>
-                <option value="custom">── 직접 입력 ──</option>
               </select>
             </div>
 
@@ -371,8 +368,19 @@ function WodLogContent() {
 
             {selectedWod === 'custom' && (
               <div className="mb-4">
-                <label className="text-rx-muted text-xs font-bold mb-2 block uppercase tracking-wider">WOD 이름</label>
-                <input type="text" className="input" placeholder="WOD 이름 입력" value={customWodName} onChange={e => setCustomWodName(e.target.value)} />
+                <label className="text-rx-muted text-xs font-bold mb-2 block uppercase tracking-wider">WOD 이름 및 내용</label>
+                <textarea
+                  className="input resize-none overflow-y-auto w-full transition-all"
+                  placeholder="WOD 내용을 입력하세요 (엔터로 줄바꿈 가능)"
+                  value={customWodName}
+                  rows={1}
+                  style={{ minHeight: '48px', maxHeight: '400px' }}
+                  onChange={e => {
+                    setCustomWodName(e.target.value)
+                    e.target.style.height = 'auto'
+                    e.target.style.height = `${Math.min(e.target.scrollHeight, 400)}px`
+                  }}
+                />
               </div>
             )}
 
@@ -438,7 +446,6 @@ function WodLogContent() {
             >
               {loading ? '저장 중...' : saved ? (
                 <span className="flex items-center justify-center gap-2">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="20 6 9 17 4 12" /></svg>
                   저장 완료!
                 </span>
               ) : '기록 저장'}
@@ -458,12 +465,6 @@ function WodLogContent() {
 
             {logs.length === 0 ? (
               <div className="text-center py-14 bg-rx-surface border border-rx-border rounded-2xl">
-                <svg className="w-12 h-12 text-rx-muted mx-auto mb-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
-                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                  <polyline points="14 2 14 8 20 8" />
-                  <line x1="16" y1="13" x2="8" y2="13" />
-                  <line x1="16" y1="17" x2="8" y2="17" />
-                </svg>
                 <p className="text-white font-bold text-lg mb-1">아직 기록이 없습니다</p>
                 <p className="text-rx-muted text-sm">기록 추가 탭에서 첫 WOD를 기록해보세요!</p>
               </div>
@@ -482,11 +483,8 @@ function WodLogContent() {
                               <span className="text-white font-black text-xl">{log.wodName}</span>
                               <span className="ml-2 text-[10px] px-2 py-0.5 rounded-full gradient-bg text-white font-bold">{log.wodType}</span>
                             </div>
-                            <button onClick={() => handleDelete(log.id)} className="text-rx-muted hover:text-red-400 transition-colors p-1">
-                              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
-                                <polyline points="3 6 5 6 21 6" />
-                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
-                              </svg>
+                            <button onClick={() => handleDelete(log.id)} className="text-rx-muted hover:text-red-400 transition-colors p-1 text-xs font-bold uppercase">
+                              삭제
                             </button>
                           </div>
                           <div className="flex flex-wrap gap-3 mb-2">
@@ -513,18 +511,18 @@ function WodLogContent() {
             <div className="flex items-center justify-between mb-6 bg-rx-card border border-rx-border rounded-xl px-4 py-3">
               <button
                 onClick={() => setCalDate(new Date(calDate.getFullYear(), calDate.getMonth() - 1))}
-                className="text-rx-muted hover:text-white transition-colors p-1"
+                className="text-rx-muted hover:text-white transition-colors p-1 font-bold text-lg"
               >
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1"><path d="M15 18l-6-6 6-6" /></svg>
+                &lt;
               </button>
               <span className="font-heading font-black text-xl text-white uppercase">
                 {calDate.getFullYear()}.{String(calDate.getMonth() + 1).padStart(2, '0')}
               </span>
               <button
                 onClick={() => setCalDate(new Date(calDate.getFullYear(), calDate.getMonth() + 1))}
-                className="text-rx-muted hover:text-white transition-colors p-1"
+                className="text-rx-muted hover:text-white transition-colors p-1 font-bold text-lg"
               >
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1"><path d="M9 18l6-6-6-6" /></svg>
+                &gt;
               </button>
             </div>
 
