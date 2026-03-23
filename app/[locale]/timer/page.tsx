@@ -360,7 +360,7 @@ export default function TimerPage() {
               key={m.id}
               onClick={() => handleModeChange(m.id)}
               className={`flex-shrink-0 whitespace-nowrap px-3 py-2.5 min-h-[44px] rounded-lg text-xs font-bold transition-colors ${
-                mode === m.id ? 'bg-rx-red text-white' : 'text-rx-muted hover:text-white'
+                mode === m.id ? 'gradient-bg text-white' : 'text-rx-muted hover:text-white'
               } ${running ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
               {m.label}
@@ -385,7 +385,7 @@ export default function TimerPage() {
                 <div className="flex gap-2 mt-3 flex-wrap">
                   {[5, 10, 12, 15, 20, 30].map(m => (
                     <button key={m} onClick={() => setConfig(p => ({ ...p, amrap: { minutes: m } }))}
-                      className={`px-3 py-1 rounded-lg text-xs font-bold transition-colors ${(c as TimerConfig['amrap']).minutes === m ? 'bg-rx-red text-white' : 'bg-rx-surface text-rx-muted hover:text-white'}`}>
+                      className={`px-3 py-1 rounded-lg text-xs font-bold transition-colors ${(c as TimerConfig['amrap']).minutes === m ? 'gradient-bg text-white' : 'bg-rx-surface text-rx-muted hover:text-white'}`}>
                       {m}분
                     </button>
                   ))}
@@ -410,7 +410,7 @@ export default function TimerPage() {
                   <div className="flex gap-2 flex-wrap">
                     {[30, 45, 60, 90, 120].map(s => (
                       <button key={s} onClick={() => setConfig(p => ({ ...p, emom: { ...p.emom, workSeconds: s } }))}
-                        className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${(c as TimerConfig['emom']).workSeconds === s ? 'bg-rx-red text-white' : 'bg-rx-surface text-rx-muted hover:text-white'}`}>
+                        className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${(c as TimerConfig['emom']).workSeconds === s ? 'gradient-bg text-white' : 'bg-rx-surface text-rx-muted hover:text-white'}`}>
                         {s}초
                       </button>
                     ))}
@@ -469,7 +469,7 @@ export default function TimerPage() {
                 <div className="flex gap-2 mt-3 flex-wrap">
                   {[3, 5, 10, 15, 20, 30, 40].map(m => (
                     <button key={m} onClick={() => setConfig(p => ({ ...p, fortime: { minutes: m } }))}
-                      className={`px-3 py-1 rounded-lg text-xs font-bold transition-colors ${(c as TimerConfig['fortime']).minutes === m ? 'bg-rx-red text-white' : 'bg-rx-surface text-rx-muted hover:text-white'}`}>
+                      className={`px-3 py-1 rounded-lg text-xs font-bold transition-colors ${(c as TimerConfig['fortime']).minutes === m ? 'gradient-bg text-white' : 'bg-rx-surface text-rx-muted hover:text-white'}`}>
                       {m}분
                     </button>
                   ))}
@@ -598,7 +598,7 @@ export default function TimerPage() {
                   ? 'bg-transparent border-rx-orange text-rx-orange hover:bg-rx-orange hover:text-white'
                   : running
                   ? 'bg-yellow-500 border-yellow-500 text-black hover:bg-yellow-400'
-                  : 'bg-rx-red border-rx-red text-white hover:bg-red-600'
+                  : 'gradient-bg border-transparent text-white hover:opacity-90'
               }`}
             >
               {finished ? '다시 시작' : running ? '일시정지' : '시작'}

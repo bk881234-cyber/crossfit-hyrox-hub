@@ -114,7 +114,7 @@ export default function Header() {
           {/* Add Record Button */}
           <Link
             href="/wod/log"
-            className="hidden md:flex px-4 py-1.5 rounded-lg text-xs font-black text-white bg-white/5 border border-white/10 hover:bg-white/10 transition-colors mr-1"
+            className="hidden md:flex px-4 py-1.5 rounded-lg text-xs font-black text-white gradient-bg hover:opacity-90 transition-opacity mr-1"
           >
             {locale === 'ko' ? '+ 기록 추가' : '+ Add Log'}
           </Link>

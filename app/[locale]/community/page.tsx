@@ -254,7 +254,7 @@ export default function CommunityPage() {
               key={t.id}
               onClick={() => setTab(t.id)}
               className={`flex-1 py-2.5 rounded-lg text-xs font-bold transition-colors whitespace-nowrap ${
-                tab === t.id ? 'bg-rx-red text-white' : 'text-rx-muted hover:text-white'
+                tab === t.id ? 'gradient-bg text-white' : 'text-rx-muted hover:text-white'
               }`}
             >
               {t.label}
@@ -281,7 +281,7 @@ export default function CommunityPage() {
                         <div className="flex items-center gap-2 flex-wrap mb-1">
                           <span className={`badge border text-xs ${
                             isPast ? 'bg-rx-surface border-rx-border text-rx-muted'
-                            : isToday ? 'bg-rx-red/20 text-rx-red border-rx-red/30'
+                            : isToday ? 'gradient-bg border-white/20 text-white'
                             : 'bg-green-500/20 text-green-400 border-green-500/30'
                           }`}>{dday}</span>
                           <span className="text-rx-muted text-xs">{event.country}</span>
@@ -318,7 +318,7 @@ export default function CommunityPage() {
               <p className="text-rx-muted text-sm">총 {allComps.length}개 대회</p>
               <button
                 onClick={() => setShowCompModal(true)}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-rx-red text-white text-xs font-bold hover:bg-red-600 transition-colors"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg gradient-bg text-white text-xs font-bold hover:opacity-90 transition-opacity"
               >
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                   <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
@@ -344,7 +344,7 @@ export default function CommunityPage() {
               <p className="text-rx-muted text-sm">{boardPosts.length}개 게시글</p>
               <button
                 onClick={() => setShowWriteModal(true)}
-                className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-rx-red text-white text-xs font-bold hover:bg-red-600 transition-colors"
+                className="flex items-center gap-1.5 px-4 py-2 rounded-lg gradient-bg text-white text-xs font-bold hover:opacity-90 transition-opacity"
               >
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                   <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
@@ -571,7 +571,7 @@ function HardcodedCompCard({ comp }: { comp: MajorComp }) {
       <div className="card col-span-1 md:col-span-2 border-rx-red/30 hover:border-rx-red/60 transition-all">
         {/* 헤더 */}
         <div className="flex flex-wrap items-center gap-2 mb-3">
-          <span className="badge bg-rx-red/20 text-rx-red border border-rx-red/30 text-xs font-black">예선 진행중</span>
+          <span className="badge gradient-bg border-transparent text-white text-xs font-black">예선 진행중</span>
           <span className={`badge border text-xs font-black ${
             isPast ? 'bg-rx-surface border-rx-border text-rx-muted'
             : 'bg-green-500/20 text-green-400 border-green-500/30'
@@ -619,7 +619,7 @@ function HardcodedCompCard({ comp }: { comp: MajorComp }) {
           href={comp.instagramUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-rx-red/20 text-rx-red border border-rx-red/30 hover:bg-rx-red/30 text-sm font-bold transition-colors"
+          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg gradient-bg border-transparent text-white hover:opacity-90 text-sm font-bold transition-opacity"
         >
           <IgIcon />
           인스타 보기
@@ -693,7 +693,7 @@ function RegisteredCompCard({ comp }: { comp: RegisteredComp }) {
           href={comp.registrationUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-rx-red/20 text-rx-red border border-rx-red/30 hover:bg-rx-red/30 text-xs font-bold transition-colors"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg gradient-bg border-transparent text-white hover:opacity-90 text-xs font-bold transition-opacity"
         >
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
@@ -714,7 +714,7 @@ function BoardPostCard({ post, liked, onLike }: { post: BoardPost; liked: boolea
     <div className="card hover:border-rx-red/30 transition-colors cursor-pointer group">
       <div className="flex flex-wrap gap-1 mb-2">
         {isNew && (
-          <span className="text-xs px-2 py-0.5 rounded-full bg-rx-red/20 border border-rx-red/30 text-rx-red font-bold">NEW</span>
+          <span className="text-xs px-2 py-0.5 rounded-full gradient-bg border-transparent text-white font-bold">NEW</span>
         )}
         {post.tags.slice(0, 3).map((tag) => (
           <span key={tag} className="text-xs px-2 py-0.5 rounded-full bg-rx-surface border border-rx-border text-rx-muted">

@@ -423,7 +423,7 @@ export default function MapPage() {
               />
               <button
                 type="submit"
-                className="absolute right-2 top-1/2 -translate-y-1/2 px-3 py-1.5 rounded-lg bg-rx-red text-white text-xs font-bold hover:bg-rx-red/80 transition-colors"
+                className="absolute right-2 top-1/2 -translate-y-1/2 px-3 py-1.5 rounded-lg gradient-bg text-white text-xs font-bold hover:opacity-90 transition-opacity"
               >
                 검색
               </button>
@@ -437,7 +437,7 @@ export default function MapPage() {
                   onClick={() => handleRegionChange(region.id)}
                   className={`flex-shrink-0 px-4 py-1.5 rounded-full text-xs font-bold transition-colors ${
                     selectedRegion === region.id
-                      ? 'bg-rx-red text-white'
+                      ? 'gradient-bg text-white'
                       : 'bg-rx-surface border border-rx-border text-rx-muted hover:text-white'
                   }`}
                 >
@@ -719,7 +719,7 @@ export default function MapPage() {
                         onClick={() => toggleFeature(f)}
                         className={`px-3 py-1.5 rounded-lg text-sm font-bold transition-colors ${
                           form.features.includes(f)
-                            ? 'bg-rx-red text-white'
+                            ? 'gradient-bg text-white'
                             : 'bg-rx-card border border-rx-border text-rx-muted hover:text-white'
                         }`}
                       >

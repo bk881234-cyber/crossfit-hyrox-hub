@@ -125,7 +125,7 @@ export default function CalculatorPage() {
               key={t}
               onClick={() => setTab(t)}
               className={`flex-1 py-2.5 rounded-lg text-sm font-bold transition-colors ${
-                tab === t ? 'bg-rx-red text-white' : 'text-rx-muted hover:text-white'
+                tab === t ? 'gradient-bg text-white' : 'text-rx-muted hover:text-white'
               }`}
             >
               {t === 'barbell' ? '바벨' : t === 'dumbbell' ? '덤벨' : '맨몸'}
@@ -180,11 +180,11 @@ export default function CalculatorPage() {
                     return (
                       <div
                         key={pct}
-                        className={`flex items-center justify-between px-4 py-3 rounded-lg ${
-                          isMax ? 'bg-rx-red/20 border border-rx-red/40' : 'bg-rx-surface'
+                        className={`flex items-center justify-between px-4 py-3 rounded-lg flex-wrap gap-2 ${
+                          isMax ? 'gradient-bg border border-white/20' : 'bg-rx-surface'
                         }`}
                       >
-                        <span className={`font-bold ${isMax ? 'text-rx-red' : 'text-rx-muted'}`}>{pct}%</span>
+                        <span className={`font-bold ${isMax ? 'text-white' : 'text-rx-muted'}`}>{pct}%</span>
                         <span className={`font-black text-lg ${isMax ? 'text-white' : 'text-white'}`}>{pctDisplay}</span>
                         <span className="text-rx-muted text-xs">
                           {unit === 'kg'
@@ -200,7 +200,7 @@ export default function CalculatorPage() {
 
             {/* Reps Input */}
             <div className="card mb-4">
-              <label className="text-white font-bold block mb-3">반복 횟수: <span className="text-rx-red">{reps}회</span></label>
+              <label className="text-white font-bold block mb-3">반복 횟수: <span className="gradient-text">{reps}회</span></label>
               <input
                 type="range"
                 min={1}
@@ -220,7 +220,7 @@ export default function CalculatorPage() {
                     key={r}
                     onClick={() => handleRepsChange(r)}
                     className={`py-1.5 rounded-lg text-xs font-bold transition-colors ${
-                      reps === r ? 'bg-rx-red text-white' : 'bg-rx-surface text-rx-muted hover:text-white'
+                      reps === r ? 'gradient-bg text-white' : 'bg-rx-surface text-rx-muted hover:text-white'
                     }`}
                   >
                     {r}회
@@ -231,8 +231,9 @@ export default function CalculatorPage() {
 
             {/* 1RM Result — 맨 아래, 크기 축소 */}
             {rm > 0 && (
-              <div className="card mb-6 text-center py-3 px-4 bg-gradient-to-br from-rx-red/20 to-rx-orange/10 border-rx-red/30">
-                <p className="text-rx-muted text-sm mb-1">예상 1RM (Epley 공식)</p>
+              <div className="card mb-6 text-center py-3 px-4 bg-rx-surface/80 border-white/10 relative overflow-hidden">
+                <div className="absolute inset-0 gradient-bg opacity-20 pointer-events-none" />
+                <p className="text-rx-muted text-sm mb-1 relative z-10">예상 1RM (Epley 공식)</p>
                 <p className="text-3xl font-black text-white">
                   {unit === 'kg' ? rm.toFixed(1) : kgToLb(rm).toFixed(1)}
                   <span className="text-xl text-rx-muted ml-1">{unit}</span>
@@ -264,7 +265,7 @@ export default function CalculatorPage() {
                     return (
                       <div key={m.name} className="flex items-center justify-between px-4 py-3 rounded-lg bg-rx-surface">
                         <span className="text-white font-medium">{m.name}</span>
-                        <span className="font-black text-rx-red">{baseKg} kg</span>
+                        <span className="font-black gradient-text">{baseKg} kg</span>
                       </div>
                     )
                   })}
