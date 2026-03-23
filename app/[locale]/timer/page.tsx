@@ -32,13 +32,13 @@ function formatTime(seconds: number) {
   return `${pad(m)}:${pad(s)}`
 }
 
-function beep(ctx: AudioContext, freq: number, duration: number, volume = 1.0) {
+function beep(ctx: AudioContext, freq: number, duration: number, volume = 2.5) {
   const oscillator = ctx.createOscillator()
   const gainNode = ctx.createGain()
   oscillator.connect(gainNode)
   gainNode.connect(ctx.destination)
   oscillator.frequency.value = freq
-  oscillator.type = 'sine'
+  oscillator.type = 'square' // Changed from sine to square for significantly louder perception
   gainNode.gain.setValueAtTime(volume, ctx.currentTime)
   gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration)
   oscillator.start(ctx.currentTime)
@@ -46,28 +46,28 @@ function beep(ctx: AudioContext, freq: number, duration: number, volume = 1.0) {
 }
 
 function beepStart(ctx: AudioContext) {
-  beep(ctx, 880, 0.2, 1.0)
+  beep(ctx, 880, 0.4, 3.0)
 }
 
 function beepEnd(ctx: AudioContext) {
-  beep(ctx, 440, 0.35, 1.0)
-  setTimeout(() => beep(ctx, 440, 0.35, 1.0), 400)
+  beep(ctx, 440, 0.5, 3.0)
+  setTimeout(() => beep(ctx, 440, 0.5, 3.0), 500)
 }
 
 // 3초, 2초, 1초 구분 비프음
 function beepAtSec(ctx: AudioContext, sec: number) {
   if (sec === 1) {
-    beep(ctx, 1200, 0.2, 1.0)
+    beep(ctx, 1200, 0.3, 3.0)
   } else if (sec === 2) {
-    beep(ctx, 1000, 0.2, 1.0)
+    beep(ctx, 1000, 0.3, 3.0)
   } else {
-    beep(ctx, 880, 0.2, 1.0)
+    beep(ctx, 880, 0.3, 3.0)
   }
 }
 
 // 10초 카운트다운 일반 틱
 function beepTick(ctx: AudioContext) {
-  beep(ctx, 660, 0.08, 0.5)
+  beep(ctx, 660, 0.1, 1.5)
 }
 
 export default function TimerPage() {
@@ -516,93 +516,104 @@ export default function TimerPage() {
           </div>
         )}
 
-        {/* Timer Display */}
-        <div className={`rounded-2xl border-2 ${phaseBorder} ${phaseColor} p-4 md:p-8 mb-4 text-center transition-colors duration-300`}>
-          {/* Phase Indicator */}
-          {running && (
-            <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold mb-4 ${
-              phase === 'work'
-                ? 'bg-green-500/20 text-green-400 border border-green-500/30'
-                : 'bg-red-500/20 text-red-400 border border-red-500/30'
-            }`}>
-              <span className={`w-1.5 h-1.5 rounded-full animate-pulse ${phase === 'work' ? 'bg-green-400' : 'bg-red-400'}`} />
-              {phase === 'work' ? '운동 중' : '휴식 중'}
-            </div>
-          )}
+        {/* === Fullscreen capable Timer & Controls Area === */}
+        <div className={
+          running || finished
+            ? `fixed inset-0 z-[100] bg-[#0a0a0a] flex flex-col ${phaseColor} transition-colors duration-300`
+            : "mb-4"
+        }>
+          <div className={
+            running || finished
+              ? "flex-1 flex flex-col items-center justify-center p-6 w-full"
+              : `rounded-2xl border-2 ${phaseBorder} ${phaseColor} p-4 md:p-8 flex flex-col items-center justify-center text-center transition-colors duration-300`
+          }>
+            {/* Phase Indicator */}
+            {running && (
+              <div className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-bold mb-6 ${
+                phase === 'work'
+                  ? 'bg-green-500/20 text-green-400 border border-green-500/30'
+                  : 'bg-red-500/20 text-red-400 border border-red-500/30'
+              }`}>
+                <span className={`w-2 h-2 rounded-full animate-pulse ${phase === 'work' ? 'bg-green-400' : 'bg-red-400'}`} />
+                {phase === 'work' ? '운동 중' : '휴식 중'}
+              </div>
+            )}
 
-          {finished && (
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold mb-4 bg-rx-orange/20 text-rx-orange border border-rx-orange/30">
-              완료!
-            </div>
-          )}
+            {finished && (
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-bold mb-6 bg-rx-orange/20 text-rx-orange border border-rx-orange/30">
+                훈련 완료!
+              </div>
+            )}
 
-          {/* Big Timer */}
-          <div className={`font-black tracking-tighter leading-none mb-4 ${
-            timeLeft < 10 && running ? 'text-rx-red' : 'text-white'
-          }`}
-            style={{ fontSize: 'clamp(60px, 20vw, 120px)' }}
-          >
-            {mode === 'fortime' || mode === 'amrap'
-              ? formatTime(timeLeft)
-              : formatTime(timeLeft)
-            }
+            {/* Big Timer */}
+            <div className={`font-black tracking-tighter leading-none mb-6 text-center w-full ${
+              timeLeft < 10 && running ? 'text-rx-red animate-pulse' : 'text-white'
+            }`}
+              style={{ fontSize: running || finished ? 'clamp(100px, 25vw, 250px)' : 'clamp(60px, 20vw, 120px)' }}
+            >
+              {formatTime(timeLeft)}
+            </div>
+
+            {/* Round Info */}
+            {(mode !== 'amrap' && mode !== 'fortime') && (
+              <div className={running || finished ? "text-white/80 text-2xl font-bold uppercase tracking-widest" : "text-rx-muted text-lg font-bold"}>
+                Round {mode === 'tabata' ? Math.ceil(currentRound / 2) : currentRound} / {mode === 'tabata'
+                  ? (c as TimerConfig['tabata']).rounds
+                  : mode === 'emom'
+                  ? (c as TimerConfig['emom']).rounds
+                  : (c as TimerConfig['interval']).rounds}
+              </div>
+            )}
+
+            {mode === 'amrap' && running && (
+              <div className={running || finished ? "text-white/80 text-xl font-bold uppercase" : "text-rx-muted text-sm font-bold"}>
+                Elapsed: {formatTime(elapsed)}
+              </div>
+            )}
           </div>
 
-          {/* Round Info */}
-          {(mode !== 'amrap' && mode !== 'fortime') && (
-            <div className="text-rx-muted text-lg font-bold">
-              라운드 {mode === 'tabata' ? Math.ceil(currentRound / 2) : currentRound} /&nbsp;
-              {mode === 'tabata'
-                ? (c as TimerConfig['tabata']).rounds
-                : mode === 'emom'
-                ? (c as TimerConfig['emom']).rounds
-                : (c as TimerConfig['interval']).rounds}
-            </div>
+          {/* 10초 후 시작 */}
+          {!running && !finished && (
+            <label className="flex items-center justify-center gap-3 cursor-pointer mb-6 mt-4">
+              <input
+                type="checkbox"
+                checked={countdownEnabled}
+                onChange={(e) => setCountdownEnabled(e.target.checked)}
+                className="w-5 h-5 accent-rx-red"
+              />
+              <span className="text-white font-bold text-sm">10초 카운트다운 후 시작</span>
+            </label>
           )}
 
-          {mode === 'amrap' && running && (
-            <div className="text-rx-muted text-sm">
-              경과: {formatTime(elapsed)}
-            </div>
-          )}
-        </div>
-
-        {/* 10초 후 시작 */}
-        {!running && !finished && (
-          <label className="flex items-center gap-3 cursor-pointer mb-4">
-            <input
-              type="checkbox"
-              checked={countdownEnabled}
-              onChange={(e) => setCountdownEnabled(e.target.checked)}
-              className="w-4 h-4 accent-rx-red"
-            />
-            <span className="text-rx-muted text-sm">10초 후 시작</span>
-          </label>
-        )}
-
-        {/* Controls */}
-        <div className="flex gap-3 mb-4">
-          <button
-            onClick={handleStart}
-            className={`flex-1 h-16 min-h-[56px] rounded-2xl font-black text-xl transition-all active:scale-95 ${
-              finished
-                ? 'bg-rx-orange text-white hover:bg-orange-500'
-                : running
-                ? 'bg-yellow-500 text-black hover:bg-yellow-400'
-                : 'bg-rx-red text-white hover:bg-red-600'
-            }`}
-          >
-            {finished ? '다시 시작' : running ? '일시정지' : '시작'}
-          </button>
-          <button
-            onClick={reset}
-            className="h-16 w-16 min-h-[56px] rounded-2xl bg-rx-surface border border-rx-border text-rx-muted hover:text-white hover:border-rx-red transition-colors flex items-center justify-center"
-          >
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-              <polyline points="1 4 1 10 7 10" />
-              <path d="M3.51 15a9 9 0 1 0 .49-4" />
-            </svg>
-          </button>
+          {/* Controls */}
+          <div className={
+            running || finished
+              ? "p-6 pb-safe flex gap-4 w-full max-w-lg mx-auto bg-black/20 backdrop-blur-md"
+              : "flex gap-3 mt-2"
+          }>
+            <button
+              onClick={handleStart}
+              className={`flex-1 h-20 min-h-[64px] rounded-2xl font-black text-2xl transition-all active:scale-95 border-2 ${
+                finished
+                  ? 'bg-transparent border-rx-orange text-rx-orange hover:bg-rx-orange hover:text-white'
+                  : running
+                  ? 'bg-yellow-500 border-yellow-500 text-black hover:bg-yellow-400'
+                  : 'bg-rx-red border-rx-red text-white hover:bg-red-600'
+              }`}
+            >
+              {finished ? '다시 시작' : running ? '일시정지' : '시작'}
+            </button>
+            <button
+              onClick={reset}
+              className={`h-20 w-24 min-h-[64px] rounded-2xl border-2 font-black text-lg transition-colors flex items-center justify-center ${
+                running || finished
+                  ? "bg-transparent border-white/30 text-white/50 hover:text-white hover:border-white"
+                  : "bg-rx-surface border-rx-border text-rx-muted hover:text-white hover:border-rx-red"
+              }`}
+            >
+              리셋
+            </button>
+          </div>
         </div>
 
         {/* Mode Info */}
@@ -629,11 +640,20 @@ export default function TimerPage() {
         </div>
       </main>
       {countingDown && (
-        <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/70">
-          <div className="text-center">
-            <div className="font-black text-white" style={{ fontSize: 'clamp(100px, 30vw, 200px)' }}>{countdownVal}</div>
-            <p className="text-white/50 text-lg mt-2">준비하세요!</p>
-            <button onClick={() => { if (countdownRef.current) clearInterval(countdownRef.current); setCountingDown(false); setCountdownVal(10); }} className="mt-4 text-rx-muted text-sm underline">취소</button>
+        <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#0a0a0a]">
+          <div className="text-center w-full">
+            <div className="font-black text-rx-red animate-pulse leading-none" style={{ fontSize: 'clamp(150px, 40vw, 350px)' }}>{countdownVal}</div>
+            <p className="text-white/70 font-black text-2xl mt-4 uppercase tracking-widest">준비하세요!</p>
+            <button
+              onClick={() => {
+                if (countdownRef.current) clearInterval(countdownRef.current);
+                setCountingDown(false);
+                setCountdownVal(10);
+              }}
+              className="mt-12 px-8 py-3 rounded-full border-2 border-white/20 text-white/50 hover:text-white hover:border-white transition-colors font-bold text-lg"
+            >
+              취소
+            </button>
           </div>
         </div>
       )}
