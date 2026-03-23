@@ -3,6 +3,38 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import Header from '@/components/layout/Header'
 import MobileNav from '@/components/layout/MobileNav'
 
+const XIcon = ({ size = 24 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <line x1="18" y1="6" x2="6" y2="18"></line>
+    <line x1="6" y1="6" x2="18" y2="18"></line>
+  </svg>
+)
+const RotateCcwIcon = ({ size = 24 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="1 4 1 10 7 10"></polyline>
+    <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+  </svg>
+)
+const MaximizeIcon = ({ size = 24 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M8 3H5a2 2 0 0 0-2 2v3"></path>
+    <path d="M21 8V5a2 2 0 0 0-2-2h-3"></path>
+    <path d="M3 16v3a2 2 0 0 0 2 2h3"></path>
+    <path d="M16 21h3a2 2 0 0 0 2-2v-3"></path>
+  </svg>
+)
+const PlayIcon = ({ size = 24 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <polygon points="5 3 19 12 5 21 5 3"></polygon>
+  </svg>
+)
+const PauseIcon = ({ size = 24 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="6" y="4" width="4" height="16"></rect>
+    <rect x="14" y="4" width="4" height="16"></rect>
+  </svg>
+)
+
 type TimerMode = 'amrap' | 'emom' | 'tabata' | 'fortime' | 'interval'
 type Phase = 'work' | 'rest' | 'idle'
 
@@ -32,42 +64,39 @@ function formatTime(seconds: number) {
   return `${pad(m)}:${pad(s)}`
 }
 
-function beep(ctx: AudioContext, freq: number, duration: number, volume = 2.5) {
+function beep(ctx: AudioContext, duration: number, volume = 4.0) {
   const oscillator = ctx.createOscillator()
   const gainNode = ctx.createGain()
   oscillator.connect(gainNode)
   gainNode.connect(ctx.destination)
-  oscillator.frequency.value = freq
-  oscillator.type = 'square' // Changed from sine to square for significantly louder perception
+  oscillator.frequency.value = 1000 // 한 음으로 통일 (삐익!)
+  oscillator.type = 'square'
   gainNode.gain.setValueAtTime(volume, ctx.currentTime)
   gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration)
+  if (ctx.state === 'suspended') ctx.resume()
   oscillator.start(ctx.currentTime)
   oscillator.stop(ctx.currentTime + duration)
 }
 
 function beepStart(ctx: AudioContext) {
-  beep(ctx, 880, 0.4, 3.0)
+  beep(ctx, 0.8) // 길고 크게
 }
 
 function beepEnd(ctx: AudioContext) {
-  beep(ctx, 440, 0.5, 3.0)
-  setTimeout(() => beep(ctx, 440, 0.5, 3.0), 500)
+  beep(ctx, 0.4)
+  setTimeout(() => beep(ctx, 0.4), 500)
 }
 
-// 3초, 2초, 1초 구분 비프음
+// 3초, 2초, 1초 통일 비프음
 function beepAtSec(ctx: AudioContext, sec: number) {
-  if (sec === 1) {
-    beep(ctx, 1200, 0.3, 3.0)
-  } else if (sec === 2) {
-    beep(ctx, 1000, 0.3, 3.0)
-  } else {
-    beep(ctx, 880, 0.3, 3.0)
+  if (sec <= 3 && sec >= 1) {
+    beep(ctx, 0.3) // 짧고 크게
   }
 }
 
-// 10초 카운트다운 일반 틱
+// 10초 카운트다운 일반 틱 (10~4초 무음 요청)
 function beepTick(ctx: AudioContext) {
-  beep(ctx, 660, 0.1, 1.5)
+  // 소리 없음
 }
 
 export default function TimerPage() {
@@ -92,6 +121,7 @@ export default function TimerPage() {
   const [countdownEnabled, setCountdownEnabled] = useState(true)
   const [countingDown, setCountingDown] = useState(false)
   const [countdownVal, setCountdownVal] = useState(10)
+  const [isFullscreen, setIsFullscreen] = useState(false)
 
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const countdownRef = useRef<ReturnType<typeof setInterval> | null>(null)
@@ -166,6 +196,7 @@ export default function TimerPage() {
     setFinished(false)
     setElapsed(0)
     setCurrentRound(1)
+    setIsFullscreen(false)
     const init = getInitialState(mode)
     setTimeLeft(init.time)
     setTotalTime(init.time)
@@ -195,12 +226,12 @@ export default function TimerPage() {
 
   // config 값이 바뀔 때 (타이머 미작동 상태) 메인 타이머 표시를 즉시 동기화
   useEffect(() => {
-    if (running) return
+    if (running || (elapsed > 0 && !finished)) return // 일시정지 상태에서는 리셋 안 함
     const init = getInitialState(mode)
     setTimeLeft(init.time)
     setTotalTime(init.time)
     setTotalRounds(init.rounds)
-  }, [config, mode, running, getInitialState])
+  }, [config, mode, running, elapsed, finished, getInitialState])
 
   const handleStart = useCallback(async () => {
     if (finished) {
@@ -237,6 +268,7 @@ export default function TimerPage() {
           setCountdownVal(10)
           beepStart(ctx)
           setRunning(true)
+          setIsFullscreen(true)
         }
       }, 1000)
       return
@@ -245,6 +277,7 @@ export default function TimerPage() {
     const ctx = getAudioCtx()
     beepStart(ctx)
     setRunning(true)
+    setIsFullscreen(true)
   }, [finished, countingDown, running, stop, reset, requestWakeLock, getAudioCtx, countdownEnabled])
 
   useEffect(() => {
@@ -354,7 +387,7 @@ export default function TimerPage() {
         <p className="section-sub">운동 모드를 선택하고 타이머를 시작하세요</p>
 
         {/* Mode Tabs */}
-        <div className="flex gap-1 bg-rx-surface rounded-xl p-1 mb-4 overflow-x-auto">
+        <div className={`flex gap-1 bg-rx-surface rounded-xl p-1 mb-4 overflow-x-auto ${elapsed > 0 && !finished ? 'opacity-50 pointer-events-none' : ''}`}>
           {MODES.map((m) => (
             <button
               key={m.id}
@@ -369,7 +402,7 @@ export default function TimerPage() {
         </div>
 
         {/* Config Panel */}
-        {!running && !finished && (
+        {!running && !finished && elapsed === 0 && (
           <div className="card mb-6">
             <h3 className="font-bold text-white mb-4">설정</h3>
             {mode === 'amrap' && (
@@ -518,15 +551,27 @@ export default function TimerPage() {
 
         {/* === Fullscreen capable Timer & Controls Area === */}
         <div className={
-          running || finished
-            ? `fixed inset-0 z-[100] bg-[#0a0a0a] flex flex-col ${phaseColor} transition-colors duration-300`
+          isFullscreen
+            ? `fixed inset-0 z-[100] bg-[#0a0a0a] flex flex-col items-center justify-center overflow-hidden touch-none overscroll-none ${phaseColor} transition-colors duration-300 pointer-events-auto`
             : "mb-4"
         }>
+          {isFullscreen && (
+            <button onClick={() => setIsFullscreen(false)} className="absolute top-6 left-6 p-2 rounded-full bg-white/10 text-white/50 hover:text-white hover:bg-white/20 transition-all z-10" title="메뉴로 돌아가기">
+              <XIcon size={28} />
+            </button>
+          )}
+
           <div className={
-            running || finished
-              ? "flex-1 flex flex-col items-center justify-center p-6 w-full"
-              : `rounded-2xl border-2 ${phaseBorder} ${phaseColor} p-4 md:p-8 flex flex-col items-center justify-center text-center transition-colors duration-300`
+            isFullscreen
+              ? "flex-1 flex flex-col items-center justify-center p-6 w-full max-h-screen relative"
+              : `rounded-2xl relative border-2 ${phaseBorder} ${phaseColor} p-4 md:p-8 flex flex-col items-center justify-center text-center transition-colors duration-300`
           }>
+            {!isFullscreen && (running || finished || elapsed > 0) && (
+              <button onClick={() => setIsFullscreen(true)} className="absolute top-4 right-4 p-2 rounded-full bg-white/5 text-white/50 hover:text-white transition-all z-10" title="전체화면">
+                <MaximizeIcon size={20} />
+              </button>
+            )}
+
             {/* Phase Indicator */}
             {running && (
               <div className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-bold mb-6 ${
@@ -549,14 +594,14 @@ export default function TimerPage() {
             <div className={`font-black tracking-tighter leading-none mb-6 text-center w-full ${
               timeLeft < 10 && running ? 'text-rx-red animate-pulse' : 'text-white'
             }`}
-              style={{ fontSize: running || finished ? 'clamp(100px, 25vw, 250px)' : 'clamp(60px, 20vw, 120px)' }}
+              style={{ fontSize: isFullscreen ? 'clamp(100px, 25vw, 250px)' : 'clamp(60px, 20vw, 120px)' }}
             >
               {formatTime(timeLeft)}
             </div>
 
             {/* Round Info */}
             {(mode !== 'amrap' && mode !== 'fortime') && (
-              <div className={running || finished ? "text-white/80 text-2xl font-bold uppercase tracking-widest" : "text-rx-muted text-lg font-bold"}>
+              <div className={isFullscreen ? "text-white/80 text-2xl font-bold uppercase tracking-widest" : "text-rx-muted text-lg font-bold"}>
                 Round {mode === 'tabata' ? Math.ceil(currentRound / 2) : currentRound} / {mode === 'tabata'
                   ? (c as TimerConfig['tabata']).rounds
                   : mode === 'emom'
@@ -566,14 +611,14 @@ export default function TimerPage() {
             )}
 
             {mode === 'amrap' && running && (
-              <div className={running || finished ? "text-white/80 text-xl font-bold uppercase" : "text-rx-muted text-sm font-bold"}>
+              <div className={isFullscreen ? "text-white/80 text-xl font-bold uppercase" : "text-rx-muted text-sm font-bold"}>
                 Elapsed: {formatTime(elapsed)}
               </div>
             )}
           </div>
 
           {/* 10초 후 시작 */}
-          {!running && !finished && (
+          {!running && !finished && elapsed === 0 && (
             <label className="flex items-center justify-center gap-3 cursor-pointer mb-6 mt-4">
               <input
                 type="checkbox"
@@ -587,13 +632,13 @@ export default function TimerPage() {
 
           {/* Controls */}
           <div className={
-            running || finished
-              ? "p-6 pb-safe flex gap-4 w-full max-w-lg mx-auto bg-black/20 backdrop-blur-md"
+            isFullscreen
+              ? "p-6 pb-safe flex gap-4 w-full max-w-lg mx-auto bg-transparent mb-10 z-10"
               : "flex gap-3 mt-2"
           }>
             <button
               onClick={handleStart}
-              className={`flex-1 h-20 min-h-[64px] rounded-2xl font-black text-2xl transition-all active:scale-95 border-2 ${
+              className={`flex-1 h-20 min-h-[64px] rounded-2xl font-black text-2xl transition-all active:scale-95 border-2 flex items-center justify-center gap-3 ${
                 finished
                   ? 'bg-transparent border-rx-orange text-rx-orange hover:bg-rx-orange hover:text-white'
                   : running
@@ -601,17 +646,18 @@ export default function TimerPage() {
                   : 'gradient-bg border-transparent text-white hover:opacity-90'
               }`}
             >
-              {finished ? '다시 시작' : running ? '일시정지' : '시작'}
+              {finished ? '다시 시작' : running ? <><PauseIcon size={28}/>일시정지</> : (elapsed > 0 ? <><PlayIcon size={28}/>이어서 시작</> : <><PlayIcon size={28}/>시작</>)}
             </button>
             <button
               onClick={reset}
-              className={`h-20 w-24 min-h-[64px] rounded-2xl border-2 font-black text-lg transition-colors flex items-center justify-center ${
-                running || finished
+              className={`h-20 w-20 min-h-[64px] rounded-2xl border-2 font-black text-lg transition-colors flex items-center justify-center shrink-0 ${
+                isFullscreen
                   ? "bg-transparent border-white/30 text-white/50 hover:text-white hover:border-white"
                   : "bg-rx-surface border-rx-border text-rx-muted hover:text-white hover:border-rx-red"
               }`}
+              title="리셋"
             >
-              리셋
+              <RotateCcwIcon size={28} />
             </button>
           </div>
         </div>

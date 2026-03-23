@@ -116,7 +116,7 @@ export default function Header() {
             href="/wod/log"
             className="hidden md:flex px-4 py-1.5 rounded-lg text-xs font-black text-white gradient-bg hover:opacity-90 transition-opacity mr-1"
           >
-            {locale === 'ko' ? '+ 기록 추가' : '+ Add Log'}
+            {locale === 'ko' ? '+ 내 기록 관리' : '+ Add Log'}
           </Link>
 
           {/* Auth area — desktop */}

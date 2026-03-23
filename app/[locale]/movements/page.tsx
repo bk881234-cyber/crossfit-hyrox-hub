@@ -55,7 +55,7 @@ export default function MovementsIndexPage() {
   return (
     <div className="min-h-screen bg-rx-bg">
       <Header />
-      <main className="pt-20 pb-24 md:pb-10 px-4 max-w-3xl mx-auto">
+      <main className="pt-20 pb-24 md:pb-10 px-4 max-w-2xl mx-auto">
         {/* Hero */}
         <h1 className="section-title mt-4">크로스핏 무브먼트 가이드</h1>
         <p className="section-sub mb-6">

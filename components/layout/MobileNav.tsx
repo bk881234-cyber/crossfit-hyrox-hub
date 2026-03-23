@@ -1,4 +1,5 @@
 'use client'
+import React from 'react'
 import { usePathname } from '@/navigation'
 import { Link } from '@/navigation'
 
@@ -69,6 +70,14 @@ export default function MobileNav() {
       className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-rx-surface/95 backdrop-blur-xl border-t border-rx-border"
       style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
     >
+      <svg width="0" height="0" className="absolute">
+        <defs>
+          <linearGradient id="navGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stopColor="#E8321A" />
+            <stop offset="100%" stopColor="#FF2D8B" />
+          </linearGradient>
+        </defs>
+      </svg>
       <div className="flex items-stretch">
         {tabs.map((tab) => {
           const isActive = pathname === tab.href || (tab.href === '/wod' && pathname.startsWith('/wod'))
@@ -80,7 +89,11 @@ export default function MobileNav() {
                 isActive ? 'text-white' : 'text-rx-muted hover:text-white'
               }`}
             >
-              <span className={isActive ? 'gradient-text' : ''}>{tab.icon}</span>
+              <span className={isActive ? '[&>svg]:stroke-[url(#navGradient)]' : ''}>
+                {React.cloneElement(tab.icon as React.ReactElement, {
+                  stroke: isActive ? "url(#navGradient)" : "currentColor"
+                })}
+              </span>
               <span className={`text-[10px] font-semibold ${isActive ? 'gradient-text' : ''}`}>{tab.label}</span>
             </Link>
           )
