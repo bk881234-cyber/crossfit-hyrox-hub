@@ -403,7 +403,7 @@ export default function MapPage() {
             borderBottom: '1px solid rgba(255,255,255,0.08)',
           }}
         >
-          <div className="max-w-5xl mx-auto">
+          <div className="max-w-[992px] mx-auto">
             {/* 검색창 */}
             <form onSubmit={handleSearchSubmit} className="relative mb-3">
               <svg
@@ -504,7 +504,7 @@ export default function MapPage() {
         </div>
 
         {/* ── 검색된 박스 리스트 영역 ─────────────────────────────────────────────── */}
-        <div className="px-4 max-w-5xl mx-auto mt-8">
+        <div className="px-4 max-w-[992px] mx-auto mt-8">
           {searchedBoxes.length > 0 && (
             <section className="mb-10">
               <div className="flex items-center justify-between mb-4">

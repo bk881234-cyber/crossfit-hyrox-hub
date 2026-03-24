@@ -371,7 +371,7 @@ export default function StrengthHubClient() {
   return (
     <div className="min-h-screen bg-rx-bg pb-28">
       <Header />
-      <main className="pt-24 px-4 max-w-3xl mx-auto">
+      <main className="pt-24 px-4 max-w-[640px] mx-auto">
 
         {/* ── Page header ── */}
         <motion.div

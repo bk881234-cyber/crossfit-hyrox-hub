@@ -263,7 +263,7 @@ export default function MyPage() {
     <div className="min-h-screen bg-rx-bg pb-28">
       <Header />
 
-      <main className="pt-24 px-4 max-w-2xl mx-auto space-y-5">
+      <main className="pt-24 px-4 max-w-[992px] mx-auto space-y-5">
 
         {/* ── Hero card ── */}
         <motion.div

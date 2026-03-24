@@ -479,7 +479,7 @@ export default function HomePage() {
         {/* Static ambient blobs — no JS needed, CSS blur is GPU-composited */}
         <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse 70% 55% at 50% 45%, rgba(232,50,26,0.12) 0%, transparent 70%)' }} />
 
-        <div className="relative text-center max-w-5xl mx-auto z-10 w-full">
+        <div className="relative text-center max-w-[992px] mx-auto z-10 w-full">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-white/40 text-[10px] font-bold mb-6 tracking-widest uppercase animate-fade-in-up">
             <span className="w-1 h-1 rounded-full gradient-bg animate-pulse" />
             {t('heroBadge')}
@@ -505,7 +505,7 @@ export default function HomePage() {
       <section aria-label="core tools" className="relative px-4 pb-16 pt-9">
         <div className="absolute top-1/2 left-[8%] -translate-y-1/2 w-[420px] h-[420px] rounded-full pointer-events-none" style={{ background: 'rgba(232,50,26,0.20)', filter: 'blur(130px)' }} />
         <div className="absolute top-1/4 right-[8%] w-[340px] h-[340px] rounded-full pointer-events-none" style={{ background: 'rgba(255,45,139,0.16)', filter: 'blur(120px)' }} />
-        <div className="relative z-10 max-w-6xl mx-auto">
+        <div className="relative z-10 max-w-[992px] mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {coreTools.map((tool) => (
               <ToolCard key={tool.href} {...tool} shortcut={shortcut} />
@@ -519,7 +519,7 @@ export default function HomePage() {
       {/* ═══ SECTION 3: AUX 2 TOOLS ═══ */}
       <section aria-label="additional features" className="bg-rx-surface px-4 pt-14 pb-14 relative overflow-hidden">
         <div className="absolute inset-0 z-0" style={{ backgroundImage: "url('/fittersstudio_img01.png')", backgroundSize: 'cover', backgroundPosition: 'center', opacity: 0.5 }} />
-        <div className="max-w-6xl mx-auto relative z-10">
+        <div className="max-w-[992px] mx-auto relative z-10">
           <div ref={r3} className="text-center mb-8">
             <h2 className="font-heading font-black text-4xl md:text-5xl uppercase text-white tracking-tight">{t('featuresTitle')}</h2>
             <p className="text-rx-muted text-sm mt-2">{t('featuresDesc')}</p>
@@ -540,7 +540,7 @@ export default function HomePage() {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[560px] h-[280px] rounded-full pointer-events-none" style={{ background: 'rgba(255,45,139,0.14)', filter: 'blur(140px)' }} />
         <div className="absolute top-[15%] left-[5%] w-[260px] h-[260px] rounded-full pointer-events-none" style={{ background: 'rgba(232,50,26,0.15)', filter: 'blur(110px)' }} />
         <div className="absolute bottom-[15%] right-[5%] w-[240px] h-[240px] rounded-full pointer-events-none" style={{ background: 'rgba(232,50,26,0.12)', filter: 'blur(100px)' }} />
-        <div className="relative z-10 max-w-6xl mx-auto">
+        <div className="relative z-10 max-w-[992px] mx-auto">
           <div ref={r4} className="text-center mb-12">
             <h2 className="font-heading font-black text-4xl md:text-5xl uppercase text-white tracking-tight">{t('statsTitle')}</h2>
             <p className="text-rx-muted text-sm mt-2">{t('statsDesc')}</p>
@@ -563,7 +563,7 @@ export default function HomePage() {
       <section aria-label="about crossfit" className="relative px-4 bg-rx-surface" style={{ paddingTop: '80px', paddingBottom: '80px' }}>
         <div className="absolute top-1/2 right-[8%] -translate-y-1/2 w-[380px] h-[380px] rounded-full pointer-events-none" style={{ background: 'rgba(255,45,139,0.14)', filter: 'blur(130px)' }} />
         <div className="absolute bottom-[10%] right-[28%] w-[260px] h-[260px] rounded-full pointer-events-none" style={{ background: 'rgba(232,50,26,0.12)', filter: 'blur(110px)' }} />
-        <div className="relative z-10 max-w-6xl mx-auto">
+        <div className="relative z-10 max-w-[992px] mx-auto">
           <div ref={r5} className="grid md:grid-cols-2 gap-12">
             {/* Left: Text */}
             <div className="flex flex-col">

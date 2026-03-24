@@ -80,7 +80,7 @@ export default function AboutPage() {
         <section className="relative px-4 pt-16 pb-20 text-center overflow-hidden">
           <div className="absolute inset-0 hero-grid-bg opacity-40" />
           <div className="absolute inset-0" style={{ background: 'radial-gradient(ellipse 70% 50% at 50% 30%, rgba(232,50,26,0.07), transparent 70%)' }} />
-          <div className="relative max-w-3xl mx-auto">
+          <div className="relative max-w-[992px] mx-auto">
             <p className="text-rx-muted text-xs tracking-widest uppercase mb-4">가이드</p>
             <h1 className="font-heading font-black uppercase tracking-tighter mb-5 gradient-text" style={{ fontSize: 'clamp(3rem, 10vw, 7rem)', lineHeight: 1 }}>
               크로스핏이란?
@@ -92,7 +92,7 @@ export default function AboutPage() {
         </section>
 
         {/* ── 1. 정의 + 철학 ── */}
-        <section className="px-4 py-16 max-w-5xl mx-auto">
+        <section className="px-4 py-16 max-w-[992px] mx-auto">
           <div ref={r1}>
             {/* 상단: 제목 + 설명 */}
             <div className="mb-10">
@@ -142,7 +142,7 @@ export default function AboutPage() {
 
         {/* ── 2. CrossFit vs 일반 헬스 ── */}
         <section className="bg-rx-surface px-4 py-16">
-          <div className="max-w-5xl mx-auto">
+          <div className="max-w-[992px] mx-auto">
             <div ref={r2}>
               <p className="text-rx-muted text-xs tracking-widest uppercase mb-3">02 / 비교</p>
               <h2 className="font-heading font-black text-3xl md:text-5xl uppercase text-white tracking-tight mb-8 whitespace-nowrap">CrossFit vs 일반 헬스</h2>
@@ -172,7 +172,7 @@ export default function AboutPage() {
         </section>
 
         {/* ── 3. 용어 사전 ── */}
-        <section className="px-4 py-16 max-w-5xl mx-auto">
+        <section className="px-4 py-16 max-w-[992px] mx-auto">
           <div ref={r3}>
             <p className="text-rx-muted text-xs tracking-widest uppercase mb-3">03 / 용어</p>
             <h2 className="font-heading font-black text-3xl md:text-5xl uppercase text-white tracking-tight mb-8 whitespace-nowrap">용어 사전 <span className="gradient-text">Glossary</span></h2>
@@ -191,7 +191,7 @@ export default function AboutPage() {
 
         {/* ── 4. 처음 시작하는 법 ── */}
         <section className="bg-rx-surface px-4 py-16">
-          <div className="max-w-5xl mx-auto">
+          <div className="max-w-[992px] mx-auto">
             <div ref={r4}>
               <p className="text-rx-muted text-xs tracking-widest uppercase mb-3">04 / 시작</p>
               <h2 className="font-heading font-black text-4xl md:text-5xl uppercase text-white tracking-tight mb-10">
@@ -223,7 +223,7 @@ export default function AboutPage() {
         </section>
 
         {/* ── 5. HYROX 소개 ── */}
-        <section className="px-4 py-16 max-w-5xl mx-auto">
+        <section className="px-4 py-16 max-w-[992px] mx-auto">
           <div ref={r5}>
             <p className="text-rx-muted text-xs tracking-widest uppercase mb-3">05 / HYROX</p>
             <h2 className="font-heading font-black text-3xl md:text-5xl uppercase text-white tracking-tight mb-5 whitespace-nowrap">

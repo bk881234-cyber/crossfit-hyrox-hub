@@ -28,7 +28,13 @@
       "Bash(ls:*)",
       "Bash(cat:*)",
       "Bash(npx tsc:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(grep -n \"max-w\" C:/Users/bkbk8/Desktop/crossfit-hyrox-hub/app/[locale]/map/page.tsx)",
+      "Read(//c/Users/bkbk8/Desktop/crossfit-hyrox-hub/**)",
+      "Bash(grep -n \"max-w-5xl\\\\|max-w-3xl\\\\|max-w-\\\\[992px\\\\]\" C:/Users/bkbk8/Desktop/crossfit-hyrox-hub/app/[locale]/about/page.tsx)",
+      "Bash(grep -n \"max-w-\" C:/Users/bkbk8/Desktop/crossfit-hyrox-hub/app/[locale]/timer/page.tsx)",
+      "Read(//c/Users/bkbk8/Desktop/crossfit-hyrox-hub/=== wod/**)",
+      "Bash(grep -n \"max-w-\" C:/Users/bkbk8/Desktop/crossfit-hyrox-hub/app/[locale]/mypage/page.tsx)"
     ]
   }
 }

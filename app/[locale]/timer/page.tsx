@@ -377,7 +377,7 @@ export default function TimerPage() {
   return (
     <div className={`min-h-screen bg-rx-bg transition-colors duration-500`}>
       {!isFullscreen && <Header />}
-      <main className="pt-20 pb-24 md:pb-10 px-4 max-w-lg mx-auto">
+      <main className="pt-20 pb-24 md:pb-10 px-4 max-w-[640px] mx-auto">
         {/* AdSense top */}
         <div className="hidden mt-4 mb-4 w-full h-16 bg-rx-surface border border-rx-border rounded-lg flex items-center justify-center">
           <span className="text-rx-muted text-xs">광고 영역 (AdSense)</span>
@@ -633,7 +633,7 @@ export default function TimerPage() {
           {/* Controls */}
           <div className={
             isFullscreen
-              ? "p-6 pb-safe flex gap-4 w-full max-w-lg mx-auto bg-transparent mb-10 z-10"
+              ? "p-6 pb-safe flex gap-4 w-full max-w-[640px] mx-auto bg-transparent mb-10 z-10"
               : "flex gap-3 mt-2"
           }>
             <button
