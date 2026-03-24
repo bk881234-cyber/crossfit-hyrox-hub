@@ -2,6 +2,7 @@
 import { useState, useEffect, useMemo, Suspense } from 'react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import Header from '@/components/layout/Header'
 import MobileNav from '@/components/layout/MobileNav'
 import { WODS } from '@/lib/wod-data'
@@ -25,10 +26,11 @@ interface WodLog {
 const WOD_TYPES = ['For Time', 'AMRAP', 'EMOM', 'Tabata', 'Strength', 'Custom']
 
 /* ─── Calendar View ─── */
-function CalendarView({ logs, currentDate, onDayClick }: {
+function CalendarView({ logs, currentDate, onDayClick, dayLabels }: {
   logs: WodLog[]
   currentDate: Date
   onDayClick: (date: string) => void
+  dayLabels: string[]
 }) {
   const year = currentDate.getFullYear()
   const month = currentDate.getMonth()
@@ -50,7 +52,7 @@ function CalendarView({ logs, currentDate, onDayClick }: {
   return (
     <div>
       <div className="grid grid-cols-7 gap-1 mb-2">
-        {['일', '월', '화', '수', '목', '금', '토'].map(d => (
+        {dayLabels.map(d => (
           <div key={d} className="text-center text-rx-muted text-xs py-2 font-medium">{d}</div>
         ))}
       </div>
@@ -88,7 +90,7 @@ function CalendarView({ logs, currentDate, onDayClick }: {
 }
 
 /* ─── Star Rating ─── */
-function StarRating({ value, onChange }: { value: number; onChange: (v: number) => void }) {
+function StarRating({ value, onChange, difficultyLabels }: { value: number; onChange: (v: number) => void; difficultyLabels: string[] }) {
   return (
     <div className="flex gap-1">
       {[1, 2, 3, 4, 5].map(s => (
@@ -102,7 +104,7 @@ function StarRating({ value, onChange }: { value: number; onChange: (v: number) 
         </button>
       ))}
       <span className="text-rx-muted text-xs ml-2 self-center">
-        {value === 0 ? '' : ['', '매우 쉬움', '쉬움', '보통', '힘듦', '극한'][value]}
+        {value === 0 ? '' : difficultyLabels[value]}
       </span>
     </div>
   )
@@ -127,6 +129,7 @@ function rowToLocal(row: Record<string, unknown>): WodLog {
 
 /* ─── Main Content ─── */
 function WodLogContent() {
+  const t = useTranslations('wodLog')
   const searchParams = useSearchParams()
   const preWodId = searchParams.get('wod') || ''
 
@@ -153,6 +156,9 @@ function WodLogContent() {
   // Calendar
   const [calDate, setCalDate] = useState(new Date())
   const [filterDate, setFilterDate] = useState('')
+
+  const difficultyLabels = ['', t('diff1'), t('diff2'), t('diff3'), t('diff4'), t('diff5')]
+  const dayLabels = [t('daySun'), t('dayMon'), t('dayTue'), t('dayWed'), t('dayThu'), t('dayFri'), t('daySat')]
 
   useEffect(() => {
     async function init() {
@@ -245,7 +251,7 @@ function WodLogContent() {
           })
           .select()
           .single()
-        
+
         if (dbError) throw dbError
         if (data) {
           setLogs([rowToLocal(data as Record<string, unknown>), ...logs])
@@ -307,16 +313,16 @@ function WodLogContent() {
           <Link href="/wod" className="flex items-center gap-1 text-rx-muted text-sm hover:text-white transition-colors mb-4">
             <span className="font-bold">&lt;</span> WOD Library
           </Link>
-          <h1 className="font-heading font-black text-5xl uppercase tracking-tight gradient-text">WOD LOG</h1>
-          <p className="text-rx-muted text-sm mt-1">운동 기록을 저장하고 성장을 추적하세요</p>
+          <h1 className="font-heading font-black text-5xl uppercase tracking-tight gradient-text">{t('title')}</h1>
+          <p className="text-rx-muted text-sm mt-1">{t('subtitle')}</p>
         </div>
 
         {/* ─ View Tabs ─ */}
         <div className="flex gap-2 mb-6 bg-rx-surface border border-rx-border rounded-xl p-1">
           {[
-            { id: 'form', label: '기록 추가' },
-            { id: 'list', label: `리스트 (${logs.length})` },
-            { id: 'calendar', label: '달력' },
+            { id: 'form', label: t('tabAdd') },
+            { id: 'list', label: t('tabList', { count: logs.length }) },
+            { id: 'calendar', label: t('tabCalendar') },
           ].map(tab => (
             <button
               key={tab.id}
@@ -333,27 +339,27 @@ function WodLogContent() {
         {/* ═══ FORM VIEW ═══ */}
         {view === 'form' && (
           <div className="bg-rx-card border border-rx-border rounded-2xl p-6">
-            <h2 className="font-heading font-black text-2xl uppercase text-white mb-5">새 기록 추가</h2>
+            <h2 className="font-heading font-black text-2xl uppercase text-white mb-5">{t('formTitle')}</h2>
 
             {/* Date */}
             <div className="mb-4">
-              <label className="text-rx-muted text-xs font-bold mb-2 block uppercase tracking-wider">날짜</label>
+              <label className="text-rx-muted text-xs font-bold mb-2 block uppercase tracking-wider">{t('fDate')}</label>
               <input type="date" className="input" value={date} onChange={e => setDate(e.target.value)} />
             </div>
 
             {/* WOD Select */}
             <div className="mb-4">
-              <label className="text-rx-muted text-xs font-bold mb-2 block uppercase tracking-wider">WOD 선택</label>
+              <label className="text-rx-muted text-xs font-bold mb-2 block uppercase tracking-wider">{t('fWod')}</label>
               <select className="input" value={selectedWod} onChange={e => setSelectedWod(e.target.value)}>
-                <option value="">WOD를 선택하세요</option>
-                <option value="custom">── 직접 입력 ──</option>
-                <optgroup label="── Girl WODs ──">
+                <option value="">{t('fWodPh')}</option>
+                <option value="custom">{t('fWodCustom')}</option>
+                <optgroup label={t('fWodGirls')}>
                   {WODS.filter(w => w.type === 'girl').map(w => <option key={w.id} value={w.id}>{w.name}</option>)}
                 </optgroup>
-                <optgroup label="── Hero WODs ──">
+                <optgroup label={t('fWodHeroes')}>
                   {WODS.filter(w => w.type === 'hero').map(w => <option key={w.id} value={w.id}>{w.name}</option>)}
                 </optgroup>
-                <optgroup label="── CrossFit Open ──">
+                <optgroup label={t('fWodOpen')}>
                   {WODS.filter(w => w.type === 'open').map(w => <option key={w.id} value={w.id}>{w.name}</option>)}
                 </optgroup>
               </select>
@@ -368,10 +374,10 @@ function WodLogContent() {
 
             {selectedWod === 'custom' && (
               <div className="mb-4">
-                <label className="text-rx-muted text-xs font-bold mb-2 block uppercase tracking-wider">WOD 이름 및 내용</label>
+                <label className="text-rx-muted text-xs font-bold mb-2 block uppercase tracking-wider">{t('fCustomLabel')}</label>
                 <textarea
                   className="input resize-none overflow-y-auto w-full transition-all"
-                  placeholder="WOD 내용을 입력하세요 (엔터로 줄바꿈 가능)"
+                  placeholder={t('fCustomPh')}
                   value={customWodName}
                   rows={1}
                   style={{ minHeight: '48px', maxHeight: '400px' }}
@@ -386,18 +392,18 @@ function WodLogContent() {
 
             {/* WOD Type */}
             <div className="mb-4">
-              <label className="text-rx-muted text-xs font-bold mb-2 block uppercase tracking-wider">운동 타입</label>
+              <label className="text-rx-muted text-xs font-bold mb-2 block uppercase tracking-wider">{t('fType')}</label>
               <div className="flex flex-wrap gap-2">
-                {WOD_TYPES.map(t => (
+                {WOD_TYPES.map(type => (
                   <button
-                    key={t}
+                    key={type}
                     type="button"
-                    onClick={() => setWodType(t)}
+                    onClick={() => setWodType(type)}
                     className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all ${
-                      wodType === t ? 'gradient-bg text-white' : 'bg-rx-surface border border-rx-border text-rx-muted hover:text-white'
+                      wodType === type ? 'gradient-bg text-white' : 'bg-rx-surface border border-rx-border text-rx-muted hover:text-white'
                     }`}
                   >
-                    {t}
+                    {type}
                   </button>
                 ))}
               </div>
@@ -406,31 +412,31 @@ function WodLogContent() {
             {/* Time + Rounds */}
             <div className="grid grid-cols-2 gap-3 mb-4">
               <div>
-                <label className="text-rx-muted text-xs font-bold mb-2 block uppercase tracking-wider">기록 시간</label>
-                <input type="text" className="input" placeholder="예: 4:52" value={time} onChange={e => setTime(e.target.value)} />
+                <label className="text-rx-muted text-xs font-bold mb-2 block uppercase tracking-wider">{t('fTime')}</label>
+                <input type="text" className="input" placeholder={t('fTimePh')} value={time} onChange={e => setTime(e.target.value)} />
               </div>
               <div>
-                <label className="text-rx-muted text-xs font-bold mb-2 block uppercase tracking-wider">라운드 수</label>
-                <input type="text" className="input" placeholder="예: 12 rounds" value={rounds} onChange={e => setRounds(e.target.value)} />
+                <label className="text-rx-muted text-xs font-bold mb-2 block uppercase tracking-wider">{t('fRounds')}</label>
+                <input type="text" className="input" placeholder={t('fRoundsPh')} value={rounds} onChange={e => setRounds(e.target.value)} />
               </div>
             </div>
 
             {/* Weight */}
             <div className="mb-4">
-              <label className="text-rx-muted text-xs font-bold mb-2 block uppercase tracking-wider">사용 무게</label>
-              <input type="text" className="input" placeholder="예: Thruster 43kg, DL 100kg" value={weight} onChange={e => setWeight(e.target.value)} />
+              <label className="text-rx-muted text-xs font-bold mb-2 block uppercase tracking-wider">{t('fWeight')}</label>
+              <input type="text" className="input" placeholder={t('fWeightPh')} value={weight} onChange={e => setWeight(e.target.value)} />
             </div>
 
             {/* Difficulty */}
             <div className="mb-4">
-              <label className="text-rx-muted text-xs font-bold mb-2 block uppercase tracking-wider">체감 난이도</label>
-              <StarRating value={difficulty} onChange={setDifficulty} />
+              <label className="text-rx-muted text-xs font-bold mb-2 block uppercase tracking-wider">{t('fDifficulty')}</label>
+              <StarRating value={difficulty} onChange={setDifficulty} difficultyLabels={difficultyLabels} />
             </div>
 
             {/* Notes */}
             <div className="mb-6">
-              <label className="text-rx-muted text-xs font-bold mb-2 block uppercase tracking-wider">메모</label>
-              <textarea className="input min-h-[80px] resize-none" placeholder="오늘 컨디션, 느낀 점, 다음 목표..." value={notes} onChange={e => setNotes(e.target.value)} />
+              <label className="text-rx-muted text-xs font-bold mb-2 block uppercase tracking-wider">{t('fNotes')}</label>
+              <textarea className="input min-h-[80px] resize-none" placeholder={t('fNotesPh')} value={notes} onChange={e => setNotes(e.target.value)} />
             </div>
 
             {error && (
@@ -444,11 +450,11 @@ function WodLogContent() {
               disabled={loading || !selectedWod || (selectedWod === 'custom' && !customWodName)}
               className="w-full btn-primary py-3.5 rounded-xl font-bold text-base disabled:opacity-40 disabled:cursor-not-allowed"
             >
-              {loading ? '저장 중...' : saved ? (
+              {loading ? t('saving') : saved ? (
                 <span className="flex items-center justify-center gap-2">
-                  저장 완료!
+                  {t('saved')}
                 </span>
-              ) : '기록 저장'}
+              ) : t('saveBtn')}
             </button>
           </div>
         )}
@@ -459,17 +465,17 @@ function WodLogContent() {
             {filterDate && (
               <div className="flex items-center gap-2 mb-4 p-3 bg-rx-surface border border-rx-border rounded-xl">
                 <span className="text-white text-sm font-bold">{filterDate} 기록</span>
-                <button onClick={() => setFilterDate('')} className="ml-auto text-rx-muted hover:text-white text-xs">전체 보기</button>
+                <button onClick={() => setFilterDate('')} className="ml-auto text-rx-muted hover:text-white text-xs">{t('viewAll')}</button>
               </div>
             )}
 
             {logs.length === 0 ? (
               <div className="text-center py-14 bg-rx-surface border border-rx-border rounded-2xl">
-                <p className="text-white font-bold text-lg mb-1">아직 기록이 없습니다</p>
-                <p className="text-rx-muted text-sm">기록 추가 탭에서 첫 WOD를 기록해보세요!</p>
+                <p className="text-white font-bold text-lg mb-1">{t('noRecords')}</p>
+                <p className="text-rx-muted text-sm">{t('noRecordsDesc')}</p>
               </div>
             ) : sortedDates.length === 0 ? (
-              <div className="text-center py-10 text-rx-muted">이 날짜의 기록이 없습니다</div>
+              <div className="text-center py-10 text-rx-muted">{t('noDateRecords')}</div>
             ) : (
               <div className="flex flex-col gap-6">
                 {sortedDates.map(date => (
@@ -484,7 +490,7 @@ function WodLogContent() {
                               <span className="ml-2 text-[10px] px-2 py-0.5 rounded-full gradient-bg text-white font-bold">{log.wodType}</span>
                             </div>
                             <button onClick={() => handleDelete(log.id)} className="text-rx-muted hover:text-red-400 transition-colors p-1 text-xs font-bold uppercase">
-                              삭제
+                              {t('deleteBtn')}
                             </button>
                           </div>
                           <div className="flex flex-wrap gap-3 mb-2">
@@ -531,13 +537,14 @@ function WodLogContent() {
                 logs={logs}
                 currentDate={calDate}
                 onDayClick={(date) => { setFilterDate(date); setView('list') }}
+                dayLabels={dayLabels}
               />
             </div>
 
             {/* Monthly summary */}
             <div className="bg-rx-surface border border-rx-border rounded-2xl p-5">
               <div className="font-bold text-white mb-3">
-                {calDate.getMonth() + 1}월 요약
+                {t('calendarSummary', { month: calDate.getMonth() + 1 })}
               </div>
               {(() => {
                 const monthStr = `${calDate.getFullYear()}-${String(calDate.getMonth() + 1).padStart(2, '0')}`
@@ -547,17 +554,17 @@ function WodLogContent() {
                   <div className="grid grid-cols-3 gap-3 text-center">
                     <div>
                       <div className="font-heading font-black text-3xl gradient-text">{monthLogs.length}</div>
-                      <div className="text-rx-muted text-xs">총 기록</div>
+                      <div className="text-rx-muted text-xs">{t('totalRecords')}</div>
                     </div>
                     <div>
                       <div className="font-heading font-black text-3xl gradient-text">{days}</div>
-                      <div className="text-rx-muted text-xs">운동 일수</div>
+                      <div className="text-rx-muted text-xs">{t('exerciseDays')}</div>
                     </div>
                     <div>
                       <div className="font-heading font-black text-3xl gradient-text">
                         {monthLogs.length > 0 ? (monthLogs.reduce((a, b) => a + b.difficulty, 0) / monthLogs.length).toFixed(1) : '-'}
                       </div>
-                      <div className="text-rx-muted text-xs">평균 난이도</div>
+                      <div className="text-rx-muted text-xs">{t('avgDifficulty')}</div>
                     </div>
                   </div>
                 )

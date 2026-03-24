@@ -1,12 +1,13 @@
 'use client'
 import React from 'react'
+import { useTranslations } from 'next-intl'
 import { usePathname } from '@/navigation'
 import { Link } from '@/navigation'
 
 const tabs = [
   {
     href: '/' as const,
-    label: '홈',
+    labelKey: 'home' as const,
     icon: (
       <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
         <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
@@ -16,7 +17,7 @@ const tabs = [
   },
   {
     href: '/timer' as const,
-    label: '타이머',
+    labelKey: 'timer' as const,
     icon: (
       <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
         <circle cx="12" cy="12" r="10" />
@@ -26,7 +27,7 @@ const tabs = [
   },
   {
     href: '/wod' as const,
-    label: 'WOD',
+    labelKey: 'wod' as const,
     icon: (
       <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
         <line x1="8" y1="6" x2="21" y2="6" />
@@ -40,7 +41,7 @@ const tabs = [
   },
   {
     href: '/map' as const,
-    label: '지도',
+    labelKey: 'map' as const,
     icon: (
       <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
         <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
@@ -50,7 +51,7 @@ const tabs = [
   },
   {
     href: '/community' as const,
-    label: '커뮤니티',
+    labelKey: 'community' as const,
     icon: (
       <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
         <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
@@ -64,6 +65,7 @@ const tabs = [
 
 export default function MobileNav() {
   const pathname = usePathname()
+  const t = useTranslations('mobileNav')
 
   return (
     <nav
@@ -94,7 +96,7 @@ export default function MobileNav() {
                   stroke: isActive ? "url(#navGradient)" : "currentColor"
                 })}
               </span>
-              <span className={`text-[10px] font-semibold ${isActive ? 'gradient-text' : ''}`}>{tab.label}</span>
+              <span className={`text-[10px] font-semibold ${isActive ? 'gradient-text' : ''}`}>{t(tab.labelKey)}</span>
             </Link>
           )
         })}

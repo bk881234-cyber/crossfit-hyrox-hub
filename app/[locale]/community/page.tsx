@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import Header from '@/components/layout/Header'
 import MobileNav from '@/components/layout/MobileNav'
 import { HYROX_EVENTS, BOARD_POSTS, type BoardPost } from '@/lib/community-data'
+import { useTranslations } from 'next-intl'
 
 type Tab = 'hyrox' | 'major' | 'board'
 
@@ -129,6 +130,7 @@ const emptyPost = {
 
 // ─── 메인 컴포넌트 ────────────────────────────────────────────────────────────
 export default function CommunityPage() {
+  const t = useTranslations('community')
   const isLoggedIn = false
 
   const [tab, setTab] = useState<Tab>('major')
@@ -210,9 +212,9 @@ export default function CommunityPage() {
   // ── 게시글 작성 제출 ────────────────────────────────────────────────────────
   const handlePostSubmit = () => {
     setWriteError('')
-    if (!writeForm.nickname.trim()) { setWriteError('닉네임을 입력해주세요.'); return }
-    if (!writeForm.title.trim()) { setWriteError('제목을 입력해주세요.'); return }
-    if (!writeForm.content.trim()) { setWriteError('내용을 입력해주세요.'); return }
+    if (!writeForm.nickname.trim()) { setWriteError(t('errNickname')); return }
+    if (!writeForm.title.trim()) { setWriteError(t('errTitle')); return }
+    if (!writeForm.content.trim()) { setWriteError(t('errContent')); return }
 
     const tags = writeForm.tags
       .split(/[,#\s]+/)
@@ -240,24 +242,24 @@ export default function CommunityPage() {
     <div className="min-h-screen bg-rx-bg">
       <Header />
       <main className="pt-20 pb-24 md:pb-10 px-4 max-w-[992px] mx-auto">
-        <h1 className="section-title mt-4">커뮤니티</h1>
-        <p className="section-sub">HYROX 대회 · 국내 대형 대회 · 자유게시판</p>
+        <h1 className="section-title mt-4">{t('title')}</h1>
+        <p className="section-sub">{t('subtitle')}</p>
 
         {/* Tab Selector */}
         <div className="flex gap-1 bg-rx-surface rounded-xl p-1 mb-6">
           {([
-            { id: 'major', label: '국내 대형 대회' },
-            { id: 'hyrox', label: 'HYROX 대회' },
-            { id: 'board', label: '자유게시판' },
-          ] as { id: Tab; label: string }[]).map((t) => (
+            { id: 'major', label: t('tabMajor') },
+            { id: 'hyrox', label: t('tabHyrox') },
+            { id: 'board', label: t('tabBoard') },
+          ] as { id: Tab; label: string }[]).map((tab_item) => (
             <button
-              key={t.id}
-              onClick={() => setTab(t.id)}
+              key={tab_item.id}
+              onClick={() => setTab(tab_item.id)}
               className={`flex-1 py-2.5 rounded-lg text-xs font-bold transition-colors whitespace-nowrap ${
-                tab === t.id ? 'gradient-bg text-white' : 'text-rx-muted hover:text-white'
+                tab === tab_item.id ? 'gradient-bg text-white' : 'text-rx-muted hover:text-white'
               }`}
             >
-              {t.label}
+              {tab_item.label}
             </button>
           ))}
         </div>
@@ -266,14 +268,15 @@ export default function CommunityPage() {
         {tab === 'hyrox' && (
           <div>
             <div className="flex items-center justify-between mb-4">
-              <p className="text-rx-muted text-sm">{HYROX_EVENTS.length}개 대회</p>
-              <span className="badge bg-blue-500/20 text-blue-400 border border-blue-500/30 text-xs">2026 시즌</span>
+              <p className="text-rx-muted text-sm">{t('hyroxCount', { count: HYROX_EVENTS.length })}</p>
+              <span className="badge bg-blue-500/20 text-blue-400 border border-blue-500/30 text-xs">{t('hyroxSeason')}</span>
             </div>
             <div className="space-y-3">
               {sortedHyrox.map((event) => {
                 const dday = getDday(event.date)
                 const isPast = dday === '종료'
                 const isToday = dday === 'D-Day'
+                const ddayDisplay = isPast ? t('hyroxEnded') : isToday ? t('hyroxDDay') : dday
                 return (
                   <div key={event.id} className={`card ${isPast ? 'opacity-60' : 'hover:border-rx-red/40'} transition-all`}>
                     <div className="flex items-start justify-between gap-3">
@@ -283,7 +286,7 @@ export default function CommunityPage() {
                             isPast ? 'bg-rx-surface border-rx-border text-rx-muted'
                             : isToday ? 'gradient-bg border-white/20 text-white'
                             : 'bg-green-500/20 text-green-400 border-green-500/30'
-                          }`}>{dday}</span>
+                          }`}>{ddayDisplay}</span>
                           <span className="text-rx-muted text-xs">{event.country}</span>
                         </div>
                         <h3 className="font-black text-white text-lg leading-tight">{event.name}</h3>
@@ -298,10 +301,10 @@ export default function CommunityPage() {
                         {!isPast && event.isOpen && (
                           <a href={event.registrationUrl} target="_blank" rel="noopener noreferrer"
                             className="inline-block bg-blue-500/20 text-blue-400 border border-blue-500/30 text-xs font-bold px-3 py-1.5 rounded-lg hover:bg-blue-500/30 transition-colors">
-                            등록하기
+                            {t('hyroxRegister')}
                           </a>
                         )}
-                        {isPast && <span className="text-rx-muted text-xs">마감</span>}
+                        {isPast && <span className="text-rx-muted text-xs">{t('hyroxClosed')}</span>}
                       </div>
                     </div>
                   </div>
@@ -315,7 +318,7 @@ export default function CommunityPage() {
         {tab === 'major' && (
           <div>
             <div className="flex items-center justify-between mb-4">
-              <p className="text-rx-muted text-sm">총 {allComps.length}개 대회</p>
+              <p className="text-rx-muted text-sm">{t('majorCount', { count: allComps.length })}</p>
               <button
                 onClick={() => setShowCompModal(true)}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg gradient-bg text-white text-xs font-bold hover:opacity-90 transition-opacity"
@@ -323,15 +326,15 @@ export default function CommunityPage() {
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                   <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
                 </svg>
-                대회 등록하기
+                {t('majorRegisterBtn')}
               </button>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {allComps.map((comp) => (
                 comp.isHardcoded
-                  ? <HardcodedCompCard key={comp.id} comp={comp as MajorComp} />
-                  : <RegisteredCompCard key={comp.id} comp={comp as RegisteredComp} />
+                  ? <HardcodedCompCard key={comp.id} comp={comp as MajorComp} t={t} />
+                  : <RegisteredCompCard key={comp.id} comp={comp as RegisteredComp} t={t} />
               ))}
             </div>
           </div>
@@ -341,7 +344,7 @@ export default function CommunityPage() {
         {tab === 'board' && (
           <div>
             <div className="flex items-center justify-between mb-4">
-              <p className="text-rx-muted text-sm">{boardPosts.length}개 게시글</p>
+              <p className="text-rx-muted text-sm">{t('boardCount', { count: boardPosts.length })}</p>
               <button
                 onClick={() => setShowWriteModal(true)}
                 className="flex items-center gap-1.5 px-4 py-2 rounded-lg gradient-bg text-white text-xs font-bold hover:opacity-90 transition-opacity"
@@ -349,7 +352,7 @@ export default function CommunityPage() {
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                   <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
                 </svg>
-                글쓰기
+                {t('boardWriteBtn')}
               </button>
             </div>
             <div className="space-y-3">
@@ -372,7 +375,7 @@ export default function CommunityPage() {
           <div className="absolute inset-0 bg-black/60" onClick={closeCompModal} />
           <div className="relative w-full max-w-lg bg-rx-surface border border-rx-border rounded-t-2xl md:rounded-2xl p-6 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="font-black text-white text-xl">대회 등록하기</h2>
+              <h2 className="font-black text-white text-xl">{t('modalCompTitle')}</h2>
               <button onClick={closeCompModal} className="text-rx-muted hover:text-white p-1">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                   <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
@@ -383,9 +386,9 @@ export default function CommunityPage() {
             {compSubmitted ? (
               <div className="text-center py-8">
                 <div className="text-5xl mb-4">🎉</div>
-                <h3 className="font-black text-white text-xl mb-2">등록 완료!</h3>
-                <p className="text-rx-muted text-sm mb-2">대회가 목록에 추가되었습니다.</p>
-                <p className="text-rx-muted text-sm mb-6">담당자 확인 후 정식 게시됩니다.</p>
+                <h3 className="font-black text-white text-xl mb-2">{t('successTitle')}</h3>
+                <p className="text-rx-muted text-sm mb-2">{t('successCompDesc')}</p>
+                <p className="text-rx-muted text-sm mb-6">{t('successCompNote')}</p>
                 <button onClick={closeCompModal} className="btn-primary px-8">확인</button>
               </div>
             ) : (
@@ -393,13 +396,13 @@ export default function CommunityPage() {
                 {!isLoggedIn && (
                   <>
                     <div>
-                      <label className="text-rx-muted text-sm block mb-1">신청자 이름 *</label>
+                      <label className="text-rx-muted text-sm block mb-1">{t('fApplicant')}</label>
                       <input type="text" className="input" placeholder="홍길동"
                         value={compForm.contactName}
                         onChange={e => setCompForm(p => ({ ...p, contactName: e.target.value }))} />
                     </div>
                     <div>
-                      <label className="text-rx-muted text-sm block mb-1">이메일 *</label>
+                      <label className="text-rx-muted text-sm block mb-1">{t('fEmail')}</label>
                       <input type="email" className="input" placeholder="example@email.com"
                         value={compForm.contactEmail}
                         onChange={e => setCompForm(p => ({ ...p, contactEmail: e.target.value }))} />
@@ -408,45 +411,45 @@ export default function CommunityPage() {
                   </>
                 )}
                 <div>
-                  <label className="text-rx-muted text-sm block mb-1">대회명 *</label>
-                  <input type="text" className="input" placeholder="대회 이름"
+                  <label className="text-rx-muted text-sm block mb-1">{t('fCompName')}</label>
+                  <input type="text" className="input" placeholder={t('fCompNamePh')}
                     value={compForm.name}
                     onChange={e => setCompForm(p => ({ ...p, name: e.target.value }))} />
                 </div>
                 <div>
-                  <label className="text-rx-muted text-sm block mb-1">주최 *</label>
-                  <input type="text" className="input" placeholder="주최 단체 또는 박스명"
+                  <label className="text-rx-muted text-sm block mb-1">{t('fOrganizer')}</label>
+                  <input type="text" className="input" placeholder={t('fOrganizerPh')}
                     value={compForm.organizer}
                     onChange={e => setCompForm(p => ({ ...p, organizer: e.target.value }))} />
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="text-rx-muted text-sm block mb-1">날짜 *</label>
+                    <label className="text-rx-muted text-sm block mb-1">{t('fDate')}</label>
                     <input type="date" className="input"
                       value={compForm.date}
                       onChange={e => setCompForm(p => ({ ...p, date: e.target.value }))} />
                   </div>
                   <div>
-                    <label className="text-rx-muted text-sm block mb-1">지역</label>
-                    <input type="text" className="input" placeholder="서울, 부산..."
+                    <label className="text-rx-muted text-sm block mb-1">{t('fCity')}</label>
+                    <input type="text" className="input" placeholder={t('fCityPh')}
                       value={compForm.city}
                       onChange={e => setCompForm(p => ({ ...p, city: e.target.value }))} />
                   </div>
                 </div>
                 <div>
-                  <label className="text-rx-muted text-sm block mb-1">참가비</label>
-                  <input type="text" className="input" placeholder="예: 70,000원"
+                  <label className="text-rx-muted text-sm block mb-1">{t('fFee')}</label>
+                  <input type="text" className="input" placeholder={t('fFeePh')}
                     value={compForm.fee}
                     onChange={e => setCompForm(p => ({ ...p, fee: e.target.value }))} />
                 </div>
                 <div>
-                  <label className="text-rx-muted text-sm block mb-1">대회 설명</label>
-                  <textarea className="input resize-none" rows={3} placeholder="대회 소개를 입력하세요"
+                  <label className="text-rx-muted text-sm block mb-1">{t('fDesc')}</label>
+                  <textarea className="input resize-none" rows={3} placeholder={t('fDescPh')}
                     value={compForm.description}
                     onChange={e => setCompForm(p => ({ ...p, description: e.target.value }))} />
                 </div>
                 <div>
-                  <label className="text-rx-muted text-sm block mb-1">신청 링크</label>
+                  <label className="text-rx-muted text-sm block mb-1">{t('fRegLink')}</label>
                   <input type="url" className="input" placeholder="https://..."
                     value={compForm.registrationUrl}
                     onChange={e => setCompForm(p => ({ ...p, registrationUrl: e.target.value }))} />
@@ -458,13 +461,13 @@ export default function CommunityPage() {
                 )}
 
                 <div className="flex gap-3 pt-2">
-                  <button onClick={closeCompModal} className="flex-1 btn-secondary text-sm py-3">취소</button>
+                  <button onClick={closeCompModal} className="flex-1 btn-secondary text-sm py-3">{t('fCancel')}</button>
                   <button
                     onClick={handleCompSubmit}
                     disabled={!compForm.name.trim() || !compForm.organizer.trim() || !compForm.date || (!isLoggedIn && (!compForm.contactName.trim() || !compForm.contactEmail.trim()))}
                     className="flex-1 btn-primary text-sm py-3 disabled:opacity-40 disabled:cursor-not-allowed"
                   >
-                    등록하기
+                    {t('fSubmit')}
                   </button>
                 </div>
               </div>
@@ -479,7 +482,7 @@ export default function CommunityPage() {
           <div className="absolute inset-0 bg-black/60" onClick={() => { setShowWriteModal(false); setWriteForm(emptyPost); setWriteError('') }} />
           <div className="relative w-full max-w-lg bg-rx-surface border border-rx-border rounded-t-2xl md:rounded-2xl p-6 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="font-black text-white text-xl">글쓰기</h2>
+              <h2 className="font-black text-white text-xl">{t('modalBoardTitle')}</h2>
               <button onClick={() => { setShowWriteModal(false); setWriteForm(emptyPost); setWriteError('') }} className="text-rx-muted hover:text-white p-1">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                   <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
@@ -489,30 +492,30 @@ export default function CommunityPage() {
 
             <div className="space-y-4">
               <div>
-                <label className="text-rx-muted text-sm block mb-1">닉네임 *</label>
-                <input type="text" className="input" placeholder="닉네임을 입력하세요"
+                <label className="text-rx-muted text-sm block mb-1">{t('bNickname')}</label>
+                <input type="text" className="input" placeholder={t('bNicknamePh')}
                   value={writeForm.nickname}
                   onChange={e => setWriteForm(p => ({ ...p, nickname: e.target.value }))} />
               </div>
               <div>
-                <label className="text-rx-muted text-sm block mb-1">제목 *</label>
-                <input type="text" className="input" placeholder="제목을 입력하세요"
+                <label className="text-rx-muted text-sm block mb-1">{t('bTitle')}</label>
+                <input type="text" className="input" placeholder={t('bTitlePh')}
                   value={writeForm.title}
                   onChange={e => setWriteForm(p => ({ ...p, title: e.target.value }))} />
               </div>
               <div>
-                <label className="text-rx-muted text-sm block mb-1">내용 *</label>
+                <label className="text-rx-muted text-sm block mb-1">{t('bContent')}</label>
                 <textarea
                   className="input resize-none"
                   rows={6}
-                  placeholder="내용을 입력하세요"
+                  placeholder={t('bContentPh')}
                   value={writeForm.content}
                   onChange={e => setWriteForm(p => ({ ...p, content: e.target.value }))}
                 />
               </div>
               <div>
-                <label className="text-rx-muted text-sm block mb-1">태그 <span className="text-rx-muted font-normal">(쉼표, 공백, # 구분 — 최대 5개)</span></label>
-                <input type="text" className="input" placeholder="CrossFit, WOD, 기록달성"
+                <label className="text-rx-muted text-sm block mb-1">{t('bTags')}</label>
+                <input type="text" className="input" placeholder={t('bTagsPh')}
                   value={writeForm.tags}
                   onChange={e => setWriteForm(p => ({ ...p, tags: e.target.value }))} />
               </div>
@@ -526,10 +529,10 @@ export default function CommunityPage() {
                   onClick={() => { setShowWriteModal(false); setWriteForm(emptyPost); setWriteError('') }}
                   className="flex-1 btn-secondary text-sm py-3"
                 >
-                  취소
+                  {t('fCancel')}
                 </button>
                 <button onClick={handlePostSubmit} className="flex-1 btn-primary text-sm py-3">
-                  게시하기
+                  {t('bPost')}
                 </button>
               </div>
             </div>
@@ -563,7 +566,7 @@ function getMakiaDday(): string {
 }
 
 // ─── 하드코딩 대회 카드 ─────────────────────────────────────────────────────────
-function HardcodedCompCard({ comp }: { comp: MajorComp }) {
+function HardcodedCompCard({ comp, t }: { comp: MajorComp; t: (key: string, values?: Record<string, string | number | Date>) => string }) {
   if (comp.isMakia) {
     const dday = getMakiaDday()
     const isPast = dday === '마감'
@@ -571,12 +574,12 @@ function HardcodedCompCard({ comp }: { comp: MajorComp }) {
       <div className="card col-span-1 md:col-span-2 border-rx-red/30 hover:border-rx-red/60 transition-all">
         {/* 헤더 */}
         <div className="flex flex-wrap items-center gap-2 mb-3">
-          <span className="badge gradient-bg border-transparent text-white text-xs font-black">예선 진행중</span>
+          <span className="badge gradient-bg border-transparent text-white text-xs font-black">{t('majorQualifying')}</span>
           <span className={`badge border text-xs font-black ${
             isPast ? 'bg-rx-surface border-rx-border text-rx-muted'
             : 'bg-green-500/20 text-green-400 border-green-500/30'
           }`}>
-            예선 마감 {dday}
+            {t('majorQualifyingClose')} {dday}
           </span>
         </div>
 
@@ -588,27 +591,27 @@ function HardcodedCompCard({ comp }: { comp: MajorComp }) {
 
             <div className="space-y-2 mb-4">
               <div className="flex items-start gap-2">
-                <span className="text-rx-muted text-xs w-24 flex-shrink-0 pt-0.5">규모</span>
+                <span className="text-rx-muted text-xs w-24 flex-shrink-0 pt-0.5">{t('majorScale')}</span>
                 <span className="text-white text-sm">{comp.scale}</span>
               </div>
               <div className="flex items-start gap-2">
-                <span className="text-rx-muted text-xs w-24 flex-shrink-0 pt-0.5">장소</span>
+                <span className="text-rx-muted text-xs w-24 flex-shrink-0 pt-0.5">{t('majorLocation')}</span>
                 <span className="text-white text-sm font-bold">{MAKIA_DETAIL.location}</span>
               </div>
               <div className="flex items-start gap-2">
-                <span className="text-rx-muted text-xs w-24 flex-shrink-0 pt-0.5">예선 접수</span>
+                <span className="text-rx-muted text-xs w-24 flex-shrink-0 pt-0.5">{t('majorRegistration')}</span>
                 <span className="text-white text-sm">{formatDate(MAKIA_DETAIL.registrationStart)} ~ {formatDate(MAKIA_DETAIL.registrationEnd)}</span>
               </div>
               <div className="flex items-start gap-2">
-                <span className="text-rx-muted text-xs w-24 flex-shrink-0 pt-0.5">WOD 공개</span>
+                <span className="text-rx-muted text-xs w-24 flex-shrink-0 pt-0.5">{t('majorWodReveal')}</span>
                 <span className="text-white text-sm">{formatDate(MAKIA_DETAIL.wodReveal)}</span>
               </div>
               <div className="flex items-start gap-2">
-                <span className="text-rx-muted text-xs w-24 flex-shrink-0 pt-0.5">예선 기간</span>
+                <span className="text-rx-muted text-xs w-24 flex-shrink-0 pt-0.5">{t('majorQualifierPeriod')}</span>
                 <span className="text-white text-sm">{formatDate(MAKIA_DETAIL.qualifierStart)} ~ {formatDate(MAKIA_DETAIL.qualifierEnd)}</span>
               </div>
               <div className="flex items-start gap-2">
-                <span className="text-rx-muted text-xs w-24 flex-shrink-0 pt-0.5">본대회</span>
+                <span className="text-rx-muted text-xs w-24 flex-shrink-0 pt-0.5">{t('majorMainEvent')}</span>
                 <span className="text-rx-orange text-sm font-bold">{MAKIA_DETAIL.mainEvent} (제주도)</span>
               </div>
             </div>
@@ -622,7 +625,7 @@ function HardcodedCompCard({ comp }: { comp: MajorComp }) {
           className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg gradient-bg border-transparent text-white hover:opacity-90 text-sm font-bold transition-opacity"
         >
           <IgIcon />
-          인스타 보기
+          {t('majorInsta')}
         </a>
       </div>
     )
@@ -635,15 +638,15 @@ function HardcodedCompCard({ comp }: { comp: MajorComp }) {
         <h3 className="font-black text-white text-lg mb-3">{comp.name}</h3>
         <div className="space-y-1.5 mb-3">
           <div className="flex items-start gap-2">
-            <span className="text-rx-muted text-xs w-10 flex-shrink-0 pt-0.5">규모</span>
+            <span className="text-rx-muted text-xs w-10 flex-shrink-0 pt-0.5">{t('majorScale')}</span>
             <span className="text-white text-sm leading-snug">{comp.scale}</span>
           </div>
           <div className="flex items-start gap-2">
-            <span className="text-rx-muted text-xs w-10 flex-shrink-0 pt-0.5">시기</span>
+            <span className="text-rx-muted text-xs w-10 flex-shrink-0 pt-0.5">{t('majorPeriod')}</span>
             <span className="text-rx-orange text-sm font-bold leading-snug">{comp.period}</span>
           </div>
         </div>
-        <p className="text-rx-muted text-xs mb-4">공식 일정은 인스타그램에서 확인하세요</p>
+        <p className="text-rx-muted text-xs mb-4">{t('majorNote')}</p>
       </div>
       <a
         href={comp.instagramUrl}
@@ -652,35 +655,35 @@ function HardcodedCompCard({ comp }: { comp: MajorComp }) {
         className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-rx-surface border border-rx-border text-rx-muted hover:text-white hover:border-rx-red text-sm font-bold transition-colors self-start"
       >
         <IgIcon />
-        인스타 보기
+        {t('majorInsta')}
       </a>
     </div>
   )
 }
 
 // ─── 사용자 등록 대회 카드 ───────────────────────────────────────────────────────
-function RegisteredCompCard({ comp }: { comp: RegisteredComp }) {
+function RegisteredCompCard({ comp, t }: { comp: RegisteredComp; t: (key: string, values?: Record<string, string | number | Date>) => string }) {
   return (
     <div className="card border-rx-orange/40 hover:border-rx-red/40 transition-all">
       <div className="flex items-center gap-2 mb-2">
-        <span className="badge bg-rx-orange/20 text-rx-orange border border-rx-orange/30 text-xs">신규</span>
+        <span className="badge bg-rx-orange/20 text-rx-orange border border-rx-orange/30 text-xs">{t('majorNew')}</span>
         {comp.city && <span className="text-rx-muted text-xs">{comp.city}</span>}
       </div>
       <h3 className="font-black text-white text-lg mb-2">{comp.name}</h3>
       <div className="space-y-1.5 mb-3">
         <div className="flex items-center gap-2">
-          <span className="text-rx-muted text-sm w-12 flex-shrink-0">주최</span>
+          <span className="text-rx-muted text-sm w-12 flex-shrink-0">{t('majorOrganizer')}</span>
           <span className="text-white text-sm font-medium">{comp.organizer}</span>
         </div>
         {comp.date && (
           <div className="flex items-center gap-2">
-            <span className="text-rx-muted text-sm w-12 flex-shrink-0">날짜</span>
+            <span className="text-rx-muted text-sm w-12 flex-shrink-0">{t('majorDate')}</span>
             <span className="text-white text-sm">{formatDate(comp.date)}</span>
           </div>
         )}
         {comp.fee && (
           <div className="flex items-center gap-2">
-            <span className="text-rx-muted text-sm w-12 flex-shrink-0">참가비</span>
+            <span className="text-rx-muted text-sm w-12 flex-shrink-0">{t('majorFee')}</span>
             <span className="text-rx-orange text-sm font-bold">{comp.fee}</span>
           </div>
         )}

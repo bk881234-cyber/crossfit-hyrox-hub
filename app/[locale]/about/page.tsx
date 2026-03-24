@@ -1,6 +1,7 @@
 'use client'
 import { useEffect, useRef } from 'react'
 import Link from 'next/link'
+import { useTranslations, useLocale } from 'next-intl'
 import Header from '@/components/layout/Header'
 import MobileNav from '@/components/layout/MobileNav'
 
@@ -20,31 +21,6 @@ function useReveal(delay = 0) {
   return ref
 }
 
-const glossary = [
-  { term: 'WOD', full: 'Workout of the Day', desc: '오늘의 운동. 매일 다른 훈련 프로그램' },
-  { term: 'AMRAP', full: 'As Many Rounds/Reps As Possible', desc: '제한 시간 내 최대한 많은 라운드·반복수 수행' },
-  { term: 'EMOM', full: 'Every Minute on the Minute', desc: '매 분 시작 시 정해진 동작을 수행하고 남은 시간 휴식' },
-  { term: 'For Time', full: 'For Time', desc: '정해진 반복수를 최단 시간에 완료' },
-  { term: 'Tabata', full: 'Tabata Protocol', desc: '20초 운동 / 10초 휴식을 8라운드 반복하는 고강도 인터벌 프로토콜' },
-  { term: 'Interval', full: 'Interval Training', desc: '운동과 휴식을 번갈아 반복하는 구조화된 훈련 방식' },
-  { term: 'RX', full: 'As Prescribed', desc: '규정된 무게·기준 그대로 수행' },
-  { term: 'Scaled', full: 'Scaled', desc: '개인 체력에 맞게 무게·동작을 조정' },
-  { term: 'PR', full: 'Personal Record', desc: '개인 최고 기록' },
-  { term: 'Box', full: 'CrossFit Box', desc: '크로스핏 전용 체육관' },
-  { term: '1RM', full: '1 Rep Maximum', desc: '1회 최대 중량. 훈련 무게 설정의 기준' },
-  { term: 'Drop-in', full: 'Drop-in', desc: '타 박스를 일회성으로 방문하는 것' },
-]
-
-const comparisonRows = [
-  { item: '운동 방식', crossfit: '기능적 복합 동작 중심', gym: '머신/고립 운동 중심' },
-  { item: '프로그램', crossfit: '매일 다른 WOD (가변성)', gym: '반복 루틴 (일관성)' },
-  { item: '강도', crossfit: '고강도 인터벌 (HIIT)', gym: '자기 페이스' },
-  { item: '커뮤니티', crossfit: '강한 단체 문화, 코치 지도', gym: '개인 운동' },
-  { item: '목표', crossfit: '전반적 체력 향상', gym: '근비대/체중 감량 특화' },
-  { item: '공간', crossfit: '오픈 플로어, 전용 Box', gym: '머신·기구 위주' },
-  { item: '비용', crossfit: '월 12~20만 원 (코칭 포함)', gym: '월 3~8만 원' },
-]
-
 const hyroxStations = [
   { no: 1, name: 'SkiErg', dist: '1,000m' },
   { no: 2, name: 'Sled Push', dist: '50m' },
@@ -56,15 +32,80 @@ const hyroxStations = [
   { no: 8, name: 'Wall Balls', dist: '100 reps' },
 ]
 
-const startingSteps = [
-  { step: '01', title: '박스 찾기', desc: '드랍인 지도에서 가까운 크로스핏 박스를 찾고, 무료 체험 클래스를 예약하세요.' },
-  { step: '02', title: '기초 동작 배우기', desc: '스쿼트, 데드리프트, 프레스 등 기본 동작부터 시작. OnRamp/Fundamentals 과정을 먼저 이수하세요.' },
-  { step: '03', title: 'Scaled로 시작', desc: '처음엔 Scaled 옵션 사용을 두려워하지 마세요. 안전하고 올바른 동작이 먼저입니다.' },
-  { step: '04', title: 'WOD 기록하기', desc: '매 WOD 결과를 기록하면 성장을 눈으로 확인할 수 있습니다. FITTERS STUDIO 기록 페이지를 활용하세요.' },
-  { step: '05', title: '커뮤니티 참여', desc: '크로스핏의 핵심은 커뮤니티. 다른 회원들과 함께하고 대회에도 도전해보세요.' },
-]
-
 export default function AboutPage() {
+  const t = useTranslations('about')
+  const locale = useLocale()
+
+  const glossaryKo = [
+    { term: 'WOD', full: 'Workout of the Day', desc: '오늘의 운동. 매일 다른 훈련 프로그램' },
+    { term: 'AMRAP', full: 'As Many Rounds/Reps As Possible', desc: '제한 시간 내 최대한 많은 라운드·반복수 수행' },
+    { term: 'EMOM', full: 'Every Minute on the Minute', desc: '매 분 시작 시 정해진 동작을 수행하고 남은 시간 휴식' },
+    { term: 'For Time', full: 'For Time', desc: '정해진 반복수를 최단 시간에 완료' },
+    { term: 'Tabata', full: 'Tabata Protocol', desc: '20초 운동 / 10초 휴식을 8라운드 반복하는 고강도 인터벌 프로토콜' },
+    { term: 'Interval', full: 'Interval Training', desc: '운동과 휴식을 번갈아 반복하는 구조화된 훈련 방식' },
+    { term: 'RX', full: 'As Prescribed', desc: '규정된 무게·기준 그대로 수행' },
+    { term: 'Scaled', full: 'Scaled', desc: '개인 체력에 맞게 무게·동작을 조정' },
+    { term: 'PR', full: 'Personal Record', desc: '개인 최고 기록' },
+    { term: 'Box', full: 'CrossFit Box', desc: '크로스핏 전용 체육관' },
+    { term: '1RM', full: '1 Rep Maximum', desc: '1회 최대 중량. 훈련 무게 설정의 기준' },
+    { term: 'Drop-in', full: 'Drop-in', desc: '타 박스를 일회성으로 방문하는 것' },
+  ]
+
+  const glossaryEn = [
+    { term: 'WOD', full: 'Workout of the Day', desc: 'Daily workout. A different training program every day.' },
+    { term: 'AMRAP', full: 'As Many Rounds/Reps As Possible', desc: 'Complete as many rounds or reps as possible within the time limit.' },
+    { term: 'EMOM', full: 'Every Minute on the Minute', desc: 'Perform the set movement at the start of each minute; rest for the remaining time.' },
+    { term: 'For Time', full: 'For Time', desc: 'Complete the prescribed reps in the shortest time possible.' },
+    { term: 'Tabata', full: 'Tabata Protocol', desc: '20 sec work / 10 sec rest repeated for 8 rounds — a high-intensity interval protocol.' },
+    { term: 'Interval', full: 'Interval Training', desc: 'Structured training alternating between work and rest.' },
+    { term: 'RX', full: 'As Prescribed', desc: 'Perform the workout at the prescribed weight and standards.' },
+    { term: 'Scaled', full: 'Scaled', desc: 'Adjust weight or movements to match individual fitness level.' },
+    { term: 'PR', full: 'Personal Record', desc: 'Personal best score or weight.' },
+    { term: 'Box', full: 'CrossFit Box', desc: 'A CrossFit-dedicated gym.' },
+    { term: '1RM', full: '1 Rep Maximum', desc: 'Maximum weight lifted for one rep. Used to set training loads.' },
+    { term: 'Drop-in', full: 'Drop-in', desc: 'Visiting another box for a single class.' },
+  ]
+
+  const comparisonRowsKo = [
+    { item: '운동 방식', crossfit: '기능적 복합 동작 중심', gym: '머신/고립 운동 중심' },
+    { item: '프로그램', crossfit: '매일 다른 WOD (가변성)', gym: '반복 루틴 (일관성)' },
+    { item: '강도', crossfit: '고강도 인터벌 (HIIT)', gym: '자기 페이스' },
+    { item: '커뮤니티', crossfit: '강한 단체 문화, 코치 지도', gym: '개인 운동' },
+    { item: '목표', crossfit: '전반적 체력 향상', gym: '근비대/체중 감량 특화' },
+    { item: '공간', crossfit: '오픈 플로어, 전용 Box', gym: '머신·기구 위주' },
+    { item: '비용', crossfit: '월 12~20만 원 (코칭 포함)', gym: '월 3~8만 원' },
+  ]
+
+  const comparisonRowsEn = [
+    { item: 'Exercise Style', crossfit: 'Functional compound movements', gym: 'Machine / isolation exercises' },
+    { item: 'Program', crossfit: 'Different WOD every day (variance)', gym: 'Repetitive routine (consistency)' },
+    { item: 'Intensity', crossfit: 'High-intensity intervals (HIIT)', gym: 'Self-paced' },
+    { item: 'Community', crossfit: 'Strong group culture, coach-led', gym: 'Individual training' },
+    { item: 'Goal', crossfit: 'Overall fitness improvement', gym: 'Hypertrophy / weight loss focus' },
+    { item: 'Space', crossfit: 'Open floor, dedicated Box', gym: 'Machine / equipment-focused' },
+    { item: 'Cost', crossfit: '120,000–200,000 KRW / mo (coaching incl.)', gym: '30,000–80,000 KRW / mo' },
+  ]
+
+  const startingStepsKo = [
+    { step: '01', title: '박스 찾기', desc: '드랍인 지도에서 가까운 크로스핏 박스를 찾고, 무료 체험 클래스를 예약하세요.' },
+    { step: '02', title: '기초 동작 배우기', desc: '스쿼트, 데드리프트, 프레스 등 기본 동작부터 시작. OnRamp/Fundamentals 과정을 먼저 이수하세요.' },
+    { step: '03', title: 'Scaled로 시작', desc: '처음엔 Scaled 옵션 사용을 두려워하지 마세요. 안전하고 올바른 동작이 먼저입니다.' },
+    { step: '04', title: 'WOD 기록하기', desc: '매 WOD 결과를 기록하면 성장을 눈으로 확인할 수 있습니다. FITTERS STUDIO 기록 페이지를 활용하세요.' },
+    { step: '05', title: '커뮤니티 참여', desc: '크로스핏의 핵심은 커뮤니티. 다른 회원들과 함께하고 대회에도 도전해보세요.' },
+  ]
+
+  const startingStepsEn = [
+    { step: '01', title: 'Find a Box', desc: 'Find a nearby CrossFit box in the drop-in map and book a free trial class.' },
+    { step: '02', title: 'Learn Basic Movements', desc: 'Start with basics like squat, deadlift, and press. Complete an OnRamp/Fundamentals course first.' },
+    { step: '03', title: 'Start with Scaled', desc: "Don't be afraid to use the Scaled option at first. Safe, proper form comes first." },
+    { step: '04', title: 'Record Your WODs', desc: 'Recording each WOD result lets you see your progress. Use the FITTERS STUDIO log page.' },
+    { step: '05', title: 'Join the Community', desc: 'Community is the heart of CrossFit. Train with others and challenge yourself in competitions.' },
+  ]
+
+  const glossary = locale === 'en' ? glossaryEn : glossaryKo
+  const comparisonRows = locale === 'en' ? comparisonRowsEn : comparisonRowsKo
+  const startingSteps = locale === 'en' ? startingStepsEn : startingStepsKo
+
   const r1 = useReveal(0)
   const r2 = useReveal(0)
   const r3 = useReveal(0)
@@ -81,12 +122,12 @@ export default function AboutPage() {
           <div className="absolute inset-0 hero-grid-bg opacity-40" />
           <div className="absolute inset-0" style={{ background: 'radial-gradient(ellipse 70% 50% at 50% 30%, rgba(232,50,26,0.07), transparent 70%)' }} />
           <div className="relative max-w-[992px] mx-auto">
-            <p className="text-rx-muted text-xs tracking-widest uppercase mb-4">가이드</p>
+            <p className="text-rx-muted text-xs tracking-widest uppercase mb-4">{t('heroLabel')}</p>
             <h1 className="font-heading font-black uppercase tracking-tighter mb-5 gradient-text" style={{ fontSize: 'clamp(3rem, 10vw, 7rem)', lineHeight: 1 }}>
-              크로스핏이란?
+              {t('heroTitle')}
             </h1>
             <p className="text-white/60 text-base md:text-lg max-w-xl mx-auto leading-relaxed">
-              크로스핏·HYROX를 처음 시작하는 분들을 위한 완전 가이드
+              {t('heroSubtitle')}
             </p>
           </div>
         </section>
@@ -96,7 +137,7 @@ export default function AboutPage() {
           <div ref={r1}>
             {/* 상단: 제목 + 설명 */}
             <div className="mb-10">
-              <p className="text-rx-muted text-xs tracking-widest uppercase mb-3">01 / 정의</p>
+              <p className="text-rx-muted text-xs tracking-widest uppercase mb-3">{t('s1Label')}</p>
               <h2 className="font-heading font-black text-3xl md:text-5xl uppercase text-white tracking-tight mb-6 whitespace-nowrap">CrossFit Philosophy</h2>
               <div className="flex flex-col gap-6 max-w-3xl">
                 <div>
@@ -115,19 +156,19 @@ export default function AboutPage() {
 
             {/* 하단: 10가지 체력 요소 */}
             <div>
-              <p className="text-rx-muted text-xs tracking-widest uppercase mb-4">체력의 10가지 요소</p>
+              <p className="text-rx-muted text-xs tracking-widest uppercase mb-4">{t('fitnessElements')}</p>
               <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
                 {[
-                  { icon: '❤️', label: '심폐지구력', en: 'Cardio Endurance' },
-                  { icon: '🔋', label: '근지구력', en: 'Muscular Endurance' },
-                  { icon: '💪', label: '근력', en: 'Strength' },
-                  { icon: '🤸', label: '유연성', en: 'Flexibility' },
-                  { icon: '⚡', label: '파워', en: 'Power' },
-                  { icon: '🏃', label: '스피드', en: 'Speed' },
-                  { icon: '🔀', label: '민첩성', en: 'Agility' },
-                  { icon: '⚖️', label: '균형', en: 'Balance' },
-                  { icon: '🧠', label: '협응', en: 'Coordination' },
-                  { icon: '🎯', label: '정확성', en: 'Accuracy' },
+                  { icon: '❤️', label: t('el1'), en: 'Cardio Endurance' },
+                  { icon: '🔋', label: t('el2'), en: 'Muscular Endurance' },
+                  { icon: '💪', label: t('el3'), en: 'Strength' },
+                  { icon: '🤸', label: t('el4'), en: 'Flexibility' },
+                  { icon: '⚡', label: t('el5'), en: 'Power' },
+                  { icon: '🏃', label: t('el6'), en: 'Speed' },
+                  { icon: '🔀', label: t('el7'), en: 'Agility' },
+                  { icon: '⚖️', label: t('el8'), en: 'Balance' },
+                  { icon: '🧠', label: t('el9'), en: 'Coordination' },
+                  { icon: '🎯', label: t('el10'), en: 'Accuracy' },
                 ].map((f) => (
                   <div key={f.label} className="glass-card p-3 text-center hover:border-white/25 transition-colors">
                     <div className="text-2xl mb-2">{f.icon}</div>
@@ -144,16 +185,16 @@ export default function AboutPage() {
         <section className="bg-rx-surface px-4 py-16">
           <div className="max-w-[992px] mx-auto">
             <div ref={r2}>
-              <p className="text-rx-muted text-xs tracking-widest uppercase mb-3">02 / 비교</p>
-              <h2 className="font-heading font-black text-3xl md:text-5xl uppercase text-white tracking-tight mb-8 whitespace-nowrap">CrossFit vs 일반 헬스</h2>
+              <p className="text-rx-muted text-xs tracking-widest uppercase mb-3">{t('s2Label')}</p>
+              <h2 className="font-heading font-black text-3xl md:text-5xl uppercase text-white tracking-tight mb-8 whitespace-nowrap">{t('s2Title')}</h2>
 
               <div className="overflow-x-auto rounded-2xl border border-rx-border">
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="border-b border-rx-border">
-                      <th className="text-left px-5 py-4 text-rx-muted font-medium w-32">항목</th>
-                      <th className="text-left px-5 py-4 font-bold" style={{ color: '#E8321A' }}>크로스핏</th>
-                      <th className="text-left px-5 py-4 text-rx-muted font-medium">일반 헬스</th>
+                      <th className="text-left px-5 py-4 text-rx-muted font-medium w-32">{t('s2ColItem')}</th>
+                      <th className="text-left px-5 py-4 font-bold" style={{ color: '#E8321A' }}>{t('s2ColCf')}</th>
+                      <th className="text-left px-5 py-4 text-rx-muted font-medium">{t('s2ColGym')}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -174,8 +215,8 @@ export default function AboutPage() {
         {/* ── 3. 용어 사전 ── */}
         <section className="px-4 py-16 max-w-[992px] mx-auto">
           <div ref={r3}>
-            <p className="text-rx-muted text-xs tracking-widest uppercase mb-3">03 / 용어</p>
-            <h2 className="font-heading font-black text-3xl md:text-5xl uppercase text-white tracking-tight mb-8 whitespace-nowrap">용어 사전 <span className="gradient-text">Glossary</span></h2>
+            <p className="text-rx-muted text-xs tracking-widest uppercase mb-3">{t('s3Label')}</p>
+            <h2 className="font-heading font-black text-3xl md:text-5xl uppercase text-white tracking-tight mb-8 whitespace-nowrap">{t('s3Title')} <span className="gradient-text">Glossary</span></h2>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {glossary.map((g) => (
@@ -193,9 +234,9 @@ export default function AboutPage() {
         <section className="bg-rx-surface px-4 py-16">
           <div className="max-w-[992px] mx-auto">
             <div ref={r4}>
-              <p className="text-rx-muted text-xs tracking-widest uppercase mb-3">04 / 시작</p>
+              <p className="text-rx-muted text-xs tracking-widest uppercase mb-3">{t('s4Label')}</p>
               <h2 className="font-heading font-black text-4xl md:text-5xl uppercase text-white tracking-tight mb-10">
-                처음 시작하는 법
+                {t('s4Title')}
               </h2>
 
               <div className="flex flex-col gap-5">
@@ -212,10 +253,10 @@ export default function AboutPage() {
 
               <div className="mt-12 flex gap-4 flex-wrap">
                 <Link href="/wod" className="btn-primary px-8 py-3.5 rounded-xl font-bold">
-                  WOD Library 보기
+                  {t('ctaWod')}
                 </Link>
                 <Link href="/map" className="btn-secondary px-8 py-3.5 rounded-xl font-bold">
-                  드랍인 박스 찾기
+                  {t('ctaMap')}
                 </Link>
               </div>
             </div>
@@ -236,8 +277,8 @@ export default function AboutPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
               <div className="bg-rx-card border border-rx-border rounded-2xl p-5">
                 <h3 className="font-bold text-white mb-4 flex items-center gap-2">
-                  <span className="gradient-text font-heading font-black text-xl">레이스 구성</span>
-                  <span className="text-rx-muted text-xs">(총 ~10km)</span>
+                  <span className="gradient-text font-heading font-black text-xl">{t('hyroxRace')}</span>
+                  <span className="text-rx-muted text-xs">{t('hyroxTotal')}</span>
                 </h3>
                 <div className="space-y-2">
                   {hyroxStations.map((s) => (
@@ -248,15 +289,15 @@ export default function AboutPage() {
                     </div>
                   ))}
                 </div>
-                <p className="text-rx-muted text-xs mt-4">* 각 스테이션 사이 1km Run</p>
+                <p className="text-rx-muted text-xs mt-4">{t('hyroxNote')}</p>
               </div>
 
               <div className="flex flex-col gap-3">
                 {[
-                  { label: 'HYROX Open', desc: '입문 카테고리. 일부 동작 무게 조정 가능', badge: '입문' },
-                  { label: 'HYROX Pro', desc: '표준 무게. 경쟁적 참가자용', badge: '표준' },
-                  { label: 'HYROX Elite', desc: '고급 무게. 상위 퍼포먼스 선수용', badge: '고급' },
-                  { label: 'HYROX Doubles', desc: '2인 1팀으로 참가하는 팀 카테고리', badge: '팀' },
+                  { label: 'HYROX Open', desc: t('hyroxOpenDesc'), badge: t('hyroxBeginner') },
+                  { label: 'HYROX Pro', desc: t('hyroxProDesc'), badge: t('hyroxStandard') },
+                  { label: 'HYROX Elite', desc: t('hyroxEliteDesc'), badge: t('hyroxAdvanced') },
+                  { label: 'HYROX Doubles', desc: t('hyroxDoublesDesc'), badge: t('hyroxTeam') },
                 ].map((cat) => (
                   <div key={cat.label} className="bg-rx-card border border-rx-border rounded-xl p-4 hover:border-white/20 transition-colors">
                     <div className="flex items-center gap-2 mb-1">
@@ -267,7 +308,7 @@ export default function AboutPage() {
                   </div>
                 ))}
                 <Link href="/community#hyrox" className="btn-secondary text-sm py-3 rounded-xl text-center font-bold">
-                  한국 HYROX 대회 일정 보기 →
+                  {t('hyroxScheduleLink')}
                 </Link>
               </div>
             </div>

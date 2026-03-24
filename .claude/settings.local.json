@@ -34,7 +34,14 @@
       "Bash(grep -n \"max-w-5xl\\\\|max-w-3xl\\\\|max-w-\\\\[992px\\\\]\" C:/Users/bkbk8/Desktop/crossfit-hyrox-hub/app/[locale]/about/page.tsx)",
       "Bash(grep -n \"max-w-\" C:/Users/bkbk8/Desktop/crossfit-hyrox-hub/app/[locale]/timer/page.tsx)",
       "Read(//c/Users/bkbk8/Desktop/crossfit-hyrox-hub/=== wod/**)",
-      "Bash(grep -n \"max-w-\" C:/Users/bkbk8/Desktop/crossfit-hyrox-hub/app/[locale]/mypage/page.tsx)"
+      "Bash(grep -n \"max-w-\" C:/Users/bkbk8/Desktop/crossfit-hyrox-hub/app/[locale]/mypage/page.tsx)",
+      "Bash(grep:*)",
+      "Bash(sed -i 's/max-w-2xl mx-auto/max-w-[992px] mx-auto/' C:/Users/bkbk8/Desktop/crossfit-hyrox-hub/app/[locale]/wod/[id]/page.tsx)",
+      "Bash(sed -i 's/max-w-3xl mx-auto/max-w-[992px] mx-auto/' C:/Users/bkbk8/Desktop/crossfit-hyrox-hub/app/[locale]/privacy/page.tsx)",
+      "Bash(sed -i 's/max-w-3xl mx-auto/max-w-[992px] mx-auto/' C:/Users/bkbk8/Desktop/crossfit-hyrox-hub/app/[locale]/terms/page.tsx)",
+      "Bash(wc:*)",
+      "Bash(head:*)",
+      "Bash(tail:*)"
     ]
   }
 }

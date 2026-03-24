@@ -1,5 +1,6 @@
 'use client'
 import { useState, useEffect, useRef, useCallback } from 'react'
+import { useTranslations } from 'next-intl'
 import Header from '@/components/layout/Header'
 import MobileNav from '@/components/layout/MobileNav'
 
@@ -100,6 +101,7 @@ function beepTick(ctx: AudioContext) {
 }
 
 export default function TimerPage() {
+  const t = useTranslations('timer')
   const [mode, setMode] = useState<TimerMode>('amrap')
   const [config, setConfig] = useState<TimerConfig>({
     amrap: { minutes: 20 },
@@ -384,8 +386,8 @@ export default function TimerPage() {
           <span className="text-rx-muted text-xs">광고 영역 (AdSense)</span>
         </div>
 
-        {!isFullscreen && <h1 className="section-title">WOD 타이머</h1>}
-        {!isFullscreen && <p className="section-sub">운동 모드를 선택하고 타이머를 시작하세요</p>}
+        {!isFullscreen && <h1 className="section-title">{t('title')}</h1>}
+        {!isFullscreen && <p className="section-sub">{t('subtitle')}</p>}
 
         {/* Mode Tabs */}
         {!isFullscreen && <div className={`flex gap-1 bg-rx-surface rounded-xl p-1 mb-4 overflow-x-auto ${elapsed > 0 && !finished ? 'opacity-50 pointer-events-none' : ''}`}>
@@ -405,14 +407,14 @@ export default function TimerPage() {
         {/* Config Panel */}
         {!running && !finished && elapsed === 0 && (
           <div className="card mb-6">
-            <h3 className="font-bold text-white mb-4">설정</h3>
+            <h3 className="font-bold text-white mb-4">{t('config')}</h3>
             {mode === 'amrap' && (
               <div>
-                <label className="text-rx-muted text-sm block mb-2">시간 제한</label>
+                <label className="text-rx-muted text-sm block mb-2">{t('timeLimit')}</label>
                 <div className="flex items-center gap-3">
                   <button onClick={() => setConfig(p => ({ ...p, amrap: { minutes: Math.max(1, p.amrap.minutes - 1) } }))}
                     className="w-10 h-10 rounded-full bg-rx-surface border border-rx-border text-white font-bold text-xl hover:border-rx-red transition-colors">−</button>
-                  <span className="text-3xl font-black text-white flex-1 text-center">{(c as TimerConfig['amrap']).minutes}분</span>
+                  <span className="text-3xl font-black text-white flex-1 text-center">{(c as TimerConfig['amrap']).minutes}{t('minUnit')}</span>
                   <button onClick={() => setConfig(p => ({ ...p, amrap: { minutes: Math.min(99, p.amrap.minutes + 1) } }))}
                     className="w-10 h-10 rounded-full bg-rx-surface border border-rx-border text-white font-bold text-xl hover:border-rx-red transition-colors">+</button>
                 </div>
@@ -420,7 +422,7 @@ export default function TimerPage() {
                   {[5, 10, 12, 15, 20, 30].map(m => (
                     <button key={m} onClick={() => setConfig(p => ({ ...p, amrap: { minutes: m } }))}
                       className={`px-3 py-1 rounded-lg text-xs font-bold transition-colors ${(c as TimerConfig['amrap']).minutes === m ? 'gradient-bg text-white' : 'bg-rx-surface text-rx-muted hover:text-white'}`}>
-                      {m}분
+                      {m}{t('minUnit')}
                     </button>
                   ))}
                 </div>
@@ -430,22 +432,22 @@ export default function TimerPage() {
             {mode === 'emom' && (
               <div className="space-y-4">
                 <div>
-                  <label className="text-rx-muted text-sm block mb-2">총 라운드</label>
+                  <label className="text-rx-muted text-sm block mb-2">{t('totalRounds')}</label>
                   <div className="flex items-center gap-3">
                     <button onClick={() => setConfig(p => ({ ...p, emom: { ...p.emom, rounds: Math.max(1, p.emom.rounds - 1) } }))}
                       className="w-10 h-10 rounded-full bg-rx-surface border border-rx-border text-white font-bold text-xl hover:border-rx-red transition-colors">−</button>
-                    <span className="text-3xl font-black text-white flex-1 text-center">{(c as TimerConfig['emom']).rounds}라운드</span>
+                    <span className="text-3xl font-black text-white flex-1 text-center">{(c as TimerConfig['emom']).rounds}{t('roundUnit')}</span>
                     <button onClick={() => setConfig(p => ({ ...p, emom: { ...p.emom, rounds: Math.min(60, p.emom.rounds + 1) } }))}
                       className="w-10 h-10 rounded-full bg-rx-surface border border-rx-border text-white font-bold text-xl hover:border-rx-red transition-colors">+</button>
                   </div>
                 </div>
                 <div>
-                  <label className="text-rx-muted text-sm block mb-2">인터벌 (초)</label>
+                  <label className="text-rx-muted text-sm block mb-2">{t('interval')}</label>
                   <div className="flex gap-2 flex-wrap">
                     {[30, 45, 60, 90, 120].map(s => (
                       <button key={s} onClick={() => setConfig(p => ({ ...p, emom: { ...p.emom, workSeconds: s } }))}
                         className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${(c as TimerConfig['emom']).workSeconds === s ? 'gradient-bg text-white' : 'bg-rx-surface text-rx-muted hover:text-white'}`}>
-                        {s}초
+                        {s}{t('secUnit')}
                       </button>
                     ))}
                   </div>
@@ -457,32 +459,32 @@ export default function TimerPage() {
               <div className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="text-rx-muted text-sm block mb-2">운동 시간</label>
+                    <label className="text-rx-muted text-sm block mb-2">{t('workTime')}</label>
                     <div className="flex items-center gap-2">
                       <button onClick={() => setConfig(p => ({ ...p, tabata: { ...p.tabata, workSeconds: Math.max(5, p.tabata.workSeconds - 5) } }))}
                         className="w-8 h-8 rounded-full bg-rx-surface border border-rx-border text-white font-bold hover:border-green-500 transition-colors">−</button>
-                      <span className="text-xl font-black text-green-400 flex-1 text-center">{(c as TimerConfig['tabata']).workSeconds}초</span>
+                      <span className="text-xl font-black text-green-400 flex-1 text-center">{(c as TimerConfig['tabata']).workSeconds}{t('secUnit')}</span>
                       <button onClick={() => setConfig(p => ({ ...p, tabata: { ...p.tabata, workSeconds: Math.min(120, p.tabata.workSeconds + 5) } }))}
                         className="w-8 h-8 rounded-full bg-rx-surface border border-rx-border text-white font-bold hover:border-green-500 transition-colors">+</button>
                     </div>
                   </div>
                   <div>
-                    <label className="text-rx-muted text-sm block mb-2">휴식 시간</label>
+                    <label className="text-rx-muted text-sm block mb-2">{t('restTime')}</label>
                     <div className="flex items-center gap-2">
                       <button onClick={() => setConfig(p => ({ ...p, tabata: { ...p.tabata, restSeconds: Math.max(5, p.tabata.restSeconds - 5) } }))}
                         className="w-8 h-8 rounded-full bg-rx-surface border border-rx-border text-white font-bold hover:border-red-500 transition-colors">−</button>
-                      <span className="text-xl font-black text-red-400 flex-1 text-center">{(c as TimerConfig['tabata']).restSeconds}초</span>
+                      <span className="text-xl font-black text-red-400 flex-1 text-center">{(c as TimerConfig['tabata']).restSeconds}{t('secUnit')}</span>
                       <button onClick={() => setConfig(p => ({ ...p, tabata: { ...p.tabata, restSeconds: Math.min(120, p.tabata.restSeconds + 5) } }))}
                         className="w-8 h-8 rounded-full bg-rx-surface border border-rx-border text-white font-bold hover:border-red-500 transition-colors">+</button>
                     </div>
                   </div>
                 </div>
                 <div>
-                  <label className="text-rx-muted text-sm block mb-2">라운드 수</label>
+                  <label className="text-rx-muted text-sm block mb-2">{t('totalRounds')}</label>
                   <div className="flex items-center gap-3">
                     <button onClick={() => setConfig(p => ({ ...p, tabata: { ...p.tabata, rounds: Math.max(1, p.tabata.rounds - 1) } }))}
                       className="w-10 h-10 rounded-full bg-rx-surface border border-rx-border text-white font-bold text-xl hover:border-rx-red transition-colors">−</button>
-                    <span className="text-3xl font-black text-white flex-1 text-center">{(c as TimerConfig['tabata']).rounds}라운드</span>
+                    <span className="text-3xl font-black text-white flex-1 text-center">{(c as TimerConfig['tabata']).rounds}{t('roundUnit')}</span>
                     <button onClick={() => setConfig(p => ({ ...p, tabata: { ...p.tabata, rounds: Math.min(20, p.tabata.rounds + 1) } }))}
                       className="w-10 h-10 rounded-full bg-rx-surface border border-rx-border text-white font-bold text-xl hover:border-rx-red transition-colors">+</button>
                   </div>
@@ -492,11 +494,11 @@ export default function TimerPage() {
 
             {mode === 'fortime' && (
               <div>
-                <label className="text-rx-muted text-sm block mb-2">제한 시간 (캡)</label>
+                <label className="text-rx-muted text-sm block mb-2">{t('capLabel')}</label>
                 <div className="flex items-center gap-3">
                   <button onClick={() => setConfig(p => ({ ...p, fortime: { minutes: Math.max(1, p.fortime.minutes - 1) } }))}
                     className="w-10 h-10 rounded-full bg-rx-surface border border-rx-border text-white font-bold text-xl hover:border-rx-red transition-colors">−</button>
-                  <span className="text-3xl font-black text-white flex-1 text-center">{(c as TimerConfig['fortime']).minutes}분</span>
+                  <span className="text-3xl font-black text-white flex-1 text-center">{(c as TimerConfig['fortime']).minutes}{t('minUnit')}</span>
                   <button onClick={() => setConfig(p => ({ ...p, fortime: { minutes: Math.min(99, p.fortime.minutes + 1) } }))}
                     className="w-10 h-10 rounded-full bg-rx-surface border border-rx-border text-white font-bold text-xl hover:border-rx-red transition-colors">+</button>
                 </div>
@@ -504,7 +506,7 @@ export default function TimerPage() {
                   {[3, 5, 10, 15, 20, 30, 40].map(m => (
                     <button key={m} onClick={() => setConfig(p => ({ ...p, fortime: { minutes: m } }))}
                       className={`px-3 py-1 rounded-lg text-xs font-bold transition-colors ${(c as TimerConfig['fortime']).minutes === m ? 'gradient-bg text-white' : 'bg-rx-surface text-rx-muted hover:text-white'}`}>
-                      {m}분
+                      {m}{t('minUnit')}
                     </button>
                   ))}
                 </div>
@@ -515,32 +517,32 @@ export default function TimerPage() {
               <div className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="text-rx-muted text-sm block mb-2">운동 시간</label>
+                    <label className="text-rx-muted text-sm block mb-2">{t('workTime')}</label>
                     <div className="flex items-center gap-2">
                       <button onClick={() => setConfig(p => ({ ...p, interval: { ...p.interval, workSeconds: Math.max(5, p.interval.workSeconds - 5) } }))}
                         className="w-8 h-8 rounded-full bg-rx-surface border border-rx-border text-white font-bold hover:border-green-500 transition-colors">−</button>
-                      <span className="text-xl font-black text-green-400 flex-1 text-center">{(c as TimerConfig['interval']).workSeconds}초</span>
+                      <span className="text-xl font-black text-green-400 flex-1 text-center">{(c as TimerConfig['interval']).workSeconds}{t('secUnit')}</span>
                       <button onClick={() => setConfig(p => ({ ...p, interval: { ...p.interval, workSeconds: Math.min(300, p.interval.workSeconds + 5) } }))}
                         className="w-8 h-8 rounded-full bg-rx-surface border border-rx-border text-white font-bold hover:border-green-500 transition-colors">+</button>
                     </div>
                   </div>
                   <div>
-                    <label className="text-rx-muted text-sm block mb-2">휴식 시간</label>
+                    <label className="text-rx-muted text-sm block mb-2">{t('restTime')}</label>
                     <div className="flex items-center gap-2">
                       <button onClick={() => setConfig(p => ({ ...p, interval: { ...p.interval, restSeconds: Math.max(5, p.interval.restSeconds - 5) } }))}
                         className="w-8 h-8 rounded-full bg-rx-surface border border-rx-border text-white font-bold hover:border-red-500 transition-colors">−</button>
-                      <span className="text-xl font-black text-red-400 flex-1 text-center">{(c as TimerConfig['interval']).restSeconds}초</span>
+                      <span className="text-xl font-black text-red-400 flex-1 text-center">{(c as TimerConfig['interval']).restSeconds}{t('secUnit')}</span>
                       <button onClick={() => setConfig(p => ({ ...p, interval: { ...p.interval, restSeconds: Math.min(300, p.interval.restSeconds + 5) } }))}
                         className="w-8 h-8 rounded-full bg-rx-surface border border-rx-border text-white font-bold hover:border-red-500 transition-colors">+</button>
                     </div>
                   </div>
                 </div>
                 <div>
-                  <label className="text-rx-muted text-sm block mb-2">총 라운드</label>
+                  <label className="text-rx-muted text-sm block mb-2">{t('totalRounds')}</label>
                   <div className="flex items-center gap-3">
                     <button onClick={() => setConfig(p => ({ ...p, interval: { ...p.interval, rounds: Math.max(1, p.interval.rounds - 1) } }))}
                       className="w-10 h-10 rounded-full bg-rx-surface border border-rx-border text-white font-bold text-xl hover:border-rx-red transition-colors">−</button>
-                    <span className="text-3xl font-black text-white flex-1 text-center">{(c as TimerConfig['interval']).rounds}라운드</span>
+                    <span className="text-3xl font-black text-white flex-1 text-center">{(c as TimerConfig['interval']).rounds}{t('roundUnit')}</span>
                     <button onClick={() => setConfig(p => ({ ...p, interval: { ...p.interval, rounds: Math.min(50, p.interval.rounds + 1) } }))}
                       className="w-10 h-10 rounded-full bg-rx-surface border border-rx-border text-white font-bold text-xl hover:border-rx-red transition-colors">+</button>
                   </div>
@@ -557,7 +559,7 @@ export default function TimerPage() {
             : "mb-4"
         }>
           {isFullscreen && (
-            <button onClick={() => setIsFullscreen(false)} className="absolute top-6 left-6 p-2 rounded-full bg-white/10 text-white/50 hover:text-white hover:bg-white/20 transition-all z-10" title="메뉴로 돌아가기">
+            <button onClick={() => setIsFullscreen(false)} className="absolute top-6 left-6 p-2 rounded-full bg-white/10 text-white/50 hover:text-white hover:bg-white/20 transition-all z-10" title={t('backToMenu')}>
               <XIcon size={28} />
             </button>
           )}
@@ -568,7 +570,7 @@ export default function TimerPage() {
               : `rounded-2xl relative border-2 ${phaseBorder} ${phaseColor} p-4 md:p-8 flex flex-col items-center justify-center text-center transition-colors duration-300`
           }>
             {!isFullscreen && (running || finished || elapsed > 0) && (
-              <button onClick={() => setIsFullscreen(true)} className="absolute top-4 right-4 p-2 rounded-full bg-white/5 text-white/50 hover:text-white transition-all z-10" title="전체화면">
+              <button onClick={() => setIsFullscreen(true)} className="absolute top-4 right-4 p-2 rounded-full bg-white/5 text-white/50 hover:text-white transition-all z-10" title={t('fullscreen')}>
                 <MaximizeIcon size={20} />
               </button>
             )}
@@ -581,13 +583,13 @@ export default function TimerPage() {
                   : 'bg-red-500/20 text-red-400 border border-red-500/30'
               }`}>
                 <span className={`w-2 h-2 rounded-full animate-pulse ${phase === 'work' ? 'bg-green-400' : 'bg-red-400'}`} />
-                {phase === 'work' ? '운동 중' : '휴식 중'}
+                {phase === 'work' ? t('phaseWork') : t('phaseRest')}
               </div>
             )}
 
             {finished && (
               <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-bold mb-6 bg-rx-orange/20 text-rx-orange border border-rx-orange/30">
-                훈련 완료!
+                {t('finished')}
               </div>
             )}
 
@@ -627,7 +629,7 @@ export default function TimerPage() {
                 onChange={(e) => setCountdownEnabled(e.target.checked)}
                 className="w-5 h-5 accent-rx-red"
               />
-              <span className="text-white font-bold text-sm">10초 카운트다운 후 시작</span>
+              <span className="text-white font-bold text-sm">{t('countdown')}</span>
             </label>
           )}
 
@@ -647,7 +649,7 @@ export default function TimerPage() {
                   : 'gradient-bg border-transparent text-white hover:opacity-90'
               }`}
             >
-              {finished ? '다시 시작' : running ? <><PauseIcon size={28}/>일시정지</> : (elapsed > 0 ? <><PlayIcon size={28}/>이어서 시작</> : <><PlayIcon size={28}/>시작</>)}
+              {finished ? t('restart') : running ? <><PauseIcon size={28}/>{t('pause')}</> : (elapsed > 0 ? <><PlayIcon size={28}/>{t('resume')}</> : <><PlayIcon size={28}/>{t('start')}</>)}
             </button>
             <button
               onClick={reset}
@@ -656,7 +658,7 @@ export default function TimerPage() {
                   ? "bg-transparent border-white/30 text-white/50 hover:text-white hover:border-white"
                   : "bg-rx-surface border-rx-border text-rx-muted hover:text-white hover:border-rx-red"
               }`}
-              title="리셋"
+              title={t('backToMenu')}
             >
               <RotateCcwIcon size={28} />
             </button>
@@ -666,18 +668,18 @@ export default function TimerPage() {
         {/* Mode Info */}
         {!isFullscreen && <div className="card bg-rx-surface/50 mb-6">
           <h3 className="font-bold text-white text-sm mb-2">
-            {mode === 'amrap' && 'AMRAP (As Many Rounds As Possible)'}
-            {mode === 'emom' && 'EMOM (Every Minute On the Minute)'}
-            {mode === 'tabata' && 'Tabata (타바타)'}
-            {mode === 'fortime' && 'For Time (제한 시간)'}
-            {mode === 'interval' && 'Interval (인터벌)'}
+            {mode === 'amrap' && t('amrapTitle')}
+            {mode === 'emom' && t('emomTitle')}
+            {mode === 'tabata' && t('tabataTitle')}
+            {mode === 'fortime' && t('fortimeTitle')}
+            {mode === 'interval' && t('intervalTitle')}
           </h3>
           <p className="text-rx-muted text-xs leading-relaxed">
-            {mode === 'amrap' && '설정한 시간 동안 최대한 많은 라운드를 완료하세요.'}
-            {mode === 'emom' && '매 분마다 정해진 동작을 완료하고 남은 시간은 휴식합니다.'}
-            {mode === 'tabata' && '20초 운동 / 10초 휴식을 8라운드 반복하는 고강도 인터벌 훈련입니다.'}
-            {mode === 'fortime' && '제한 시간 내에 주어진 동작을 완료하세요. 완료 시 타이머를 정지하세요.'}
-            {mode === 'interval' && '설정한 운동/휴식 시간으로 반복 인터벌 훈련을 진행합니다.'}
+            {mode === 'amrap' && t('amrapDesc')}
+            {mode === 'emom' && t('emomDesc')}
+            {mode === 'tabata' && t('tabataDesc')}
+            {mode === 'fortime' && t('fortimeDesc')}
+            {mode === 'interval' && t('intervalDesc')}
           </p>
         </div>}
 
@@ -690,7 +692,7 @@ export default function TimerPage() {
         <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#0a0a0a]">
           <div className="text-center w-full">
             <div className="font-black text-rx-red animate-pulse leading-none" style={{ fontSize: 'clamp(150px, 40vw, 350px)' }}>{countdownVal}</div>
-            <p className="text-white/70 font-black text-2xl mt-4 uppercase tracking-widest">준비하세요!</p>
+            <p className="text-white/70 font-black text-2xl mt-4 uppercase tracking-widest">{t('getReady')}</p>
             <button
               onClick={() => {
                 if (countdownRef.current) clearInterval(countdownRef.current);
@@ -699,7 +701,7 @@ export default function TimerPage() {
               }}
               className="mt-12 px-8 py-3 rounded-full border-2 border-white/20 text-white/50 hover:text-white hover:border-white transition-colors font-bold text-lg"
             >
-              취소
+              {t('cancelCountdown')}
             </button>
           </div>
         </div>

@@ -1,5 +1,6 @@
 'use client'
 import { useState, useCallback } from 'react'
+import { useTranslations } from 'next-intl'
 import Header from '@/components/layout/Header'
 import MobileNav from '@/components/layout/MobileNav'
 
@@ -32,6 +33,7 @@ function lbToKg(lb: number): number {
 type WeightTabState = { weightInput: string; reps: number }
 
 export default function CalculatorPage() {
+  const t = useTranslations('calculator')
   const [tab, setTab] = useState<Tab>('barbell')
   const [unit, setUnit] = useState<Unit>('lb')
   // 바벨·덤벨 탭 각각 독립적인 상태
@@ -93,8 +95,8 @@ export default function CalculatorPage() {
           <span className="text-rx-muted text-xs">광고 영역 (AdSense)</span>
         </div>
 
-        <h1 className="section-title mt-2">1RM 계산기</h1>
-        <p className="section-sub">최대 중량을 계산하고 퍼센트 테이블을 확인하세요</p>
+        <h1 className="section-title mt-2">{t('title')}</h1>
+        <p className="section-sub">{t('subtitle')}</p>
 
         {/* Strength Hub CTA */}
         <a
@@ -108,8 +110,8 @@ export default function CalculatorPage() {
           <div className="flex items-center gap-3">
             <span className="text-2xl">💪</span>
             <div>
-              <p className="text-white font-black" style={{ fontSize: 16 }}>나의 PR 기록하기</p>
-              <p className="text-rx-muted" style={{ fontSize: 16 }}>나의 PR을 기록하고 관리하며 성장과정을 공유하세요.</p>
+              <p className="text-white font-black" style={{ fontSize: 16 }}>{t('ctaTitle')}</p>
+              <p className="text-rx-muted" style={{ fontSize: 16 }}>{t('ctaDesc')}</p>
             </div>
           </div>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"
@@ -120,15 +122,15 @@ export default function CalculatorPage() {
 
         {/* Tab Selector */}
         <div className="flex gap-1 bg-rx-surface rounded-xl p-1 mb-6">
-          {(['barbell', 'dumbbell', 'bodyweight'] as Tab[]).map((t) => (
+          {(['barbell', 'dumbbell', 'bodyweight'] as Tab[]).map((tabKey) => (
             <button
-              key={t}
-              onClick={() => setTab(t)}
+              key={tabKey}
+              onClick={() => setTab(tabKey)}
               className={`flex-1 py-2.5 rounded-lg text-sm font-bold transition-colors ${
-                tab === t ? 'gradient-bg text-white' : 'text-rx-muted hover:text-white'
+                tab === tabKey ? 'gradient-bg text-white' : 'text-rx-muted hover:text-white'
               }`}
             >
-              {t === 'barbell' ? '바벨' : t === 'dumbbell' ? '덤벨' : '맨몸'}
+              {tabKey === 'barbell' ? t('tabBarbell') : tabKey === 'dumbbell' ? t('tabDumbbell') : t('tabBodyweight')}
             </button>
           ))}
         </div>
@@ -138,7 +140,7 @@ export default function CalculatorPage() {
             {/* Weight Input */}
             <div className="card mb-4">
               <div className="flex items-center justify-between mb-3">
-                <label className="text-white font-bold">사용 중량</label>
+                <label className="text-white font-bold">{t('weightLabel')}</label>
                 <button
                   onClick={toggleUnit}
                   className="px-3 py-1 rounded-lg bg-rx-surface border border-rx-border text-sm font-bold text-rx-muted hover:text-white hover:border-rx-red transition-colors"
@@ -169,7 +171,7 @@ export default function CalculatorPage() {
             {/* Percentage Table — 반복횟수보다 위 */}
             {rm > 0 && (
               <div className="card mb-4">
-                <h2 className="font-black text-white mb-4">퍼센트 테이블</h2>
+                <h2 className="font-black text-white mb-4">{t('pctTable')}</h2>
                 <div className="space-y-2">
                   {PERCENTAGES.map((pct) => {
                     const pctKg = Math.round(rm * pct / 100 * 10) / 10
@@ -200,7 +202,7 @@ export default function CalculatorPage() {
 
             {/* Reps Input */}
             <div className="card mb-4">
-              <label className="text-white font-bold block mb-3">반복 횟수: <span className="gradient-text">{reps}회</span></label>
+              <label className="text-white font-bold block mb-3">{t('repsLabel', { reps })}</label>
               <input
                 type="range"
                 min={1}
@@ -210,9 +212,9 @@ export default function CalculatorPage() {
                 className="w-full accent-rx-red h-2"
               />
               <div className="flex justify-between text-rx-muted text-xs mt-1">
-                <span>1회</span>
-                <span>15회</span>
-                <span>30회</span>
+                <span>{t('repsMin')}</span>
+                <span>{t('repsMid')}</span>
+                <span>{t('repsMax')}</span>
               </div>
               <div className="grid grid-cols-5 gap-1 mt-3">
                 {[1, 2, 3, 5, 8, 10, 12, 15, 20, 30].map((r) => (
@@ -223,7 +225,7 @@ export default function CalculatorPage() {
                       reps === r ? 'gradient-bg text-white' : 'bg-rx-surface text-rx-muted hover:text-white'
                     }`}
                   >
-                    {r}회
+                    {t('repsBtn', { r })}
                   </button>
                 ))}
               </div>
@@ -233,7 +235,7 @@ export default function CalculatorPage() {
             {rm > 0 && (
               <div className="card mb-6 text-center py-3 px-4 bg-rx-surface/80 border-white/10 relative overflow-hidden">
                 <div className="absolute inset-0 gradient-bg opacity-20 pointer-events-none" />
-                <p className="text-rx-muted text-sm mb-1 relative z-10">예상 1RM (Epley 공식)</p>
+                <p className="text-rx-muted text-sm mb-1 relative z-10">{t('estimated1rm')}</p>
                 <p className="text-3xl font-black text-white">
                   {unit === 'kg' ? rm.toFixed(1) : kgToLb(rm).toFixed(1)}
                   <span className="text-xl text-rx-muted ml-1">{unit}</span>
@@ -245,7 +247,7 @@ export default function CalculatorPage() {
           // Bodyweight tab
           <div>
             <div className="card mb-4">
-              <label className="text-white font-bold block mb-3">체중 입력 (kg)</label>
+              <label className="text-white font-bold block mb-3">{t('bwLabel')}</label>
               <input
                 type="number"
                 inputMode="decimal"
@@ -258,7 +260,7 @@ export default function CalculatorPage() {
 
             {bw > 0 && (
               <div className="card mb-6">
-                <h2 className="font-black text-white mb-4">맨몸 운동 기준 중량</h2>
+                <h2 className="font-black text-white mb-4">{t('bwTable')}</h2>
                 <div className="space-y-3">
                   {BODYWEIGHT_MOVEMENTS.map((m) => {
                     const baseKg = Math.round(bw * m.multiplier * 10) / 10
@@ -275,12 +277,12 @@ export default function CalculatorPage() {
             )}
 
             <div className="card bg-rx-surface/50">
-              <h3 className="font-bold text-white mb-3">맨몸 운동 팁</h3>
+              <h3 className="font-bold text-white mb-3">{t('bwTip')}</h3>
               <ul className="text-rx-muted text-sm space-y-2">
-                <li>• 풀업: 체중 × 1.0 = 내 체중이 곧 부하</li>
-                <li>• 푸시업: 체중의 약 65% 부하</li>
-                <li>• 딥스: 체중 × 1.0 (+ 추가 중량 가능)</li>
-                <li>• HSPU: 체중 × 1.0 (팔뚝 위치에 따라 변동)</li>
+                <li>• {t('bwPullup')}</li>
+                <li>• {t('bwPushup')}</li>
+                <li>• {t('bwDip')}</li>
+                <li>• {t('bwHspu')}</li>
               </ul>
             </div>
           </div>
@@ -289,17 +291,17 @@ export default function CalculatorPage() {
         {/* Equipment Recommendation */}
         <div className="mt-6 p-5 bg-rx-surface border border-rx-border rounded-xl">
           <div className="flex items-center gap-2 mb-3">
-            <span className="badge bg-rx-orange/20 text-rx-orange border border-rx-orange/30">추천 장비</span>
+            <span className="badge bg-rx-orange/20 text-rx-orange border border-rx-orange/30">{t('equipTitle')}</span>
           </div>
           <h3 className="font-bold text-white mb-1">
-            {tab === 'barbell' ? '바벨 & 플레이트 추천' : tab === 'dumbbell' ? '덤벨 세트 추천' : '맨몸 운동 장비 추천'}
+            {tab === 'barbell' ? t('equipBarbell') : tab === 'dumbbell' ? t('equipDumbbell') : t('equipBodyweight')}
           </h3>
           <p className="text-rx-muted text-sm">
             {tab === 'barbell'
-              ? '올림픽 바벨 20kg + 플레이트 세트로 본격 훈련을 시작하세요.'
+              ? t('equipBarbellDesc')
               : tab === 'dumbbell'
-              ? '가변형 덤벨 세트로 다양한 중량을 효율적으로 활용하세요.'
-              : '풀업바 + 딥바 세트로 맨몸 운동의 기본을 갖추세요.'}
+              ? t('equipDumbbellDesc')
+              : t('equipBodyweightDesc')}
           </p>
           <div className="hidden mt-3 h-12 bg-rx-card border border-rx-border rounded-lg flex items-center justify-center">
             <span className="text-rx-muted text-xs">제휴 광고 영역 (Affiliate)</span>

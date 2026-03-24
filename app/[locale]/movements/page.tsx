@@ -1,8 +1,9 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { getTranslations } from 'next-intl/server'
 import Header from '@/components/layout/Header'
 import MobileNav from '@/components/layout/MobileNav'
-import { MOVEMENTS, CATEGORY_LABELS, type MovementCategory } from '@/lib/movements-data'
+import { MOVEMENTS, type MovementCategory } from '@/lib/movements-data'
 
 export const metadata: Metadata = {
   title: '크로스핏 동작 가이드 — 15가지 핵심 무브먼트 완전 정복',
@@ -45,22 +46,23 @@ const CATEGORY_ICONS: Record<MovementCategory, string> = {
   metabolic: '🔥',
 }
 
-const CATEGORY_DESCRIPTIONS: Record<MovementCategory, string> = {
-  upper_power: '등, 어깨, 가슴을 단련하는 상체 당기기·밀기 동작. 기능성 근력의 핵심입니다.',
-  lower_strength: '대퇴사두근, 둔근, 햄스트링을 중심으로 하체 폭발력과 근력을 기르는 동작들입니다.',
-  metabolic: '심박수를 최대로 끌어올리고 전신 대사 능력을 발전시키는 고강도 컨디셔닝 동작입니다.',
-}
+export default async function MovementsIndexPage() {
+  const t = await getTranslations('movements')
 
-export default function MovementsIndexPage() {
+  const catInfo: Record<MovementCategory, { label: string; desc: string }> = {
+    upper_power: { label: t('catUpperPower'), desc: t('catUpperDesc') },
+    lower_strength: { label: t('catLowerStrength'), desc: t('catLowerDesc') },
+    metabolic: { label: t('catMetabolic'), desc: t('catMetabolicDesc') },
+  }
+
   return (
     <div className="min-h-screen bg-rx-bg">
       <Header />
       <main className="pt-20 pb-24 md:pb-10 px-4 max-w-[992px] mx-auto">
         {/* Hero */}
-        <h1 className="section-title mt-4">크로스핏 무브먼트 가이드</h1>
+        <h1 className="section-title mt-4">{t('title')}</h1>
         <p className="section-sub mb-6">
-          15가지 핵심 동작의 기술 기준, 일반적 실수, 스케일링 방법을 단계별로 알아보세요.
-          초보자부터 RX 선수까지 모든 레벨을 위한 완전한 가이드입니다.
+          {t('subtitle')}
         </p>
 
         {/* Schema — BreadcrumbList */}
@@ -85,9 +87,9 @@ export default function MovementsIndexPage() {
             <section key={cat} className="mb-10">
               <div className="flex items-center gap-2 mb-2">
                 <span className="text-2xl">{CATEGORY_ICONS[cat]}</span>
-                <h2 className="text-xl font-black text-white">{CATEGORY_LABELS[cat]}</h2>
+                <h2 className="text-xl font-black text-white">{catInfo[cat].label}</h2>
               </div>
-              <p className="text-rx-muted text-sm mb-4">{CATEGORY_DESCRIPTIONS[cat]}</p>
+              <p className="text-rx-muted text-sm mb-4">{catInfo[cat].desc}</p>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {movements.map((m) => (
@@ -122,7 +124,7 @@ export default function MovementsIndexPage() {
 
                     <div className="flex items-center justify-between mt-auto pt-3 border-t border-white/5">
                       <span className="text-rx-muted text-xs">
-                        기술기준 {m.technicalStandards.length}개 · 스케일링 {m.scaling.length}단계
+                        {t('technicalStandards', { count: m.technicalStandards.length })} · {t('scalingSteps', { count: m.scaling.length })}
                       </span>
                       <svg
                         width="16"
@@ -148,15 +150,15 @@ export default function MovementsIndexPage() {
           background: 'linear-gradient(135deg, rgba(232,50,26,0.08), rgba(255,45,139,0.08))',
           border: '1px solid rgba(232,50,26,0.25)',
         }}>
-          <p className="text-white font-black mb-1">배운 동작을 WOD에 적용해보세요</p>
+          <p className="text-white font-black mb-1">{t('ctaTitle')}</p>
           <p className="text-rx-muted text-sm mb-3">
-            37개의 Girl, Hero, Open 벤치마크 WOD를 확인하고 오늘의 도전을 시작하세요.
+            {t('ctaDesc')}
           </p>
           <Link
             href="wod"
             className="inline-flex items-center gap-2 px-4 py-2 rounded-lg btn-primary text-sm font-bold"
           >
-            WOD 보러 가기
+            {t('ctaBtn')}
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
               <path d="M5 12h14M12 5l7 7-7 7" />
             </svg>

@@ -1,6 +1,7 @@
 'use client'
 import React, { useState, useMemo } from 'react'
 import Link from 'next/link'
+import { useTranslations } from 'next-intl'
 import Header from '@/components/layout/Header'
 import MobileNav from '@/components/layout/MobileNav'
 import { WODS, WOD_CATEGORIES, EQUIPMENT_FILTERS, type WOD } from '@/lib/wod-data'
@@ -10,13 +11,6 @@ const TYPE_COLORS: Record<WOD['type'], string> = {
   hero: 'bg-blue-500/20 text-blue-400 border-blue-500/30',
   open: 'bg-rx-orange/20 text-rx-orange border-rx-orange/30',
   benchmark: 'bg-green-500/20 text-green-400 border-green-500/30',
-}
-
-const TYPE_LABELS: Record<WOD['type'], string> = {
-  girl: 'Girl WOD',
-  hero: 'Hero WOD',
-  open: 'Open',
-  benchmark: '벤치마크',
 }
 
 const EQUIPMENT_ICONS: Record<string, JSX.Element> = {
@@ -52,20 +46,28 @@ const EQUIPMENT_ICONS: Record<string, JSX.Element> = {
   ),
 }
 
-const EQUIPMENT_LABELS: Record<string, string> = {
-  barbell: '바벨',
-  dumbbell: '덤벨',
-  bodyweight: '맨몸',
-  rope: '줄넘기',
-  kettlebell: '케틀벨',
-  box: '박스',
-}
-
 export default function WODPage() {
+  const t = useTranslations('wod')
   const [category, setCategory] = useState('all')
   const [equipment, setEquipment] = useState('all')
   const [search, setSearch] = useState('')
   const [showAll, setShowAll] = useState(false)
+
+  const TYPE_LABELS: Record<WOD['type'], string> = {
+    girl: 'Girl WOD',
+    hero: 'Hero WOD',
+    open: 'Open',
+    benchmark: t('benchmark'),
+  }
+
+  const EQUIPMENT_LABELS: Record<string, string> = {
+    barbell: t('equipBarbell'),
+    dumbbell: t('equipDumbbell'),
+    bodyweight: t('equipBodyweight'),
+    rope: t('equipRope'),
+    kettlebell: t('equipKettlebell'),
+    box: t('equipBox'),
+  }
 
   const filtered = useMemo(() => {
     return WODS.filter((wod) => {
@@ -73,7 +75,7 @@ export default function WODPage() {
       const matchEq = equipment === 'all' || wod.equipment.includes(equipment as WOD['equipment'][number])
       const matchSearch = search === '' || wod.name.toLowerCase().includes(search.toLowerCase()) ||
         wod.movements.some(m => m.toLowerCase().includes(search.toLowerCase())) ||
-        wod.tags.some(t => t.toLowerCase().includes(search.toLowerCase()))
+        wod.tags.some(tag => tag.toLowerCase().includes(search.toLowerCase()))
       return matchCat && matchEq && matchSearch
     })
   }, [category, equipment, search])
@@ -88,8 +90,8 @@ export default function WODPage() {
         </div>
 
         <div className="mb-6">
-          <h1 className="text-4xl font-black text-white mb-1">WOD 라이브러리</h1>
-          <p className="text-rx-muted text-sm">{WODS.length}개의 벤치마크 WOD · Girl / Hero / Open</p>
+          <h1 className="text-4xl font-black text-white mb-1">{t('title')}</h1>
+          <p className="text-rx-muted text-sm">{t('subtitle', { count: WODS.length })}</p>
         </div>
 
         {/* Sticky Search + Filters */}
@@ -120,7 +122,7 @@ export default function WODPage() {
             </svg>
             <input
               type="text"
-              placeholder="WOD 이름, 동작, 태그 검색..."
+              placeholder={t('searchPlaceholder')}
               className="input pl-9"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
@@ -164,7 +166,7 @@ export default function WODPage() {
         </div>
 
         {/* Results count */}
-        <p className="text-rx-muted text-sm mt-6 mb-4">{filtered.length}개의 WOD</p>
+        <p className="text-rx-muted text-sm mt-6 mb-4">{t('resultsCount', { count: filtered.length })}</p>
 
         {/* WOD Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -180,7 +182,7 @@ export default function WODPage() {
                     {TYPE_LABELS[wod.type]}
                   </span>
                   <span className="text-xs text-rx-muted group-hover:text-white transition-colors flex items-center gap-0.5">
-                    자세히
+                    {t('viewDetail')}
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
                       <path d="M9 18l6-6-6-6" />
                     </svg>
@@ -206,7 +208,7 @@ export default function WODPage() {
                     <span key={i} className="text-rx-muted text-xs mr-2 font-medium">· {m}</span>
                   ))}
                   {wod.movements.length > 3 && (
-                    <span className="text-rx-muted text-xs">+{wod.movements.length - 3}개</span>
+                    <span className="text-rx-muted text-xs">{t('moreMovements', { count: wod.movements.length - 3 })}</span>
                   )}
                 </div>
 
@@ -232,7 +234,7 @@ export default function WODPage() {
         {filtered.length > 36 && !showAll && (
           <div className="text-center mt-8">
             <button onClick={() => setShowAll(true)} className="btn-secondary px-8 py-3 rounded-xl">
-              더보기 ({filtered.length - 36}개 더)
+              {t('loadMore', { count: filtered.length - 36 })}
             </button>
           </div>
         )}
@@ -242,8 +244,8 @@ export default function WODPage() {
             <svg className="w-12 h-12 text-rx-muted mx-auto mb-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
               <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
             </svg>
-            <p className="text-white font-bold text-lg mb-1">검색 결과가 없습니다</p>
-            <p className="text-rx-muted text-sm">다른 검색어나 필터를 사용해보세요</p>
+            <p className="text-white font-bold text-lg mb-1">{t('noResults')}</p>
+            <p className="text-rx-muted text-sm">{t('noResultsDesc')}</p>
           </div>
         )}
       </main>

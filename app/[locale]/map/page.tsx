@@ -3,6 +3,7 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import Script from 'next/script'
 import Header from '@/components/layout/Header'
 import MobileNav from '@/components/layout/MobileNav'
+import { useTranslations } from 'next-intl'
 
 declare global {
   interface Window { kakao: any }
@@ -61,6 +62,7 @@ function buildOverlayEl(
   lat: string,
   lng: string,
   onClose: () => void,
+  directionsLabel: string,
 ): HTMLDivElement {
   const wrap = document.createElement('div')
   wrap.style.cssText = 'position:relative;'
@@ -105,7 +107,7 @@ function buildOverlayEl(
         <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
         <circle cx="12" cy="10" r="3"/>
       </svg>
-      길찾기
+      ${directionsLabel}
     </a>
   `
 
@@ -133,6 +135,8 @@ function buildOverlayEl(
 }
 
 export default function MapPage() {
+  const t = useTranslations('map')
+
   const [selectedRegion, setSelectedRegion] = useState('서울')
   const [search, setSearch] = useState('')
   const [kakaoReady, setKakaoReady] = useState(false)  // SDK 준비 완료 플래그
@@ -165,6 +169,8 @@ export default function MapPage() {
     overlayRef.current?.setMap(null)
     overlayRef.current = null
   }, [])
+
+  const directionsLabel = t('directions')
 
   // 장소 검색 후 마커 생성
   const searchPlaces = useCallback((regionId: string, keyword?: string) => {
@@ -205,6 +211,7 @@ export default function MapPage() {
             place.y,
             place.x,
             closeOverlay,
+            directionsLabel,
           )
           const ov = new window.kakao.maps.CustomOverlay({ position, content: el, yAnchor: 1.12 })
           ov.setMap(mapRef.current)
@@ -231,7 +238,7 @@ export default function MapPage() {
 
     // 카카오맵에는 체육시설 전용 category_group_code가 없으므로 옵션을 비우고 검색 (이후 프론트엔드 단편에서 필터링)
     ps.keywordSearch(q, handleResult)
-  }, [clearMarkers, closeOverlay])
+  }, [clearMarkers, closeOverlay, directionsLabel])
 
   // 환경변수 누락 체크
   useEffect(() => {
@@ -326,6 +333,7 @@ export default function MapPage() {
                   place.y,
                   place.x,
                   closeOverlay,
+                  directionsLabel,
                 )
                 const ov = new window.kakao.maps.CustomOverlay({ position, content: el, yAnchor: 1.12 })
                 ov.setMap(mapRef.current)
@@ -374,6 +382,15 @@ export default function MapPage() {
     ? `//dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.NEXT_PUBLIC_KAKAO_MAP_KEY}&libraries=services&autoload=false`
     : null
 
+  const featureLabels: Record<string, string> = {
+    '주차가능': t('fParking'),
+    '샤워실': t('fShower'),
+    '에어컨': t('fAc'),
+    '와이파이': t('fWifi'),
+    '보충제판매': t('fSupplements'),
+    '개인락커': t('fLockers'),
+  }
+
   return (
     <div className="min-h-screen bg-rx-bg">
       {/* 카카오맵 SDK — Next.js Script 컴포넌트로 안전하게 로드
@@ -416,7 +433,7 @@ export default function MapPage() {
               </svg>
               <input
                 type="text"
-                placeholder="지역명, 박스 이름으로 검색 후 Enter..."
+                placeholder={t('searchPlaceholder')}
                 className="input pl-9 pr-20"
                 value={search}
                 onChange={(e) => handleSearch(e.target.value)}
@@ -441,7 +458,7 @@ export default function MapPage() {
                       : 'bg-rx-surface border border-rx-border text-rx-muted hover:text-white'
                   }`}
                 >
-                  {region.label}
+                  {region.id === 'all' ? t('regionAll') : region.label}
                 </button>
               ))}
             </div>
@@ -516,7 +533,7 @@ export default function MapPage() {
                   목록 보기 <span className="text-rx-muted font-normal text-sm ml-1">({searchedBoxes.length})</span>
                 </h2>
               </div>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {searchedBoxes.slice(0, visibleBoxCount).map((box) => (
                   <div key={box.id} className="p-4 rounded-xl bg-rx-surface border border-rx-border hover:border-rx-red/40 transition-colors">
@@ -531,7 +548,7 @@ export default function MapPage() {
                       {box.road_address_name || box.address_name}
                     </p>
                     <div className="flex gap-2">
-                      <a href={`https://map.kakao.com/link/to/${encodeURIComponent(box.place_name)},${box.y},${box.x}`} target="_blank" rel="noopener noreferrer" className="flex-1 text-center py-2 rounded-lg bg-rx-bg border border-rx-border text-xs font-bold text-white hover:border-rx-red/50 transition-colors">길찾기</a>
+                      <a href={`https://map.kakao.com/link/to/${encodeURIComponent(box.place_name)},${box.y},${box.x}`} target="_blank" rel="noopener noreferrer" className="flex-1 text-center py-2 rounded-lg bg-rx-bg border border-rx-border text-xs font-bold text-white hover:border-rx-red/50 transition-colors">{t('directions')}</a>
                       {box.place_url && <a href={box.place_url} target="_blank" rel="noopener noreferrer" className="flex-1 text-center py-2 rounded-lg bg-rx-bg border border-rx-border text-xs font-bold text-white hover:border-rx-red/50 transition-colors">상세정보</a>}
                     </div>
                   </div>
@@ -565,8 +582,8 @@ export default function MapPage() {
                       <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" />
                     </svg>
                   ),
-                  title: '마커 클릭',
-                  desc: '지도의 마커(핀)를 클릭하면 박스 이름, 주소, 길찾기 링크가 담긴 말풍선이 표시됩니다.',
+                  title: t('g1Title'),
+                  desc: t('g1Desc'),
                 },
                 {
                   icon: (
@@ -574,8 +591,8 @@ export default function MapPage() {
                       <rect x="3" y="3" width="18" height="18" rx="2" /><path d="M3 9h18M9 21V9" />
                     </svg>
                   ),
-                  title: '드랍인 매너',
-                  desc: '드랍인 시 반드시 방문 전 해당 박스에 사전 연락하세요. 클래스 인원 제한 및 규정이 다를 수 있습니다.',
+                  title: t('g2Title'),
+                  desc: t('g2Desc'),
                 },
                 {
                   icon: (
@@ -584,8 +601,8 @@ export default function MapPage() {
                       <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
                     </svg>
                   ),
-                  title: '정보 수정 요청',
-                  desc: '지도에 표시된 박스 정보(주소·운영시간 등)가 정확하지 않은 경우, 하단 [박스 등록하기]를 통해 수정 요청을 보내주세요.',
+                  title: t('g3Title'),
+                  desc: t('g3Desc'),
                 },
               ].map((item) => (
                 <div key={item.title} className="flex gap-3 p-4 rounded-xl bg-rx-surface border border-rx-border">
@@ -598,20 +615,19 @@ export default function MapPage() {
               ))}
             </div>
             <p className="text-rx-muted text-xs mt-4 leading-relaxed">
-              ※ 지도 데이터는 카카오맵 Places API를 기반으로 하며, 실제 운영 여부 및 드랍인 요금은 반드시 각 박스에 직접 확인하세요.
-              데이터 오류나 누락된 박스는 아래 박스 등록 기능을 통해 제보 부탁드립니다.
+              {t('mapNote')}
             </p>
           </section>
 
           {/* 추천 파트너 박스 */}
           <section className="mb-10">
             <div className="flex items-center gap-2 mb-5">
-              <h2 className="text-xl font-black text-white">추천 파트너 박스</h2>
-              <span className="badge bg-rx-orange/20 text-rx-orange border-rx-orange/30">스폰서</span>
+              <h2 className="text-xl font-black text-white">{t('partnerBoxes')}</h2>
+              <span className="badge bg-rx-orange/20 text-rx-orange border-rx-orange/30">{t('sponsor')}</span>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {SPONSOR_BOXES.map((box) => (
-                <SponsorBoxCard key={box.id} box={box} />
+                <SponsorBoxCard key={box.id} box={box} t={t} />
               ))}
             </div>
           </section>
@@ -621,13 +637,13 @@ export default function MapPage() {
             <svg className="text-rx-muted mx-auto mb-3" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
               <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" />
             </svg>
-            <h3 className="text-white font-black text-lg mb-1">우리 박스가 없나요?</h3>
-            <p className="text-rx-muted text-sm mb-4">박스 정보를 등록하면 검토 후 지도에 반영됩니다</p>
+            <h3 className="text-white font-black text-lg mb-1">{t('noBoxTitle')}</h3>
+            <p className="text-rx-muted text-sm mb-4">{t('noBoxDesc')}</p>
             <button
               onClick={() => setShowAddModal(true)}
               className="btn-primary px-6 py-2.5 rounded-xl text-sm"
             >
-              + 박스 등록하기
+              {t('registerBtn')}
             </button>
           </section>
         </div>
@@ -639,7 +655,7 @@ export default function MapPage() {
           <div className="absolute inset-0 bg-black/60" onClick={closeModal} />
           <div className="relative w-full max-w-lg bg-rx-surface border border-rx-border rounded-t-2xl md:rounded-2xl p-6 max-h-[92vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="font-black text-white text-xl">박스 등록하기</h2>
+              <h2 className="font-black text-white text-xl">{t('modalTitle')}</h2>
               <button onClick={closeModal} className="text-rx-muted hover:text-white p-1">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
@@ -650,67 +666,67 @@ export default function MapPage() {
             {addSubmitted ? (
               <div className="text-center py-8">
                 <div className="text-5xl mb-4">🏋️</div>
-                <h3 className="font-black text-white text-xl mb-2">등록 완료!</h3>
-                <p className="text-rx-muted text-sm mb-1">소중한 제보 감사합니다.</p>
-                <p className="text-rx-muted text-sm mb-6">검토 후 지도에 반영됩니다.</p>
-                <button onClick={closeModal} className="btn-primary px-8">확인</button>
+                <h3 className="font-black text-white text-xl mb-2">{t('successTitle')}</h3>
+                <p className="text-rx-muted text-sm mb-1">{t('successDesc')}</p>
+                <p className="text-rx-muted text-sm mb-6">{t('successNote')}</p>
+                <button onClick={closeModal} className="btn-primary px-8">{t('fSubmit')}</button>
               </div>
             ) : (
               <div className="space-y-4">
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="text-rx-muted text-sm block mb-1">신청자 이름 *</label>
+                    <label className="text-rx-muted text-sm block mb-1">{t('fName')}</label>
                     <input type="text" className="input" placeholder="홍길동"
                       value={form.contactName} onChange={(e) => setForm((p) => ({ ...p, contactName: e.target.value }))} />
                   </div>
                   <div>
-                    <label className="text-rx-muted text-sm block mb-1">이메일 *</label>
+                    <label className="text-rx-muted text-sm block mb-1">{t('fEmail')}</label>
                     <input type="email" className="input" placeholder="example@email.com"
                       value={form.contactEmail} onChange={(e) => setForm((p) => ({ ...p, contactEmail: e.target.value }))} />
                   </div>
                 </div>
                 <hr className="border-rx-border" />
                 <div>
-                  <label className="text-rx-muted text-sm block mb-1">박스명 *</label>
+                  <label className="text-rx-muted text-sm block mb-1">{t('fBoxName')}</label>
                   <input type="text" className="input" placeholder="CrossFit OOO"
                     value={form.name} onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))} />
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="text-rx-muted text-sm block mb-1">지역(시) *</label>
-                    <input type="text" className="input" placeholder="서울, 부산..."
+                    <label className="text-rx-muted text-sm block mb-1">{t('fCity')}</label>
+                    <input type="text" className="input" placeholder={t('fCityPh')}
                       value={form.city} onChange={(e) => setForm((p) => ({ ...p, city: e.target.value }))} />
                   </div>
                   <div>
-                    <label className="text-rx-muted text-sm block mb-1">구/동</label>
-                    <input type="text" className="input" placeholder="강남구"
+                    <label className="text-rx-muted text-sm block mb-1">{t('fDistrict')}</label>
+                    <input type="text" className="input" placeholder={t('fDistrictPh')}
                       value={form.district} onChange={(e) => setForm((p) => ({ ...p, district: e.target.value }))} />
                   </div>
                 </div>
                 <div>
-                  <label className="text-rx-muted text-sm block mb-1">주소 *</label>
-                  <input type="text" className="input" placeholder="서울특별시 강남구 테헤란로 123"
+                  <label className="text-rx-muted text-sm block mb-1">{t('fAddress')}</label>
+                  <input type="text" className="input" placeholder={t('fAddressPh')}
                     value={form.address} onChange={(e) => setForm((p) => ({ ...p, address: e.target.value }))} />
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="text-rx-muted text-sm block mb-1">드랍인 비용</label>
-                    <input type="text" className="input" placeholder="20,000원"
+                    <label className="text-rx-muted text-sm block mb-1">{t('fFee')}</label>
+                    <input type="text" className="input" placeholder={t('fFeePh')}
                       value={form.dropinFee} onChange={(e) => setForm((p) => ({ ...p, dropinFee: e.target.value }))} />
                   </div>
                   <div>
-                    <label className="text-rx-muted text-sm block mb-1">전화번호</label>
-                    <input type="tel" className="input" placeholder="02-000-0000"
+                    <label className="text-rx-muted text-sm block mb-1">{t('fPhone')}</label>
+                    <input type="tel" className="input" placeholder={t('fPhonePh')}
                       value={form.phone} onChange={(e) => setForm((p) => ({ ...p, phone: e.target.value }))} />
                   </div>
                 </div>
                 <div>
-                  <label className="text-rx-muted text-sm block mb-1">웹사이트 / SNS</label>
-                  <input type="url" className="input" placeholder="https://..."
+                  <label className="text-rx-muted text-sm block mb-1">{t('fWebsite')}</label>
+                  <input type="url" className="input" placeholder={t('fWebsitePh')}
                     value={form.website} onChange={(e) => setForm((p) => ({ ...p, website: e.target.value }))} />
                 </div>
                 <div>
-                  <label className="text-rx-muted text-sm block mb-2">편의시설</label>
+                  <label className="text-rx-muted text-sm block mb-2">{t('fFeatures')}</label>
                   <div className="flex flex-wrap gap-2">
                     {FEATURE_OPTIONS.map((f) => (
                       <button
@@ -723,15 +739,15 @@ export default function MapPage() {
                             : 'bg-rx-card border border-rx-border text-rx-muted hover:text-white'
                         }`}
                       >
-                        {f}
+                        {featureLabels[f] ?? f}
                       </button>
                     ))}
                   </div>
                 </div>
                 {formError && <p className="text-rx-red text-sm font-bold">{formError}</p>}
                 <div className="flex gap-3 pt-2">
-                  <button onClick={closeModal} className="flex-1 btn-secondary text-sm py-3">취소</button>
-                  <button onClick={handleAddSubmit} className="flex-1 btn-primary text-sm py-3">등록하기</button>
+                  <button onClick={closeModal} className="flex-1 btn-secondary text-sm py-3">{t('fCancel')}</button>
+                  <button onClick={handleAddSubmit} className="flex-1 btn-primary text-sm py-3">{t('fSubmit')}</button>
                 </div>
               </div>
             )}
@@ -758,7 +774,7 @@ interface SponsorBox {
   dropinFee: string
 }
 
-function SponsorBoxCard({ box }: { box: SponsorBox }) {
+function SponsorBoxCard({ box, t }: { box: SponsorBox; t: (key: string) => string }) {
   return (
     <div className="card border-rx-orange/30 hover:border-rx-orange/60 transition-all duration-200">
       <div className="flex items-start justify-between mb-3">
@@ -770,7 +786,7 @@ function SponsorBoxCard({ box }: { box: SponsorBox }) {
           <p className="text-rx-muted text-xs">{box.near}</p>
         </div>
         <div className="text-right flex-shrink-0">
-          <p className="text-rx-muted text-xs mb-0.5">드랍인</p>
+          <p className="text-rx-muted text-xs mb-0.5">{t('dropinFee')}</p>
           <p className="text-rx-muted font-black text-sm">{box.dropinFee}</p>
         </div>
       </div>
@@ -796,7 +812,7 @@ function SponsorBoxCard({ box }: { box: SponsorBox }) {
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
             <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.11 6.11l1.97-1.97a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" />
           </svg>
-          {box.phone}
+          {t('phone')}
         </a>
         <a
           href={box.website}
@@ -808,7 +824,7 @@ function SponsorBoxCard({ box }: { box: SponsorBox }) {
             <circle cx="12" cy="12" r="10" />
             <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
           </svg>
-          웹사이트
+          {t('website')}
         </a>
         <a
           href={`https://map.kakao.com/link/search/${encodeURIComponent(box.name)}`}
@@ -819,7 +835,7 @@ function SponsorBoxCard({ box }: { box: SponsorBox }) {
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
             <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" />
           </svg>
-          길찾기
+          {t('directions')}
         </a>
       </div>
     </div>

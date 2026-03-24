@@ -22,6 +22,7 @@ export default function Header() {
   const router = useRouter()
   const tNav = useTranslations('nav')
   const tAuth = useTranslations('auth')
+  const tLang = useTranslations('lang')
 
   const [menuOpen, setMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
@@ -116,7 +117,7 @@ export default function Header() {
             href="/wod/log"
             className="hidden md:flex px-4 py-1.5 rounded-lg text-xs font-black text-white gradient-bg hover:opacity-90 transition-opacity mr-1"
           >
-            {locale === 'ko' ? '+ 내 기록 관리' : '+ Add Log'}
+            {tNav('addLog')}
           </Link>
 
           {/* Auth area — desktop */}
@@ -168,14 +169,19 @@ export default function Header() {
             </div>
           )}
 
-          {/* Language toggle */}
-          <button
-            onClick={handleLocaleSwitch}
-            className="hidden md:flex items-center justify-center w-8 h-8 rounded-md text-xs font-bold border border-rx-border text-rx-muted hover:text-white hover:border-white/30 transition-colors"
-            title={locale === 'ko' ? 'Switch to English' : '한국어로 변경'}
-          >
-            {locale === 'ko' ? 'EN' : 'KO'}
-          </button>
+          {/* Language toggle pill */}
+          <div className="hidden md:flex items-center bg-rx-surface border border-rx-border rounded-full overflow-hidden">
+            <button
+              onClick={locale === 'en' ? handleLocaleSwitch : undefined}
+              className={`px-2.5 py-1 text-[11px] font-bold transition-colors ${locale === 'ko' ? 'gradient-bg text-white' : 'text-rx-muted hover:text-white'}`}
+              title={tLang('switchToKo')}
+            >KR</button>
+            <button
+              onClick={locale === 'ko' ? handleLocaleSwitch : undefined}
+              className={`px-2.5 py-1 text-[11px] font-bold transition-colors ${locale === 'en' ? 'gradient-bg text-white' : 'text-rx-muted hover:text-white'}`}
+              title={tLang('switchToEn')}
+            >EN</button>
+          </div>
 
           {/* Mobile hamburger */}
           <button
@@ -263,12 +269,16 @@ export default function Header() {
 
         {/* Language toggle in drawer */}
         <div className="px-4 mt-2">
-          <button
-            onClick={() => { handleLocaleSwitch(); setMenuOpen(false) }}
-            className="flex items-center justify-center gap-2 px-4 py-3 rounded-lg text-sm font-bold border border-rx-border text-rx-muted hover:text-white hover:border-white/30 transition-colors w-full"
-          >
-            {locale === 'ko' ? 'Switch to English' : '한국어로 변경'}
-          </button>
+          <div className="flex items-center bg-rx-card border border-rx-border rounded-full overflow-hidden w-full">
+            <button
+              onClick={() => { if (locale === 'en') { handleLocaleSwitch(); setMenuOpen(false) } }}
+              className={`flex-1 py-2.5 text-sm font-bold transition-colors ${locale === 'ko' ? 'gradient-bg text-white' : 'text-rx-muted hover:text-white'}`}
+            >KR</button>
+            <button
+              onClick={() => { if (locale === 'ko') { handleLocaleSwitch(); setMenuOpen(false) } }}
+              className={`flex-1 py-2.5 text-sm font-bold transition-colors ${locale === 'en' ? 'gradient-bg text-white' : 'text-rx-muted hover:text-white'}`}
+            >EN</button>
+          </div>
         </div>
       </div>
     </>
