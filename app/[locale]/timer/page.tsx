@@ -248,7 +248,7 @@ export default function TimerPage() {
       stop()
       return
     }
-    if (countdownEnabled) {
+    if (countdownEnabled && elapsed === 0) {
       await requestWakeLock()
       const ctx = getAudioCtx()
       setCountingDown(true)
@@ -376,7 +376,7 @@ export default function TimerPage() {
 
   return (
     <div className={`min-h-screen bg-rx-bg transition-colors duration-500`}>
-      <Header />
+      {!isFullscreen && <Header />}
       <main className="pt-20 pb-24 md:pb-10 px-4 max-w-lg mx-auto">
         {/* AdSense top */}
         <div className="hidden mt-4 mb-4 w-full h-16 bg-rx-surface border border-rx-border rounded-lg flex items-center justify-center">
@@ -703,7 +703,7 @@ export default function TimerPage() {
           </div>
         </div>
       )}
-      <MobileNav />
+      {!isFullscreen && <MobileNav />}
     </div>
   )
 }
