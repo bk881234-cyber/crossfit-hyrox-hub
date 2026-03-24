@@ -108,7 +108,7 @@ export default function MovementDetailPage({ params }: Props) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(buildBreadcrumbSchema(movement)) }}
       />
 
-      <main className="pt-20 pb-24 md:pb-10 px-4 max-w-2xl mx-auto">
+      <main className="pt-20 pb-24 md:pb-10 px-4 max-w-[992px] mx-auto">
         {/* Breadcrumb */}
         <nav className="flex items-center gap-1.5 text-xs text-rx-muted mb-4" aria-label="breadcrumb">
           <Link href="../movements" className="hover:text-white transition-colors">무브먼트 가이드</Link>

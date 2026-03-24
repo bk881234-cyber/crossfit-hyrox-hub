@@ -231,6 +231,7 @@ export default function TimerPage() {
     setTimeLeft(init.time)
     setTotalTime(init.time)
     setTotalRounds(init.rounds)
+    setPhase(init.phase)
   }, [config, mode, running, elapsed, finished, getInitialState])
 
   const handleStart = useCallback(async () => {

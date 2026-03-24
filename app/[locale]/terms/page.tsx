@@ -10,7 +10,7 @@ export default function TermsPage() {
   return (
     <div className="min-h-screen bg-rx-bg">
       <Header />
-      <main className="pt-20 pb-24 md:pb-10 px-4 max-w-3xl mx-auto">
+      <main className="pt-20 pb-24 md:pb-10 px-4 max-w-[992px] mx-auto">
         <div className="mt-8 mb-8">
           <h1 className="text-3xl font-black text-white mb-2">이용약관</h1>
           <p className="text-rx-muted text-sm">최종 수정일: 2026년 3월 10일</p>
