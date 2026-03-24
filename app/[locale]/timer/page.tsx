@@ -383,11 +383,11 @@ export default function TimerPage() {
           <span className="text-rx-muted text-xs">광고 영역 (AdSense)</span>
         </div>
 
-        <h1 className="section-title">WOD 타이머</h1>
-        <p className="section-sub">운동 모드를 선택하고 타이머를 시작하세요</p>
+        {!isFullscreen && <h1 className="section-title">WOD 타이머</h1>}
+        {!isFullscreen && <p className="section-sub">운동 모드를 선택하고 타이머를 시작하세요</p>}
 
         {/* Mode Tabs */}
-        <div className={`flex gap-1 bg-rx-surface rounded-xl p-1 mb-4 overflow-x-auto ${elapsed > 0 && !finished ? 'opacity-50 pointer-events-none' : ''}`}>
+        {!isFullscreen && <div className={`flex gap-1 bg-rx-surface rounded-xl p-1 mb-4 overflow-x-auto ${elapsed > 0 && !finished ? 'opacity-50 pointer-events-none' : ''}`}>
           {MODES.map((m) => (
             <button
               key={m.id}
@@ -399,7 +399,7 @@ export default function TimerPage() {
               {m.label}
             </button>
           ))}
-        </div>
+        </div>}
 
         {/* Config Panel */}
         {!running && !finished && elapsed === 0 && (
@@ -552,7 +552,7 @@ export default function TimerPage() {
         {/* === Fullscreen capable Timer & Controls Area === */}
         <div className={
           isFullscreen
-            ? `fixed inset-0 z-[100] bg-[#0a0a0a] flex flex-col items-center justify-center overflow-hidden touch-none overscroll-none ${phaseColor} transition-colors duration-300 pointer-events-auto`
+            ? `fixed inset-0 z-[100] bg-[#0a0a0a] flex flex-col items-center justify-center overflow-hidden touch-none overscroll-none pointer-events-auto`
             : "mb-4"
         }>
           {isFullscreen && (
@@ -663,7 +663,7 @@ export default function TimerPage() {
         </div>
 
         {/* Mode Info */}
-        <div className="card bg-rx-surface/50 mb-6">
+        {!isFullscreen && <div className="card bg-rx-surface/50 mb-6">
           <h3 className="font-bold text-white text-sm mb-2">
             {mode === 'amrap' && 'AMRAP (As Many Rounds As Possible)'}
             {mode === 'emom' && 'EMOM (Every Minute On the Minute)'}
@@ -678,7 +678,7 @@ export default function TimerPage() {
             {mode === 'fortime' && '제한 시간 내에 주어진 동작을 완료하세요. 완료 시 타이머를 정지하세요.'}
             {mode === 'interval' && '설정한 운동/휴식 시간으로 반복 인터벌 훈련을 진행합니다.'}
           </p>
-        </div>
+        </div>}
 
         {/* AdSense bottom */}
         <div className="hidden w-full h-16 bg-rx-surface border border-rx-border rounded-lg flex items-center justify-center">
