@@ -132,6 +132,7 @@ export default function TimerPage() {
   const [isResting, setIsResting] = useState(false)
   const [restTime, setRestTime] = useState(0)
   const [isLogOpen, setIsLogOpen] = useState(false)
+  const [hasSeenLog, setHasSeenLog] = useState(false)
 
   const [countdownEnabled, setCountdownEnabled] = useState(true)
   const [countingDown, setCountingDown] = useState(false)
@@ -259,6 +260,7 @@ export default function TimerPage() {
     setIsResting(false)
     setRestTime(0)
     setIsLogOpen(false)
+    setHasSeenLog(false)
     if (restIntervalRef.current) clearInterval(restIntervalRef.current)
     lastLapElapsedRef.current = 0
     restStartElapsedRef.current = 0
@@ -288,6 +290,7 @@ export default function TimerPage() {
     setIsResting(false)
     setRestTime(0)
     setIsLogOpen(false)
+    setHasSeenLog(false)
     lastLapElapsedRef.current = 0
     restStartElapsedRef.current = 0
     const init = getInitialState(newMode)
@@ -877,21 +880,29 @@ export default function TimerPage() {
         >
           {/* Drag handle bar */}
           <div
-            className="relative flex items-center justify-between px-5 h-20 cursor-pointer select-none"
-            onClick={() => setIsLogOpen(v => !v)}
+            className="relative flex items-center justify-between px-5 h-20 cursor-pointer select-none overflow-hidden"
+            onClick={() => {
+              const opening = !isLogOpen
+              setIsLogOpen(v => !v)
+              if (opening) setHasSeenLog(true)
+            }}
             onTouchStart={(e) => { touchStartYRef.current = e.touches[0].clientY }}
             onTouchEnd={(e) => {
               const delta = touchStartYRef.current - e.changedTouches[0].clientY
-              if (delta > 30) setIsLogOpen(true)
+              if (delta > 30) { setIsLogOpen(true); setHasSeenLog(true) }
               else if (delta < -30) setIsLogOpen(false)
             }}
           >
+            {/* Blink overlay — fades out once user has seen the log */}
+            {!hasSeenLog && lapRound > 0 && (
+              <div className="absolute inset-0 bg-white/[0.07] animate-pulse pointer-events-none" />
+            )}
             {/* Pill indicator */}
             <div className="absolute top-2 left-1/2 -translate-x-1/2 w-10 h-1 rounded-full bg-white/20" />
             <div className="flex items-center gap-2.5 mt-1">
               <span className="text-white/60 font-bold text-sm">Show Workout</span>
               {lapRound > 0 && (
-                <span className="text-xs font-black px-2 py-0.5 rounded-full gradient-bg text-white">
+                <span className="text-xs font-black px-2.5 py-1 rounded-full bg-white text-[#0D0D0D]">
                   {lapRound} rds
                 </span>
               )}
