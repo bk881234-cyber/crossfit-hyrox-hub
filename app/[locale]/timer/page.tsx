@@ -56,9 +56,9 @@ interface WorkoutLog {
 
 const MODES: { id: TimerMode; label: string }[] = [
   { id: 'amrap', label: 'AMRAP' },
+  { id: 'fortime', label: 'For Time' },
   { id: 'emom', label: 'EMOM' },
   { id: 'tabata', label: 'Tabata' },
-  { id: 'fortime', label: 'For Time' },
   { id: 'interval', label: 'Interval' },
 ]
 
