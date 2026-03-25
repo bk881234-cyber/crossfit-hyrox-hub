@@ -791,7 +791,7 @@ export default function TimerPage() {
               {/* Reset */}
               <button
                 onClick={reset}
-                className="w-full h-11 rounded-xl border border-sky-400/30 text-sky-300/70 hover:text-sky-300 hover:border-sky-400/60 transition-colors flex items-center justify-center gap-2 font-bold text-sm"
+                className="w-full h-11 rounded-xl border border-white/20 text-white/60 hover:text-white/80 hover:border-white/40 transition-colors flex items-center justify-center gap-2 font-bold text-sm"
               >
                 <RotateCcwIcon size={16} />
                 Reset
