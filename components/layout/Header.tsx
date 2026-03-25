@@ -187,10 +187,14 @@ export default function Header() {
           {/* Mobile hamburger */}
           <button
             onClick={() => setMenuOpen(true)}
-            className="md:hidden p-2 text-rx-muted hover:text-white text-xs font-black uppercase"
+            className="md:hidden p-2 text-rx-muted hover:text-white transition-colors"
             aria-label={tHeader('menuAriaLabel')}
           >
-            {tHeader('menu')}
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
+              <line x1="3" y1="6" x2="21" y2="6" />
+              <line x1="3" y1="12" x2="21" y2="12" />
+              <line x1="3" y1="18" x2="21" y2="18" />
+            </svg>
           </button>
         </div>
       </header>
@@ -213,8 +217,11 @@ export default function Header() {
             width={120}
             className="h-6 w-auto"
           />
-          <button onClick={() => setMenuOpen(false)} className="p-2 text-rx-muted hover:text-white font-black text-xs uppercase">
-            {tHeader('close')}
+          <button onClick={() => setMenuOpen(false)} className="p-2 text-rx-muted hover:text-white transition-colors rounded-lg hover:bg-white/5">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
           </button>
         </div>
 
