@@ -873,11 +873,11 @@ export default function TimerPage() {
       {isFullscreen && (mode === 'amrap' || mode === 'fortime') && (lapRound > 0 || workoutLogs.length > 0) && (
         <div
           className="fixed bottom-0 left-0 right-0 z-[110] h-[50vh] bg-[#111111] border-t border-white/10 transition-transform duration-300 ease-out"
-          style={{ transform: isLogOpen ? 'translateY(0)' : 'translateY(calc(50vh - 56px))' }}
+          style={{ transform: isLogOpen ? 'translateY(0)' : 'translateY(calc(50vh - 80px))' }}
         >
           {/* Drag handle bar */}
           <div
-            className="relative flex items-center justify-between px-5 h-14 cursor-pointer select-none"
+            className="relative flex items-center justify-between px-5 h-20 cursor-pointer select-none"
             onClick={() => setIsLogOpen(v => !v)}
             onTouchStart={(e) => { touchStartYRef.current = e.touches[0].clientY }}
             onTouchEnd={(e) => {
@@ -905,7 +905,7 @@ export default function TimerPage() {
           </div>
 
           {/* Log content */}
-          <div className="overflow-y-auto h-[calc(50vh-56px)] px-5 pb-safe">
+          <div className="overflow-y-auto h-[calc(50vh-80px)] px-5 pb-safe">
             {workoutLogs.length === 0 ? (
               <p className="text-white/30 text-sm text-center py-8">
                 라운드를 완료하면 기록이 표시됩니다
