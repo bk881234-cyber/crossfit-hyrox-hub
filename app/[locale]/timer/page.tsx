@@ -738,7 +738,7 @@ export default function TimerPage() {
           {/* Controls */}
           {isFullscreen && (mode === 'amrap' || mode === 'fortime') && !finished ? (
             /* AMRAP / For Time — 3-button layout: [Rest] [Play/Pause] [+Round] */
-            <div className="p-4 pb-safe flex flex-col gap-3 w-full max-w-[640px] mx-auto mb-16 z-10">
+            <div className="p-4 pb-safe flex flex-col gap-3 w-full max-w-[640px] mx-auto mb-20 z-10">
               <div className="flex gap-3">
                 {/* Rest button */}
                 <button
@@ -747,7 +747,7 @@ export default function TimerPage() {
                     isResting
                       ? 'bg-blue-500/20 border-blue-400 text-blue-300'
                       : running
-                      ? 'bg-white/5 border-white/20 text-white/60 hover:border-white/40'
+                      ? 'bg-white/5 border-white/20 text-sky-300 hover:border-sky-400/50'
                       : 'bg-transparent border-white/10 text-white/25 cursor-not-allowed'
                   }`}
                 >
@@ -791,7 +791,7 @@ export default function TimerPage() {
               {/* Reset */}
               <button
                 onClick={reset}
-                className="w-full h-11 rounded-xl border border-white/15 text-white/35 hover:text-white/70 hover:border-white/35 transition-colors flex items-center justify-center gap-2 font-bold text-sm"
+                className="w-full h-11 rounded-xl border border-sky-400/30 text-sky-300/70 hover:text-sky-300 hover:border-sky-400/60 transition-colors flex items-center justify-center gap-2 font-bold text-sm"
               >
                 <RotateCcwIcon size={16} />
                 Reset
