@@ -23,6 +23,7 @@ export default function Header() {
   const tNav = useTranslations('nav')
   const tAuth = useTranslations('auth')
   const tLang = useTranslations('lang')
+  const tHeader = useTranslations('header')
 
   const [menuOpen, setMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
@@ -187,9 +188,9 @@ export default function Header() {
           <button
             onClick={() => setMenuOpen(true)}
             className="md:hidden p-2 text-rx-muted hover:text-white text-xs font-black uppercase"
-            aria-label="메뉴 열기"
+            aria-label={tHeader('menuAriaLabel')}
           >
-            MENU
+            {tHeader('menu')}
           </button>
         </div>
       </header>
@@ -213,7 +214,7 @@ export default function Header() {
             className="h-6 w-auto"
           />
           <button onClick={() => setMenuOpen(false)} className="p-2 text-rx-muted hover:text-white font-black text-xs uppercase">
-            CLOSE
+            {tHeader('close')}
           </button>
         </div>
 
