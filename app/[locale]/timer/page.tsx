@@ -47,6 +47,13 @@ interface TimerConfig {
   interval: { workSeconds: number; restSeconds: number; rounds: number }
 }
 
+interface WorkoutLog {
+  type: 'round' | 'rest'
+  roundNumber?: number
+  lapTime: number
+  cumulativeTime: number
+}
+
 const MODES: { id: TimerMode; label: string }[] = [
   { id: 'amrap', label: 'AMRAP' },
   { id: 'emom', label: 'EMOM' },
@@ -120,6 +127,12 @@ export default function TimerPage() {
   const [elapsed, setElapsed] = useState(0)
   const [finished, setFinished] = useState(false)
 
+  const [lapRound, setLapRound] = useState(0)
+  const [workoutLogs, setWorkoutLogs] = useState<WorkoutLog[]>([])
+  const [isResting, setIsResting] = useState(false)
+  const [restTime, setRestTime] = useState(0)
+  const [isLogOpen, setIsLogOpen] = useState(false)
+
   const [countdownEnabled, setCountdownEnabled] = useState(true)
   const [countingDown, setCountingDown] = useState(false)
   const [countdownVal, setCountdownVal] = useState(10)
@@ -129,10 +142,16 @@ export default function TimerPage() {
   const countdownRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const audioCtxRef = useRef<AudioContext | null>(null)
   const wakeLockRef = useRef<WakeLockSentinel | null>(null)
+  const restIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const lastLapElapsedRef = useRef(0)
+  const restStartElapsedRef = useRef(0)
+  const elapsedRef = useRef(0)
+  const touchStartYRef = useRef(0)
   const stateRef = useRef({ phase, timeLeft, currentRound })
 
-  // Keep ref in sync
+  // Keep refs in sync
   stateRef.current = { phase, timeLeft, currentRound }
+  elapsedRef.current = elapsed
 
   const getAudioCtx = useCallback(() => {
     if (!audioCtxRef.current) {
@@ -184,6 +203,42 @@ export default function TimerPage() {
     }
   }, [config])
 
+  const handleRestPress = useCallback(() => {
+    if (!running || (mode !== 'amrap' && mode !== 'fortime')) return
+    const currentElapsed = elapsedRef.current
+    if (isResting) {
+      if (restIntervalRef.current) clearInterval(restIntervalRef.current)
+      const restDuration = currentElapsed - restStartElapsedRef.current
+      setWorkoutLogs(prev => [...prev, { type: 'rest', lapTime: restDuration, cumulativeTime: currentElapsed }])
+      setIsResting(false)
+      setRestTime(0)
+      lastLapElapsedRef.current = currentElapsed
+    } else {
+      restStartElapsedRef.current = currentElapsed
+      setIsResting(true)
+      setRestTime(0)
+    }
+  }, [running, mode, isResting])
+
+  const handleRoundPress = useCallback(() => {
+    if (!running || (mode !== 'amrap' && mode !== 'fortime')) return
+    const currentElapsed = elapsedRef.current
+    const newLogs: WorkoutLog[] = []
+    if (isResting) {
+      if (restIntervalRef.current) clearInterval(restIntervalRef.current)
+      const restDuration = currentElapsed - restStartElapsedRef.current
+      newLogs.push({ type: 'rest', lapTime: restDuration, cumulativeTime: currentElapsed })
+      setIsResting(false)
+      setRestTime(0)
+    }
+    const lapTime = currentElapsed - lastLapElapsedRef.current
+    const newRound = lapRound + 1
+    newLogs.push({ type: 'round', roundNumber: newRound, lapTime, cumulativeTime: currentElapsed })
+    setWorkoutLogs(prev => [...prev, ...newLogs])
+    setLapRound(newRound)
+    lastLapElapsedRef.current = currentElapsed
+  }, [running, mode, isResting, lapRound])
+
   const stop = useCallback(() => {
     if (intervalRef.current) clearInterval(intervalRef.current)
     if (countdownRef.current) clearInterval(countdownRef.current)
@@ -199,6 +254,14 @@ export default function TimerPage() {
     setElapsed(0)
     setCurrentRound(1)
     setIsFullscreen(false)
+    setLapRound(0)
+    setWorkoutLogs([])
+    setIsResting(false)
+    setRestTime(0)
+    setIsLogOpen(false)
+    if (restIntervalRef.current) clearInterval(restIntervalRef.current)
+    lastLapElapsedRef.current = 0
+    restStartElapsedRef.current = 0
     const init = getInitialState(mode)
     setTimeLeft(init.time)
     setTotalTime(init.time)
@@ -211,6 +274,7 @@ export default function TimerPage() {
     if (running) return
     if (intervalRef.current) clearInterval(intervalRef.current)
     if (countdownRef.current) clearInterval(countdownRef.current)
+    if (restIntervalRef.current) clearInterval(restIntervalRef.current)
     setCountingDown(false)
     setCountdownVal(10)
     setRunning(false)
@@ -219,6 +283,13 @@ export default function TimerPage() {
     setFinished(false)
     setElapsed(0)
     setCurrentRound(1)
+    setLapRound(0)
+    setWorkoutLogs([])
+    setIsResting(false)
+    setRestTime(0)
+    setIsLogOpen(false)
+    lastLapElapsedRef.current = 0
+    restStartElapsedRef.current = 0
     const init = getInitialState(newMode)
     setTimeLeft(init.time)
     setTotalTime(init.time)
@@ -371,6 +442,24 @@ export default function TimerPage() {
       if (intervalRef.current) clearInterval(intervalRef.current)
     }
   }, [running, mode, config, releaseWakeLock])
+
+  // Rest sub-timer: only runs when both resting AND main timer is running
+  useEffect(() => {
+    if (isResting && running) {
+      restIntervalRef.current = setInterval(() => setRestTime(t => t + 1), 1000)
+    } else {
+      if (restIntervalRef.current) {
+        clearInterval(restIntervalRef.current)
+        restIntervalRef.current = null
+      }
+    }
+    return () => {
+      if (restIntervalRef.current) {
+        clearInterval(restIntervalRef.current)
+        restIntervalRef.current = null
+      }
+    }
+  }, [isResting, running])
 
   const phaseColor = phase === 'work' ? 'bg-green-500/10' : phase === 'rest' ? 'bg-red-500/10' : 'bg-transparent'
   const phaseBorder = phase === 'work' ? 'border-green-500/30' : phase === 'rest' ? 'border-red-500/30' : 'border-rx-border'
@@ -614,8 +703,18 @@ export default function TimerPage() {
             )}
 
             {mode === 'amrap' && running && (
-              <div className={isFullscreen ? "text-white/80 text-xl font-bold uppercase" : "text-rx-muted text-sm font-bold"}>
-                Elapsed: {formatTime(elapsed)}
+              <div className={`flex flex-col items-center gap-1 ${isFullscreen ? "text-white/80 text-xl font-bold uppercase" : "text-rx-muted text-sm font-bold"}`}>
+                <span>Elapsed: {formatTime(elapsed)}</span>
+                {lapRound > 0 && (
+                  <span className={isFullscreen ? "text-white/60 text-base" : "text-rx-muted text-xs"}>
+                    {lapRound} Round{lapRound > 1 ? 's' : ''}
+                  </span>
+                )}
+              </div>
+            )}
+            {mode === 'fortime' && running && lapRound > 0 && (
+              <div className={isFullscreen ? "text-white/60 text-lg font-bold" : "text-rx-muted text-xs font-bold"}>
+                {lapRound} Round{lapRound > 1 ? 's' : ''}
               </div>
             )}
           </div>
@@ -634,35 +733,99 @@ export default function TimerPage() {
           )}
 
           {/* Controls */}
-          <div className={
-            isFullscreen
-              ? "p-6 pb-safe flex gap-4 w-full max-w-[640px] mx-auto bg-transparent mb-10 z-10"
-              : "flex gap-3 mt-2"
-          }>
-            <button
-              onClick={handleStart}
-              className={`flex-1 h-20 min-h-[64px] rounded-2xl font-black text-2xl transition-all active:scale-95 border-2 flex items-center justify-center gap-3 ${
-                finished
-                  ? 'bg-transparent border-rx-orange text-rx-orange hover:bg-rx-orange hover:text-white'
-                  : running
-                  ? 'bg-yellow-500 border-yellow-500 text-black hover:bg-yellow-400'
-                  : 'gradient-bg border-transparent text-white hover:opacity-90'
-              }`}
-            >
-              {finished ? t('restart') : running ? <><PauseIcon size={28}/>{t('pause')}</> : (elapsed > 0 ? <><PlayIcon size={28}/>{t('resume')}</> : <><PlayIcon size={28}/>{t('start')}</>)}
-            </button>
-            <button
-              onClick={reset}
-              className={`h-20 w-20 min-h-[64px] rounded-2xl border-2 font-black text-lg transition-colors flex items-center justify-center shrink-0 ${
-                isFullscreen
-                  ? "bg-transparent border-white/30 text-white/50 hover:text-white hover:border-white"
-                  : "bg-rx-surface border-rx-border text-rx-muted hover:text-white hover:border-rx-red"
-              }`}
-              title={t('backToMenu')}
-            >
-              <RotateCcwIcon size={28} />
-            </button>
-          </div>
+          {isFullscreen && (mode === 'amrap' || mode === 'fortime') && !finished ? (
+            /* AMRAP / For Time — 3-button layout: [Rest] [Play/Pause] [+Round] */
+            <div className="p-4 pb-safe flex flex-col gap-3 w-full max-w-[640px] mx-auto mb-16 z-10">
+              <div className="flex gap-3">
+                {/* Rest button */}
+                <button
+                  onClick={handleRestPress}
+                  className={`flex-1 h-20 rounded-2xl border-2 font-bold flex flex-col items-center justify-center gap-1 transition-all active:scale-95 ${
+                    isResting
+                      ? 'bg-blue-500/20 border-blue-400 text-blue-300'
+                      : running
+                      ? 'bg-white/5 border-white/20 text-white/60 hover:border-white/40'
+                      : 'bg-transparent border-white/10 text-white/25 cursor-not-allowed'
+                  }`}
+                >
+                  {isResting ? (
+                    <>
+                      <span className="font-black text-lg leading-none">{formatTime(restTime)}</span>
+                      <span className="text-xs">End Rest</span>
+                    </>
+                  ) : (
+                    <>
+                      <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" stroke="none"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>
+                      <span className="text-xs font-bold">REST</span>
+                    </>
+                  )}
+                </button>
+
+                {/* Play / Pause */}
+                <button
+                  onClick={handleStart}
+                  className={`flex-1 h-20 rounded-2xl font-black text-2xl transition-all active:scale-95 border-2 flex items-center justify-center gap-2 ${
+                    running
+                      ? 'bg-yellow-500 border-yellow-500 text-black hover:bg-yellow-400'
+                      : 'gradient-bg border-transparent text-white hover:opacity-90'
+                  }`}
+                >
+                  {running ? <PauseIcon size={28}/> : <><PlayIcon size={28}/>{elapsed > 0 ? t('resume') : t('start')}</>}
+                </button>
+
+                {/* Round counter button */}
+                <button
+                  onClick={handleRoundPress}
+                  className={`flex-1 h-20 rounded-2xl border-2 border-transparent flex flex-col items-center justify-center gap-0.5 transition-all active:scale-95 ${
+                    running ? 'gradient-bg' : 'bg-white/5 cursor-not-allowed'
+                  }`}
+                >
+                  <span className={`font-black text-4xl leading-none ${running ? 'text-white' : 'text-white/25'}`}>{lapRound}</span>
+                  <span className={`text-xs font-bold tracking-wider ${running ? 'text-white/70' : 'text-white/25'}`}>+ROUND</span>
+                </button>
+              </div>
+
+              {/* Reset */}
+              <button
+                onClick={reset}
+                className="w-full h-11 rounded-xl border border-white/15 text-white/35 hover:text-white/70 hover:border-white/35 transition-colors flex items-center justify-center gap-2 font-bold text-sm"
+              >
+                <RotateCcwIcon size={16} />
+                Reset
+              </button>
+            </div>
+          ) : (
+            /* Default layout for other modes (and finished state) */
+            <div className={
+              isFullscreen
+                ? "p-6 pb-safe flex gap-4 w-full max-w-[640px] mx-auto bg-transparent mb-10 z-10"
+                : "flex gap-3 mt-2"
+            }>
+              <button
+                onClick={handleStart}
+                className={`flex-1 h-20 min-h-[64px] rounded-2xl font-black text-2xl transition-all active:scale-95 border-2 flex items-center justify-center gap-3 ${
+                  finished
+                    ? 'bg-transparent border-rx-orange text-rx-orange hover:bg-rx-orange hover:text-white'
+                    : running
+                    ? 'bg-yellow-500 border-yellow-500 text-black hover:bg-yellow-400'
+                    : 'gradient-bg border-transparent text-white hover:opacity-90'
+                }`}
+              >
+                {finished ? t('restart') : running ? <><PauseIcon size={28}/>{t('pause')}</> : (elapsed > 0 ? <><PlayIcon size={28}/>{t('resume')}</> : <><PlayIcon size={28}/>{t('start')}</>)}
+              </button>
+              <button
+                onClick={reset}
+                className={`h-20 w-20 min-h-[64px] rounded-2xl border-2 font-black text-lg transition-colors flex items-center justify-center shrink-0 ${
+                  isFullscreen
+                    ? "bg-transparent border-white/30 text-white/50 hover:text-white hover:border-white"
+                    : "bg-rx-surface border-rx-border text-rx-muted hover:text-white hover:border-rx-red"
+                }`}
+                title={t('backToMenu')}
+              >
+                <RotateCcwIcon size={28} />
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Mode Info */}
@@ -706,6 +869,90 @@ export default function TimerPage() {
           </div>
         </div>
       )}
+      {/* ── Bottom Sheet: Workout Log (AMRAP / For Time only) ── */}
+      {isFullscreen && (mode === 'amrap' || mode === 'fortime') && (lapRound > 0 || workoutLogs.length > 0) && (
+        <div
+          className="fixed bottom-0 left-0 right-0 z-[110] h-[50vh] bg-[#111111] border-t border-white/10 transition-transform duration-300 ease-out"
+          style={{ transform: isLogOpen ? 'translateY(0)' : 'translateY(calc(50vh - 56px))' }}
+        >
+          {/* Drag handle bar */}
+          <div
+            className="relative flex items-center justify-between px-5 h-14 cursor-pointer select-none"
+            onClick={() => setIsLogOpen(v => !v)}
+            onTouchStart={(e) => { touchStartYRef.current = e.touches[0].clientY }}
+            onTouchEnd={(e) => {
+              const delta = touchStartYRef.current - e.changedTouches[0].clientY
+              if (delta > 30) setIsLogOpen(true)
+              else if (delta < -30) setIsLogOpen(false)
+            }}
+          >
+            {/* Pill indicator */}
+            <div className="absolute top-2 left-1/2 -translate-x-1/2 w-10 h-1 rounded-full bg-white/20" />
+            <div className="flex items-center gap-2.5 mt-1">
+              <span className="text-white/60 font-bold text-sm">Show Workout</span>
+              {lapRound > 0 && (
+                <span className="text-xs font-black px-2 py-0.5 rounded-full gradient-bg text-white">
+                  {lapRound} rds
+                </span>
+              )}
+            </div>
+            <svg
+              width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"
+              className={`text-white/35 transition-transform duration-300 mt-1 ${isLogOpen ? 'rotate-180' : ''}`}
+            >
+              <polyline points="18 15 12 9 6 15" />
+            </svg>
+          </div>
+
+          {/* Log content */}
+          <div className="overflow-y-auto h-[calc(50vh-56px)] px-5 pb-safe">
+            {workoutLogs.length === 0 ? (
+              <p className="text-white/30 text-sm text-center py-8">
+                라운드를 완료하면 기록이 표시됩니다
+              </p>
+            ) : (
+              <>
+                {(() => {
+                  const roundLogs = workoutLogs.filter(l => l.type === 'round')
+                  return [...workoutLogs].reverse().map((log, i) => {
+                    if (log.type === 'round') {
+                      const roundIdx = roundLogs.findIndex(r => r.roundNumber === log.roundNumber)
+                      const prevRound = roundLogs[roundIdx - 1]
+                      const diff = prevRound ? log.lapTime - prevRound.lapTime : null
+                      return (
+                        <div key={i} className="flex items-center py-2.5 border-b border-white/[0.06]">
+                          <span className="text-white/40 text-xs w-20 shrink-0">Round {log.roundNumber}</span>
+                          <span className="text-white font-bold flex-1 font-mono text-sm">{formatTime(log.lapTime)}</span>
+                          {diff !== null && (
+                            <span className={`text-xs font-bold min-w-[40px] text-right ${diff > 0 ? 'text-red-400' : diff < 0 ? 'text-green-400' : 'text-white/30'}`}>
+                              {diff > 0 ? `+${diff}s` : `${diff}s`}
+                            </span>
+                          )}
+                        </div>
+                      )
+                    } else {
+                      return (
+                        <div key={i} className="flex items-center py-2.5 border-b border-white/[0.06]">
+                          <span className="text-blue-400/60 text-xs w-20 shrink-0">휴식</span>
+                          <span className="text-blue-300/70 font-bold flex-1 font-mono text-sm">{formatTime(log.lapTime)}</span>
+                          <span className="text-blue-400/30 text-xs min-w-[40px] text-right">–</span>
+                        </div>
+                      )
+                    }
+                  })
+                })()}
+                {/* Summary row */}
+                <div className="flex items-center py-3 mt-1">
+                  <span className="text-white/30 text-xs w-20 shrink-0">합계</span>
+                  <span className="text-white/50 text-sm font-bold flex-1">{lapRound} rounds</span>
+                  <span className="text-white/40 text-xs font-mono">{formatTime(elapsed)}</span>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+
       {!isFullscreen && <MobileNav />}
     </div>
   )
