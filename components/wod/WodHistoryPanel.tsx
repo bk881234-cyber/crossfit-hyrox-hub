@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect, useMemo } from 'react'
 import { motion } from 'framer-motion'
+import { useTranslations } from 'next-intl'
 import { Link } from '@/navigation'
 import { createClient } from '@/lib/supabase/client'
 import type { WodLog } from '@/lib/supabase-types'
@@ -54,33 +55,41 @@ function findPrIndex(logs: WodLog[]): number {
     return bestIdx >= 0 ? bestIdx : 0
   }
 
-  return 0 // default: most recent
+  return 0
 }
 
 // ─── Delta badge between two attempts ────────────────────────
 type DeltaBadge = { dir: 'up' | 'down' | 'same'; label: string }
 
-function computeDelta(current: WodLog, previous: WodLog): DeltaBadge | null {
+function computeDelta(
+  current: WodLog,
+  previous: WodLog,
+  tFaster: (t: string) => string,
+  tSlower: (t: string) => string,
+  tSame: string,
+  tMoreRounds: (n: number) => string,
+  tFewerRounds: (n: number) => string,
+): DeltaBadge | null {
   const wt = current.wod_type
 
   if (wt === 'For Time') {
     const curr = parseTimeToSec(current.time)
     const prev = parseTimeToSec(previous.time)
     if (curr === null || prev === null) return null
-    const delta = prev - curr // positive = faster = better
-    if (delta > 0) return { dir: 'up',   label: `↑ ${fmtSec(delta)} 단축!` }
-    if (delta < 0) return { dir: 'down', label: `↓ ${fmtSec(Math.abs(delta))} 느림` }
-    return { dir: 'same', label: '동일' }
+    const delta = prev - curr
+    if (delta > 0) return { dir: 'up',   label: tFaster(fmtSec(delta)) }
+    if (delta < 0) return { dir: 'down', label: tSlower(fmtSec(Math.abs(delta))) }
+    return { dir: 'same', label: tSame }
   }
 
   if (wt === 'AMRAP') {
     const curr = parseRoundsToNum(current.rounds)
     const prev = parseRoundsToNum(previous.rounds)
     if (curr === null || prev === null) return null
-    const delta = curr - prev // positive = more rounds = better
-    if (delta > 0) return { dir: 'up',   label: `↑ ${delta} 라운드 더!` }
-    if (delta < 0) return { dir: 'down', label: `↓ ${Math.abs(delta)} 라운드 감소` }
-    return { dir: 'same', label: '동일' }
+    const delta = curr - prev
+    if (delta > 0) return { dir: 'up',   label: tMoreRounds(delta) }
+    if (delta < 0) return { dir: 'down', label: tFewerRounds(Math.abs(delta)) }
+    return { dir: 'same', label: tSame }
   }
 
   return null
@@ -108,6 +117,7 @@ function DeltaChip({ badge }: { badge: DeltaBadge }) {
 interface Props { wodId: string }
 
 export default function WodHistoryPanel({ wodId }: Props) {
+  const th = useTranslations('wodHistory')
   const supabase = useMemo(() => createClient(), [])
   const [logs, setLogs] = useState<WodLog[]>([])
   const [status, setStatus] = useState<'loading' | 'guest' | 'ready'>('loading')
@@ -130,12 +140,9 @@ export default function WodHistoryPanel({ wodId }: Props) {
     load()
   }, [supabase, wodId])
 
-  // Don't render anything while loading or for guests
   if (status !== 'ready') return null
 
   const prIdx = findPrIndex(logs)
-
-  // Best result for the banner
   const prLog = logs[prIdx]
   const prResult = prLog?.time ?? prLog?.rounds ?? null
 
@@ -157,7 +164,6 @@ export default function WodHistoryPanel({ wodId }: Props) {
         >
           <div className="flex items-start justify-between gap-4 flex-wrap">
             <div>
-              {/* Title row */}
               <div className="flex items-center gap-2 mb-3 flex-wrap">
                 <span style={{ fontSize: 22 }}>🔄</span>
                 <span className="font-black text-white uppercase tracking-tight" style={{ fontSize: 20 }}>
@@ -167,25 +173,24 @@ export default function WodHistoryPanel({ wodId }: Props) {
                   className="px-2.5 py-0.5 rounded-full font-bold text-white"
                   style={{ background: 'linear-gradient(135deg, #E8321A, #FF2D8B)', fontSize: 16 }}
                 >
-                  {logs.length}회 도전
+                  {th('challengeCount', { count: logs.length })}
                 </span>
               </div>
 
-              {/* Stats row */}
               <div className="flex gap-6 flex-wrap">
                 {prResult && (
                   <div>
-                    <p className="text-rx-muted" style={{ fontSize: 16 }}>PR 기록</p>
+                    <p className="text-rx-muted" style={{ fontSize: 16 }}>{th('prRecord')}</p>
                     <p className="font-black gradient-text" style={{ fontSize: 24 }}>{prResult}</p>
                   </div>
                 )}
                 <div>
-                  <p className="text-rx-muted" style={{ fontSize: 16 }}>마지막 도전</p>
+                  <p className="text-rx-muted" style={{ fontSize: 16 }}>{th('lastChallenge')}</p>
                   <p className="text-white font-bold" style={{ fontSize: 16 }}>{logs[0].date}</p>
                 </div>
                 {logs[0].difficulty && (
                   <div>
-                    <p className="text-rx-muted" style={{ fontSize: 16 }}>난이도</p>
+                    <p className="text-rx-muted" style={{ fontSize: 16 }}>{th('difficulty')}</p>
                     <p style={{ fontSize: 16 }}>{'🔥'.repeat(logs[0].difficulty)}</p>
                   </div>
                 )}
@@ -197,25 +202,22 @@ export default function WodHistoryPanel({ wodId }: Props) {
               className="btn-primary py-2.5 px-5 whitespace-nowrap self-start"
               style={{ fontSize: 16 }}
             >
-              재도전 →
+              {th('rechallenge')}
             </Link>
           </div>
         </div>
       ) : (
-        /* First-time hint */
-        <div
-          className="glass-card p-4 flex items-center justify-between gap-4 mb-4 flex-wrap"
-        >
+        <div className="glass-card p-4 flex items-center justify-between gap-4 mb-4 flex-wrap">
           <div>
-            <p className="text-white font-bold" style={{ fontSize: 16 }}>아직 이 WOD를 기록하지 않았어요</p>
-            <p className="text-rx-muted" style={{ fontSize: 16 }}>첫 도전을 시작해보세요!</p>
+            <p className="text-white font-bold" style={{ fontSize: 16 }}>{th('noChallenges')}</p>
+            <p className="text-rx-muted" style={{ fontSize: 16 }}>{th('firstChallenge')}</p>
           </div>
           <Link
             href={`/wod/log?wod=${wodId}`}
             className="btn-primary py-2 px-4 whitespace-nowrap flex-shrink-0"
             style={{ fontSize: 16 }}
           >
-            기록하기
+            {th('logBtn')}
           </Link>
         </div>
       )}
@@ -224,17 +226,26 @@ export default function WodHistoryPanel({ wodId }: Props) {
       {logs.length > 0 && (
         <div>
           <h3 className="font-black text-white uppercase tracking-tight mb-3" style={{ fontSize: 18 }}>
-            도전 기록{' '}
+            {th('historyTitle')}{' '}
             <span className="text-rx-muted font-normal" style={{ fontSize: 16 }}>
-              ({logs.length}회)
+              {th('historyCount', { count: logs.length })}
             </span>
           </h3>
 
           <div className="space-y-2.5">
             {logs.slice(0, 5).map((log, i) => {
               const isPR = i === prIdx
-              // Compare this attempt with the PREVIOUS (older) attempt
-              const delta = i < logs.length - 1 ? computeDelta(log, logs[i + 1]) : null
+              const delta = i < logs.length - 1
+                ? computeDelta(
+                    log,
+                    logs[i + 1],
+                    (t) => th('fasterBy', { t }),
+                    (t) => th('slowerBy', { t }),
+                    th('same'),
+                    (n) => th('moreRounds', { n }),
+                    (n) => th('fewerRounds', { n }),
+                  )
+                : null
 
               return (
                 <motion.div
@@ -248,7 +259,6 @@ export default function WodHistoryPanel({ wodId }: Props) {
                     boxShadow: '0 0 18px rgba(255,45,139,0.10)',
                   } : {}}
                 >
-                  {/* Rank / trophy */}
                   <div className="flex-shrink-0 w-9 flex flex-col items-center">
                     {isPR
                       ? <span style={{ fontSize: 22 }}>🏆</span>
@@ -256,7 +266,6 @@ export default function WodHistoryPanel({ wodId }: Props) {
                     }
                   </div>
 
-                  {/* Result */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap mb-0.5">
                       {log.time && (
@@ -266,7 +275,7 @@ export default function WodHistoryPanel({ wodId }: Props) {
                         <span className="font-black text-green-400" style={{ fontSize: 20 }}>🔄 {log.rounds}</span>
                       )}
                       {!log.time && !log.rounds && (
-                        <span className="text-rx-muted" style={{ fontSize: 16 }}>결과 없음</span>
+                        <span className="text-rx-muted" style={{ fontSize: 16 }}>{th('noResult')}</span>
                       )}
                       {isPR && (
                         <span
@@ -280,7 +289,6 @@ export default function WodHistoryPanel({ wodId }: Props) {
                     <p className="text-rx-muted" style={{ fontSize: 16 }}>{log.date}</p>
                   </div>
 
-                  {/* Delta chip */}
                   {delta && <DeltaChip badge={delta} />}
                 </motion.div>
               )
@@ -289,9 +297,9 @@ export default function WodHistoryPanel({ wodId }: Props) {
 
           {logs.length > 5 && (
             <p className="text-rx-muted text-center mt-3" style={{ fontSize: 16 }}>
-              + {logs.length - 5}개 더 —{' '}
-              <Link href="/mypage" className="text-white underline underline-offset-2">마이페이지</Link>
-              에서 전체 보기
+              {th('moreResults', { n: logs.length - 5 })}{' '}
+              <Link href="/mypage" className="text-white underline underline-offset-2">{th('viewAllMypage')}</Link>
+              {th('viewAllSuffix')}
             </p>
           )}
         </div>

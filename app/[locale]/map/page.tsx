@@ -172,73 +172,82 @@ export default function MapPage() {
 
   const directionsLabel = t('directions')
 
-  // 장소 검색 후 마커 생성
+  // 마커 렌더링 헬퍼 (중복 제거된 결과를 받아 지도에 표시)
+  const renderMarkers = useCallback((places: any[]) => {
+    setResultCount(places.length)
+    setSearchedBoxes(places)
+    setVisibleBoxCount(8)
+    places.forEach((place) => {
+      const position = new window.kakao.maps.LatLng(place.y, place.x)
+      const marker = new window.kakao.maps.Marker({ map: mapRef.current, position })
+      window.kakao.maps.event.addListener(marker, 'click', () => {
+        overlayRef.current?.setMap(null)
+        const el = buildOverlayEl(
+          place.place_name,
+          place.road_address_name || place.address_name,
+          place.id,
+          place.y,
+          place.x,
+          closeOverlay,
+          directionsLabel,
+        )
+        const ov = new window.kakao.maps.CustomOverlay({ position, content: el, yAnchor: 1.12 })
+        ov.setMap(mapRef.current)
+        overlayRef.current = ov
+      })
+      markersRef.current.push(marker)
+    })
+  }, [closeOverlay, directionsLabel])
+
+  // 장소 검색 — CrossFit(크로스핏·영문) + HYROX 다중 키워드 동시 검색, 중복 제거
   const searchPlaces = useCallback((regionId: string, keyword?: string) => {
     if (!window.kakao?.maps?.services || !mapRef.current) return
     clearMarkers()
 
     const region = REGIONS.find((r) => r.id === regionId) ?? REGIONS[0]
+    const prefix = regionId === 'all' ? '' : `${region.label} `
 
-    // 1. 검색 키워드 강제 조합: 입력값 없으면 항상 "크로스핏" 포함 키워드 사용
-    const q = keyword
-      ? keyword
-      : regionId === 'all'
-        ? '크로스핏'
-        : `${region.label} 크로스핏`
+    // 사용자 입력이 있으면 그대로, 없으면 CrossFit + HYROX 두 키워드로 검색
+    const keywords: string[] = keyword
+      ? [keyword]
+      : [`${prefix}크로스핏`, `${prefix}CrossFit`, `${prefix}HYROX`]
 
     const ps = new window.kakao.maps.services.Places()
     const accumulated: any[] = []
+    const seenIds = new Set<string>()
+    let pending = keywords.length
 
-    // 전체 마커를 한 번에 지도에 렌더링 + 3. 프론트엔드 단어 필터링
-    const renderAllMarkers = (places: any[]) => {
-      const filtered = places.filter((place) => {
-        const name = place.place_name ?? ''
-        const category = place.category_name ?? ''
-        return name.includes('크로스핏') || category.includes('크로스핏')
+    const onAllDone = () => {
+      // place.id 기준 중복 제거 후 렌더링
+      const unique = accumulated.filter((p) => {
+        if (seenIds.has(p.id)) return false
+        seenIds.add(p.id)
+        return true
       })
-      setResultCount(filtered.length)
-      setSearchedBoxes(filtered)
-      setVisibleBoxCount(8)
-      filtered.forEach((place) => {
-        const position = new window.kakao.maps.LatLng(place.y, place.x)
-        const marker = new window.kakao.maps.Marker({ map: mapRef.current, position })
-        window.kakao.maps.event.addListener(marker, 'click', () => {
-          overlayRef.current?.setMap(null)
-          const el = buildOverlayEl(
-            place.place_name,
-            place.road_address_name || place.address_name,
-            place.id,
-            place.y,
-            place.x,
-            closeOverlay,
-            directionsLabel,
-          )
-          const ov = new window.kakao.maps.CustomOverlay({ position, content: el, yAnchor: 1.12 })
-          ov.setMap(mapRef.current)
-          overlayRef.current = ov
-        })
-        markersRef.current.push(marker)
-      })
+      if (unique.length === 0) setResultCount(0)
+      else renderMarkers(unique)
     }
 
-    // 2. 페이지네이션 끝까지 연속 호출: 모든 페이지 결과 누적 후 한 번에 렌더링
-    const handleResult = (data: any[], status: string, pagination: any) => {
-      if (status !== window.kakao.maps.services.Status.OK) {
-        if (accumulated.length === 0) setResultCount(0)
-        else renderAllMarkers(accumulated)
-        return
+    keywords.forEach((kw) => {
+      const kwAccum: any[] = []
+      const handlePage = (data: any[], status: string, pagination: any) => {
+        if (status === window.kakao.maps.services.Status.OK) {
+          kwAccum.push(...data)
+          if (pagination.hasNextPage) {
+            pagination.nextPage()
+          } else {
+            accumulated.push(...kwAccum)
+            pending--
+            if (pending === 0) onAllDone()
+          }
+        } else {
+          pending--
+          if (pending === 0) onAllDone()
+        }
       }
-      accumulated.push(...data)
-      if (pagination.hasNextPage) {
-        pagination.nextPage()
-      } else {
-        renderAllMarkers(accumulated)
-      }
-    }
-
-    // 카카오맵에는 체육시설 전용 category_group_code가 없으므로 옵션을 비우고 검색 (이후 프론트엔드 단편에서 필터링)
-    ps.keywordSearch(q, handleResult)
-  }, [clearMarkers, closeOverlay, directionsLabel])
+      ps.keywordSearch(kw, handlePage)
+    })
+  }, [clearMarkers, renderMarkers])
 
   // 환경변수 누락 체크
   useEffect(() => {
@@ -294,11 +303,10 @@ export default function MapPage() {
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (!search.trim() || !mapRef.current) return
-    const q = search.includes('크로스핏') ? search : `${search} 크로스핏`
-    searchPlaces(selectedRegion, q)
+    searchPlaces(selectedRegion, search.trim())
   }
 
-  // 내 위치
+  // 내 위치 — CrossFit + HYROX 반경 10km 다중 검색
   const handleFindNearby = () => {
     if (!mapRef.current || !window.kakao?.maps?.services) return
     setLocating(true)
@@ -313,40 +321,38 @@ export default function MapPage() {
         const myMarker = new window.kakao.maps.Marker({
           map: mapRef.current,
           position: pos,
-          title: '내 위치',
+          title: t('nearbyBtn'),
         })
         myLocationMarkerRef.current = myMarker
 
         const ps = new window.kakao.maps.services.Places()
-        ps.keywordSearch('크로스핏', (data: any[], status: string) => {
-          if (status === window.kakao.maps.services.Status.OK) {
-            setResultCount(data.length)
-            data.forEach((place) => {
-              const position = new window.kakao.maps.LatLng(place.y, place.x)
-              const marker = new window.kakao.maps.Marker({ map: mapRef.current, position })
-              window.kakao.maps.event.addListener(marker, 'click', () => {
-                overlayRef.current?.setMap(null)
-                const el = buildOverlayEl(
-                  place.place_name,
-                  place.road_address_name || place.address_name,
-                  place.id,
-                  place.y,
-                  place.x,
-                  closeOverlay,
-                  directionsLabel,
-                )
-                const ov = new window.kakao.maps.CustomOverlay({ position, content: el, yAnchor: 1.12 })
-                ov.setMap(mapRef.current)
-                overlayRef.current = ov
-              })
-              markersRef.current.push(marker)
-            })
-          }
+        const nearbyKeywords = ['크로스핏', 'CrossFit', 'HYROX']
+        const accumulated: any[] = []
+        const seenIds = new Set<string>()
+        let pending = nearbyKeywords.length
+
+        const onAllDone = () => {
+          const unique = accumulated.filter((p) => {
+            if (seenIds.has(p.id)) return false
+            seenIds.add(p.id)
+            return true
+          })
+          renderMarkers(unique)
           setLocating(false)
-        }, { location: pos, radius: 10000 })
+        }
+
+        nearbyKeywords.forEach((kw) => {
+          ps.keywordSearch(kw, (data: any[], status: string) => {
+            if (status === window.kakao.maps.services.Status.OK) {
+              accumulated.push(...data)
+            }
+            pending--
+            if (pending === 0) onAllDone()
+          }, { location: pos, radius: 10000 })
+        })
       },
       () => {
-        alert('위치 권한이 필요합니다.')
+        alert(t('locationPermission'))
         setLocating(false)
       }
     )
@@ -362,11 +368,11 @@ export default function MapPage() {
 
   const handleAddSubmit = () => {
     setFormError('')
-    if (!form.name.trim()) { setFormError('박스명을 입력해주세요.'); return }
-    if (!form.city.trim()) { setFormError('지역(시)을 입력해주세요.'); return }
-    if (!form.address.trim()) { setFormError('주소를 입력해주세요.'); return }
+    if (!form.name.trim()) { setFormError(t('formValidName')); return }
+    if (!form.city.trim()) { setFormError(t('formValidCity')); return }
+    if (!form.address.trim()) { setFormError(t('formValidAddress')); return }
     if (!form.contactName.trim() || !form.contactEmail.trim()) {
-      setFormError('신청자 이름과 이메일을 입력해주세요.'); return
+      setFormError(t('formValidContact')); return
     }
     setAddSubmitted(true)
   }
@@ -442,7 +448,7 @@ export default function MapPage() {
                 type="submit"
                 className="absolute right-2 top-1/2 -translate-y-1/2 px-3 py-1.5 rounded-lg gradient-bg text-white text-xs font-bold hover:opacity-90 transition-opacity"
               >
-                검색
+                {t('searchBtn')}
               </button>
             </form>
 
@@ -484,7 +490,7 @@ export default function MapPage() {
                 <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
                 <circle cx="12" cy="10" r="3" />
               </svg>
-              <p className="text-rx-muted text-sm relative z-10 mt-3">지도 불러오는 중...</p>
+              <p className="text-rx-muted text-sm relative z-10 mt-3">{t('mapLoading')}</p>
             </div>
           )}
 
@@ -494,15 +500,15 @@ export default function MapPage() {
               <svg className="text-rx-muted mb-3" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
                 <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" />
               </svg>
-              <p className="text-white font-bold mb-1">지도를 불러올 수 없습니다</p>
-              <p className="text-rx-muted text-sm">API 키를 확인해주세요</p>
+              <p className="text-white font-bold mb-1">{t('mapLoadError')}</p>
+              <p className="text-rx-muted text-sm">{t('mapErrorHint')}</p>
             </div>
           )}
 
           {/* 검색 결과 수 배지 */}
           {mapLoaded && resultCount !== null && (
             <div className="absolute top-3 left-3 z-10 px-3 py-1.5 rounded-full bg-rx-bg/90 backdrop-blur-sm border border-white/10 text-white text-xs font-bold">
-              크로스핏 박스 {resultCount}개 검색됨
+              {t('resultsBadge', { count: resultCount })}
             </div>
           )}
 
@@ -516,7 +522,7 @@ export default function MapPage() {
               <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
               <circle cx="12" cy="10" r="3" />
             </svg>
-            {locating ? '위치 확인 중...' : '내 주변 박스'}
+            {locating ? t('locating') : t('nearbyBtn')}
           </button>
         </div>
 
@@ -530,7 +536,7 @@ export default function MapPage() {
                     <line x1="8" y1="6" x2="21" y2="6" /><line x1="8" y1="12" x2="21" y2="12" /><line x1="8" y1="18" x2="21" y2="18" />
                     <line x1="3" y1="6" x2="3.01" y2="6" /><line x1="3" y1="12" x2="3.01" y2="12" /><line x1="3" y1="18" x2="3.01" y2="18" />
                   </svg>
-                  목록 보기 <span className="text-rx-muted font-normal text-sm ml-1">({searchedBoxes.length})</span>
+                  {t('listView')} <span className="text-rx-muted font-normal text-sm ml-1">({searchedBoxes.length})</span>
                 </h2>
               </div>
 
@@ -549,7 +555,7 @@ export default function MapPage() {
                     </p>
                     <div className="flex gap-2">
                       <a href={`https://map.kakao.com/link/to/${encodeURIComponent(box.place_name)},${box.y},${box.x}`} target="_blank" rel="noopener noreferrer" className="flex-1 text-center py-2 rounded-lg bg-rx-bg border border-rx-border text-xs font-bold text-white hover:border-rx-red/50 transition-colors">{t('directions')}</a>
-                      {box.place_url && <a href={box.place_url} target="_blank" rel="noopener noreferrer" className="flex-1 text-center py-2 rounded-lg bg-rx-bg border border-rx-border text-xs font-bold text-white hover:border-rx-red/50 transition-colors">상세정보</a>}
+                      {box.place_url && <a href={box.place_url} target="_blank" rel="noopener noreferrer" className="flex-1 text-center py-2 rounded-lg bg-rx-bg border border-rx-border text-xs font-bold text-white hover:border-rx-red/50 transition-colors">{t('listDetails')}</a>}
                     </div>
                   </div>
                 ))}
@@ -560,7 +566,7 @@ export default function MapPage() {
                   onClick={() => setVisibleBoxCount(prev => prev + 8)}
                   className="w-full mt-4 py-3 rounded-xl border border-rx-border bg-rx-surface hover:bg-rx-border/50 text-white text-sm font-bold transition-colors"
                 >
-                  더보기 ({visibleBoxCount} / {searchedBoxes.length})
+                  {t('loadMoreList', { current: visibleBoxCount, total: searchedBoxes.length })}
                 </button>
               )}
             </section>
@@ -572,7 +578,7 @@ export default function MapPage() {
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-rx-red">
                 <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" />
               </svg>
-              지도 이용 안내
+              {t('guideTitle')}
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {[

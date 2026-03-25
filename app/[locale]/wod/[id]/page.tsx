@@ -1,4 +1,5 @@
-import Link from 'next/link'
+import { getTranslations } from 'next-intl/server'
+import { Link } from '@/navigation'
 import { notFound } from 'next/navigation'
 import Header from '@/components/layout/Header'
 import MobileNav from '@/components/layout/MobileNav'
@@ -15,22 +16,6 @@ const TYPE_COLORS: Record<WOD['type'], string> = {
   hero: 'bg-blue-500/20 text-blue-400 border-blue-500/30',
   open: 'bg-rx-orange/20 text-rx-orange border-rx-orange/30',
   benchmark: 'bg-green-500/20 text-green-400 border-green-500/30',
-}
-
-const TYPE_LABELS: Record<WOD['type'], string> = {
-  girl: 'Girl WOD',
-  hero: 'Hero WOD',
-  open: 'CrossFit Open',
-  benchmark: '벤치마크',
-}
-
-const EQUIPMENT_LABELS: Record<string, string> = {
-  barbell: '바벨',
-  dumbbell: '덤벨',
-  bodyweight: '맨몸',
-  rope: '줄넘기',
-  kettlebell: '케틀벨',
-  box: '박스',
 }
 
 function EquipmentIcon({ type }: { type: string }) {
@@ -70,14 +55,33 @@ function EquipmentIcon({ type }: { type: string }) {
 }
 
 interface Props {
-  params: { locale: string; id: string }
+  params: Promise<{ locale: string; id: string }>
 }
 
-export default function WODDetailPage({ params }: Props) {
-  const wod = WODS.find((w) => w.id === params.id)
+export default async function WODDetailPage({ params }: Props) {
+  const { id } = await params
+  const t = await getTranslations('wod')
+
+  const wod = WODS.find((w) => w.id === id)
   if (!wod) notFound()
 
   const wodIndex = WODS.indexOf(wod)
+
+  const TYPE_LABELS: Record<WOD['type'], string> = {
+    girl: 'Girl WOD',
+    hero: 'Hero WOD',
+    open: 'CrossFit Open',
+    benchmark: t('typeBenchmark'),
+  }
+
+  const EQUIPMENT_LABELS: Record<string, string> = {
+    barbell: t('equipBarbell'),
+    dumbbell: t('equipDumbbell'),
+    bodyweight: t('equipBodyweight'),
+    rope: t('equipRope'),
+    kettlebell: t('equipKettlebell'),
+    box: t('equipBox'),
+  }
 
   return (
     <div className="min-h-screen bg-rx-bg">
@@ -85,7 +89,7 @@ export default function WODDetailPage({ params }: Props) {
       <main className="pt-20 pb-24 md:pb-10 px-4 max-w-[992px] mx-auto">
         {/* Breadcrumb */}
         <nav className="flex items-center gap-2 mt-4 mb-6 text-xs text-rx-muted">
-          <Link href="/" className="hover:text-white transition-colors">홈</Link>
+          <Link href="/" className="hover:text-white transition-colors">{t('breadcrumbHome')}</Link>
           <span>/</span>
           <Link href="/wod" className="hover:text-white transition-colors">WOD Library</Link>
           <span>/</span>
@@ -101,13 +105,13 @@ export default function WODDetailPage({ params }: Props) {
             <svg className="group-hover:-translate-x-1 transition-transform" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
               <path d="M19 12H5M12 19l-7-7 7-7" />
             </svg>
-            WOD 목록으로
+            {t('backToList')}
           </Link>
           <Link
             href={`/wod/log?wod=${wod.id}`}
             className="btn-primary text-sm px-4 py-2 rounded-xl"
           >
-            기록하기
+            {t('logBtn')}
           </Link>
         </div>
 
@@ -130,7 +134,7 @@ export default function WODDetailPage({ params }: Props) {
             {wod.equipment.map((eq) => (
               <span key={eq} className="text-xs bg-rx-surface px-3 py-1 rounded-full text-rx-muted border border-rx-border flex items-center gap-1.5">
                 <EquipmentIcon type={eq} />
-                {EQUIPMENT_LABELS[eq]}
+                {EQUIPMENT_LABELS[eq] ?? eq}
               </span>
             ))}
           </div>
@@ -142,7 +146,7 @@ export default function WODDetailPage({ params }: Props) {
               <polyline points="12 6 12 12 16 14" />
             </svg>
             <div>
-              <p className="text-xs font-bold gradient-text">목표 시간</p>
+              <p className="text-xs font-bold gradient-text">{t('targetTime')}</p>
               <p className="text-white text-sm font-bold">{wod.timeTarget}</p>
             </div>
           </div>
@@ -150,7 +154,7 @@ export default function WODDetailPage({ params }: Props) {
 
         {/* Description */}
         <div className="card mb-6">
-          <h2 className="font-black text-white text-xl mb-4">WOD 설명</h2>
+          <h2 className="font-black text-white text-xl mb-4">{t('wodDescription')}</h2>
           <div className="text-white leading-relaxed whitespace-pre-line text-sm">
             {wod.description}
           </div>
@@ -158,7 +162,7 @@ export default function WODDetailPage({ params }: Props) {
 
         {/* Movements */}
         <div className="card mb-6">
-          <h2 className="font-black text-white text-xl mb-4">주요 동작</h2>
+          <h2 className="font-black text-white text-xl mb-4">{t('keyMovements')}</h2>
           <div className="space-y-2">
             {wod.movements.map((movement, i) => (
               <div key={i} className="flex items-center gap-3 px-4 py-3 bg-rx-surface rounded-xl">
@@ -182,7 +186,7 @@ export default function WODDetailPage({ params }: Props) {
                 <polyline points="20 6 9 17 4 12" />
               </svg>
             </span>
-            <h2 className="font-black text-white text-xl">스케일링 옵션</h2>
+            <h2 className="font-black text-white text-xl">{t('scalingOptions')}</h2>
           </div>
           <div className="text-rx-muted leading-relaxed whitespace-pre-line text-sm bg-rx-surface rounded-xl p-4">
             {wod.scaling}
@@ -207,13 +211,13 @@ export default function WODDetailPage({ params }: Props) {
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="inline mr-1.5 -mt-0.5">
               <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
             </svg>
-            타이머로 이동
+            {t('goToTimer')}
           </Link>
           <Link href={`/wod/log?wod=${wod.id}`} className="btn-secondary text-sm py-3.5 rounded-xl text-center">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="inline mr-1.5 -mt-0.5">
               <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
             </svg>
-            기록하기
+            {t('logBtn')}
           </Link>
         </div>
 
@@ -224,7 +228,7 @@ export default function WODDetailPage({ params }: Props) {
               href={`/wod/${WODS[wodIndex - 1].id}`}
               className="flex-1 card text-center hover:border-white/20 transition-colors"
             >
-              <p className="text-rx-muted text-xs mb-1">이전 WOD</p>
+              <p className="text-rx-muted text-xs mb-1">{t('prevWod')}</p>
               <p className="text-white font-bold">{WODS[wodIndex - 1].name}</p>
             </Link>
           )}
@@ -233,7 +237,7 @@ export default function WODDetailPage({ params }: Props) {
               href={`/wod/${WODS[wodIndex + 1].id}`}
               className="flex-1 card text-center hover:border-white/20 transition-colors"
             >
-              <p className="text-rx-muted text-xs mb-1">다음 WOD</p>
+              <p className="text-rx-muted text-xs mb-1">{t('nextWod')}</p>
               <p className="text-white font-bold">{WODS[wodIndex + 1].name}</p>
             </Link>
           )}
