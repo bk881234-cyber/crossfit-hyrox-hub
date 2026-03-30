@@ -687,7 +687,7 @@ export default function TimerPage() {
 
             {/* Big Timer */}
             <div className={`font-black tracking-tighter leading-none mb-6 text-center w-full ${
-              timeLeft < 10 && running ? 'text-rx-red animate-pulse' : 'text-white'
+              timeLeft <= 10 && running ? 'text-rx-red' : 'text-white'
             }`}
               style={{ fontSize: isFullscreen ? 'clamp(100px, 25vw, 250px)' : 'clamp(60px, 20vw, 120px)' }}
             >
