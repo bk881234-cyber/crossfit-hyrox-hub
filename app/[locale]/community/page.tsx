@@ -16,21 +16,6 @@ interface MajorComp {
   period: string      // "매년 4~6월 (예정)" 형식
   instagramUrl: string
   isHardcoded: true
-  isMakia?: boolean
-}
-
-// 마키아 상세 일정
-const MAKIA_DETAIL = {
-  fullName: '2026 Jeju Island MAKIA',
-  slogan: 'UNLOCK YOUR LIMIT',
-  location: '제주도',
-  registrationStart: '2026-04-27',
-  registrationEnd: '2026-05-11',
-  wodReveal: '2026-05-04',
-  qualifierStart: '2026-05-06',
-  qualifierEnd: '2026-05-17',
-  mainEvent: '2026년 여름',
-  ddayTarget: '2026-05-11', // 예선 접수 마감
 }
 
 interface RegisteredComp {
@@ -64,7 +49,7 @@ const HARDCODED_COMPS: MajorComp[] = [
   {
     id: 'makia', name: '마키아', nameEn: 'Makia',
     scale: '개인/팀 대회 · 제주도 개최', period: '예선 2026년 5월 · 본대회 2026년 여름',
-    instagramUrl: 'https://www.instagram.com/makia_official_', isHardcoded: true, isMakia: true,
+    instagramUrl: 'https://www.instagram.com/makia_official_', isHardcoded: true,
   },
   {
     id: 'battlecrew', name: '배틀크루', nameEn: 'Battle Crew',
@@ -556,81 +541,8 @@ function IgIcon() {
   )
 }
 
-// ─── 마키아 전용 D-day 계산 ───────────────────────────────────────────────────
-function getMakiaDday(): string {
-  const target = new Date(MAKIA_DETAIL.ddayTarget)
-  const diff = Math.ceil((target.getTime() - TODAY.getTime()) / (1000 * 60 * 60 * 24))
-  if (diff < 0) return '마감'
-  if (diff === 0) return 'D-Day'
-  return `D-${diff}`
-}
-
 // ─── 하드코딩 대회 카드 ─────────────────────────────────────────────────────────
 function HardcodedCompCard({ comp, t }: { comp: MajorComp; t: (key: string, values?: Record<string, string | number | Date>) => string }) {
-  if (comp.isMakia) {
-    const dday = getMakiaDday()
-    const isPast = dday === '마감'
-    return (
-      <div className="card col-span-1 md:col-span-2 border-rx-red/30 hover:border-rx-red/60 transition-all">
-        {/* 헤더 */}
-        <div className="flex flex-wrap items-center gap-2 mb-3">
-          <span className="badge gradient-bg border-transparent text-white text-xs font-black">{t('majorQualifying')}</span>
-          <span className={`badge border text-xs font-black ${
-            isPast ? 'bg-rx-surface border-rx-border text-rx-muted'
-            : 'bg-green-500/20 text-green-400 border-green-500/30'
-          }`}>
-            {t('majorQualifyingClose')} {dday}
-          </span>
-        </div>
-
-        <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
-          <div className="flex-1">
-            <p className="text-rx-muted text-xs mb-0.5">{comp.nameEn}</p>
-            <h3 className="font-black text-white text-xl mb-0.5">{MAKIA_DETAIL.fullName}</h3>
-            <p className="gradient-text font-black text-sm mb-3">{MAKIA_DETAIL.slogan}</p>
-
-            <div className="space-y-2 mb-4">
-              <div className="flex items-start gap-2">
-                <span className="text-rx-muted text-xs w-24 flex-shrink-0 pt-0.5">{t('majorScale')}</span>
-                <span className="text-white text-sm">{comp.scale}</span>
-              </div>
-              <div className="flex items-start gap-2">
-                <span className="text-rx-muted text-xs w-24 flex-shrink-0 pt-0.5">{t('majorLocation')}</span>
-                <span className="text-white text-sm font-bold">{MAKIA_DETAIL.location}</span>
-              </div>
-              <div className="flex items-start gap-2">
-                <span className="text-rx-muted text-xs w-24 flex-shrink-0 pt-0.5">{t('majorRegistration')}</span>
-                <span className="text-white text-sm">{formatDate(MAKIA_DETAIL.registrationStart)} ~ {formatDate(MAKIA_DETAIL.registrationEnd)}</span>
-              </div>
-              <div className="flex items-start gap-2">
-                <span className="text-rx-muted text-xs w-24 flex-shrink-0 pt-0.5">{t('majorWodReveal')}</span>
-                <span className="text-white text-sm">{formatDate(MAKIA_DETAIL.wodReveal)}</span>
-              </div>
-              <div className="flex items-start gap-2">
-                <span className="text-rx-muted text-xs w-24 flex-shrink-0 pt-0.5">{t('majorQualifierPeriod')}</span>
-                <span className="text-white text-sm">{formatDate(MAKIA_DETAIL.qualifierStart)} ~ {formatDate(MAKIA_DETAIL.qualifierEnd)}</span>
-              </div>
-              <div className="flex items-start gap-2">
-                <span className="text-rx-muted text-xs w-24 flex-shrink-0 pt-0.5">{t('majorMainEvent')}</span>
-                <span className="text-rx-orange text-sm font-bold">{MAKIA_DETAIL.mainEvent} (제주도)</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <a
-          href={comp.instagramUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg gradient-bg border-transparent text-white hover:opacity-90 text-sm font-bold transition-opacity"
-        >
-          <IgIcon />
-          {t('majorInsta')}
-        </a>
-      </div>
-    )
-  }
-
   return (
     <div className="card hover:border-rx-red/40 transition-all flex flex-col">
       <div className="flex-1">
