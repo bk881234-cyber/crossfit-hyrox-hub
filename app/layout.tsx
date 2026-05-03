@@ -108,7 +108,7 @@ const websiteJsonLd = {
   },
 }
 
-const adsensePubId = process.env.NEXT_PUBLIC_ADSENSE_ID
+const adsensePubId = process.env.NEXT_PUBLIC_ADSENSE_ID || 'ca-pub-6607759856824002'
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -123,20 +123,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
         />
-      </head>
-      <body className={`${notoSansKR.variable} bg-rx-bg min-h-screen`} suppressHydrationWarning>
-        {children}
-
-        {/* Google AdSense 자동 광고 — NEXT_PUBLIC_ADSENSE_ID 환경변수 설정 후 활성화 */}
+        {/* Google AdSense 자동 광고 */}
         {adsensePubId && (
-          <Script
-            id="adsense-script"
+          <script
             async
             src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${adsensePubId}`}
             crossOrigin="anonymous"
-            strategy="afterInteractive"
-          />
+          ></script>
         )}
+      </head>
+      <body className={`${notoSansKR.variable} bg-rx-bg min-h-screen`} suppressHydrationWarning>
+        {children}
       </body>
     </html>
   )
