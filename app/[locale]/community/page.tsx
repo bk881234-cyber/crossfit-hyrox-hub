@@ -84,7 +84,7 @@ const HARDCODED_COMPS: MajorComp[] = [
 ]
 
 // ─── HYROX 날짜 유틸 ──────────────────────────────────────────────────────────
-const TODAY = new Date('2026-03-12')
+const TODAY = new Date('2026-05-03')
 
 function getDday(dateStr: string): string {
   const diff = Math.ceil((new Date(dateStr).getTime() - TODAY.getTime()) / (1000 * 60 * 60 * 24))
