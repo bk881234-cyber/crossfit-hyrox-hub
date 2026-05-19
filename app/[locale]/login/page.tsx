@@ -12,7 +12,7 @@ export default function LoginPage() {
   const callbackUrl = searchParams.get('callbackUrl') ?? `/${locale}`
   const errorParam = searchParams.get('error')
 
-  const [loading, setLoading] = useState<'google' | 'kakao' | null>(null)
+  const [loading, setLoading] = useState<'google' | null>(null)
 
   const supabase = createClient()
   const tAuth = useTranslations('auth')
@@ -27,10 +27,10 @@ export default function LoginPage() {
   }
 
   const handleKakaoLogin = () => {
-    setLoading('kakao')
-    const state = encodeURIComponent(JSON.stringify({ locale, callbackUrl }))
-    const kakaoUrl = `https://kauth.kakao.com/oauth/authorize?client_id=aaabffa226fc652b4faedaec8af04582&redirect_uri=${window.location.origin}/api/auth/kakao&response_type=code&state=${state}`
-    window.location.href = kakaoUrl
+    // setLoading('kakao')
+    // const state = encodeURIComponent(JSON.stringify({ locale, callbackUrl }))
+    // const kakaoUrl = `https://kauth.kakao.com/oauth/authorize?client_id=aaabffa226fc652b4faedaec8af04582&redirect_uri=${window.location.origin}/api/auth/kakao&response_type=code&state=${state}`
+    // window.location.href = kakaoUrl
   }
 
   return (
@@ -108,7 +108,8 @@ export default function LoginPage() {
             {tAuth('google')}
           </button>
 
-          {/* Kakao login button */}
+          {/* Kakao login button (Hidden for now) */}
+          {/*
           <button
             onClick={handleKakaoLogin}
             disabled={loading !== null}
@@ -129,6 +130,7 @@ export default function LoginPage() {
             )}
             {tAuth('kakao')}
           </button>
+          */}
 
           <p className="text-center text-rx-muted text-xs">
             {tAuth('loginNote')}
