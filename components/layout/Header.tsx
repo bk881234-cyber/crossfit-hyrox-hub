@@ -43,9 +43,14 @@ export default function Header() {
   // Auth state listener
   useEffect(() => {
     const getUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      setUser(user)
-      setAuthLoading(false)
+      try {
+        const { data: { user } } = await supabase.auth.getUser()
+        setUser(user)
+      } catch (e) {
+        console.error('Failed to get user:', e)
+      } finally {
+        setAuthLoading(false)
+      }
     }
     getUser()
 

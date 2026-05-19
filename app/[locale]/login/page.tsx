@@ -12,7 +12,7 @@ export default function LoginPage() {
   const callbackUrl = searchParams.get('callbackUrl') ?? `/${locale}`
   const errorParam = searchParams.get('error')
 
-  const [loading, setLoading] = useState<'google' | null>(null)
+  const [loading, setLoading] = useState<'google' | 'kakao' | null>(null)
 
   const supabase = createClient()
   const tAuth = useTranslations('auth')
@@ -24,6 +24,13 @@ export default function LoginPage() {
       provider: 'google',
       options: { redirectTo },
     })
+  }
+
+  const handleKakaoLogin = () => {
+    setLoading('kakao')
+    const state = encodeURIComponent(JSON.stringify({ locale, callbackUrl }))
+    const kakaoUrl = `https://kauth.kakao.com/oauth/authorize?client_id=aaabffa226fc652b4faedaec8af04582&redirect_uri=${window.location.origin}/api/auth/kakao&response_type=code&state=${state}`
+    window.location.href = kakaoUrl
   }
 
   return (
@@ -99,6 +106,28 @@ export default function LoginPage() {
               </svg>
             )}
             {tAuth('google')}
+          </button>
+
+          {/* Kakao login button */}
+          <button
+            onClick={handleKakaoLogin}
+            disabled={loading !== null}
+            className="w-full flex items-center justify-center gap-3 px-5 py-3.5 rounded-xl font-bold text-sm mb-4 border transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed hover:scale-[1.02] active:scale-[0.98]"
+            style={{
+              background: '#FEE500',
+              borderColor: '#FEE500',
+              color: '#000000',
+              boxShadow: loading === 'kakao' ? 'none' : '0 2px 12px rgba(254,229,0,0.15)',
+            }}
+          >
+            {loading === 'kakao' ? (
+              <span className="inline-block w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin" />
+            ) : (
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="#000000">
+                <path d="M12 3C6.477 3 2 6.477 2 10.766c0 2.766 1.847 5.178 4.606 6.551-.19.702-.686 2.535-.749 2.784-.08.318.114.318.241.231.102-.07 1.637-1.111 2.308-1.579.51.083 1.037.127 1.586.127 5.523 0 10-3.477 10-7.766C22 6.477 17.523 3 12 3z"/>
+              </svg>
+            )}
+            {tAuth('kakao')}
           </button>
 
           <p className="text-center text-rx-muted text-xs">

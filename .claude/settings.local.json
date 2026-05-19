@@ -41,7 +41,13 @@
       "Bash(sed -i 's/max-w-3xl mx-auto/max-w-[992px] mx-auto/' C:/Users/bkbk8/Desktop/crossfit-hyrox-hub/app/[locale]/terms/page.tsx)",
       "Bash(wc:*)",
       "Bash(head:*)",
-      "Bash(tail:*)"
+      "Bash(tail:*)",
+      "Bash(find /c/Users/bkbk8/Desktop/crossfit-hyrox-hub -maxdepth 2 -name *i18n* -o -name *locale* -o -name *translation*)",
+      "Bash(find /c/Users/bkbk8/Desktop/crossfit-hyrox-hub -maxdepth 3 -name *.json -type f)",
+      "Bash(gh auth:*)",
+      "Bash(vercel:*)",
+      "Bash(git config:*)",
+      "Bash(find /c/Users/bkbk8/Desktop/crossfit-hyrox-hub/app -type f \\\\\\(-name *.tsx -o -name *.ts \\\\\\))"
     ]
   }
 }

@@ -29,6 +29,19 @@ const REGIONS = [
   { id: '제주',  label: '제주도', lat: 33.4996, lng: 126.5312, level: 10 },
 ]
 
+// ── 세부 지역 (구/시 단위) 데이터 ──────────────────────────────────────────
+const SUB_REGIONS: Record<string, string[]> = {
+  '서울': ['강남구', '강동구', '강북구', '강서구', '관악구', '광진구', '구로구', '금천구', '노원구', '도봉구', '동대문구', '동작구', '마포구', '서대문구', '서초구', '성동구', '성북구', '송파구', '양천구', '영등포구', '용산구', '은평구', '종로구', '중구', '중랑구'],
+  '경기': ['수원시', '고양시', '용인시', '성남시', '부천시', '화성시', '안산시', '남양주시', '안양시', '평택시', '시흥시', '파주시', '의정부시', '김포시', '광주시', '광명시', '하남시', '군포시', '오산시', '이천시', '양주시', '구리시', '안성시', '의왕시', '포천시', '양평군', '여주시', '동두천시', '과천시', '가평군', '연천군'],
+  '인천': ['중구', '동구', '미추홀구', '연수구', '남동구', '부평구', '계양구', '서구', '강화군', '옹진군'],
+  '부산': ['중구', '서구', '동구', '영도구', '부산진구', '동래구', '남구', '북구', '해운대구', '사하구', '금정구', '강서구', '연제구', '수영구', '사상구', '기장군'],
+  '대구': ['중구', '동구', '서구', '남구', '북구', '수성구', '달서구', '달성군', '군위군'],
+  '대전': ['동구', '중구', '서구', '유성구', '대덕구'],
+  '광주': ['동구', '서구', '남구', '북구', '광산구'],
+  '울산': ['중구', '남구', '동구', '북구', '울주군'],
+  '제주': ['제주시', '서귀포시'],
+}
+
 // ── 추천 파트너 박스 (실제 데이터) ──────────────────────────────────────────
 const SPONSOR_BOXES = [
   {
@@ -138,6 +151,7 @@ export default function MapPage() {
   const t = useTranslations('map')
 
   const [selectedRegion, setSelectedRegion] = useState('서울')
+  const [selectedSubRegion, setSelectedSubRegion] = useState('all')
   const [search, setSearch] = useState('')
   const [kakaoReady, setKakaoReady] = useState(false)  // SDK 준비 완료 플래그
   const [mapLoaded, setMapLoaded] = useState(false)
@@ -200,17 +214,18 @@ export default function MapPage() {
   }, [closeOverlay, directionsLabel])
 
   // 장소 검색 — CrossFit(크로스핏·영문) + HYROX 다중 키워드 동시 검색, 중복 제거
-  const searchPlaces = useCallback((regionId: string, keyword?: string) => {
+  const searchPlaces = useCallback((regionId: string, subRegion: string = 'all', customKeyword?: string) => {
     if (!window.kakao?.maps?.services || !mapRef.current) return
     clearMarkers()
 
     const region = REGIONS.find((r) => r.id === regionId) ?? REGIONS[0]
     const prefix = regionId === 'all' ? '' : `${region.label} `
+    const subPrefix = subRegion === 'all' ? '' : `${subRegion} `
 
-    // 사용자 입력이 있으면 그대로, 없으면 CrossFit + HYROX 두 키워드로 검색
-    const keywords: string[] = keyword
-      ? [keyword]
-      : [`${prefix}크로스핏`, `${prefix}CrossFit`, `${prefix}HYROX`]
+    // 사용자 입력이 있으면 그대로, 없으면 지역+서브지역+키워드
+    const keywords: string[] = customKeyword
+      ? [customKeyword]
+      : [`${prefix}${subPrefix}크로스핏`, `${prefix}${subPrefix}CrossFit`, `${prefix}${subPrefix}HYROX`]
 
     const ps = new window.kakao.maps.services.Places()
     const accumulated: any[] = []
@@ -220,12 +235,30 @@ export default function MapPage() {
     const onAllDone = () => {
       // place.id 기준 중복 제거 후 렌더링
       const unique = accumulated.filter((p) => {
+        const name = p.place_name.toUpperCase()
+        if (name.includes('F45') || name.includes('팀버핏')) return false
+        
         if (seenIds.has(p.id)) return false
         seenIds.add(p.id)
         return true
       })
-      if (unique.length === 0) setResultCount(0)
-      else renderMarkers(unique)
+      if (unique.length === 0) {
+        setResultCount(0)
+      } else {
+        renderMarkers(unique)
+        // 서브 지역(구 단위) 검색이거나 특정 검색어가 있을 때 마커를 기준으로 지도 영역 재조정
+        if ((subRegion !== 'all' || customKeyword) && unique.length > 0) {
+          const bounds = new window.kakao.maps.LatLngBounds()
+          unique.forEach((p) => {
+            bounds.extend(new window.kakao.maps.LatLng(p.y, p.x))
+          })
+          mapRef.current.setBounds(bounds)
+          // 1개인 경우 너무 확대될 수 있으므로 레벨 조정
+          if (unique.length === 1) {
+            mapRef.current.setLevel(5)
+          }
+        }
+      }
     }
 
     keywords.forEach((kw) => {
@@ -277,7 +310,7 @@ export default function MapPage() {
       })
       mapRef.current = map
       setMapLoaded(true)
-      searchPlaces('서울')
+      searchPlaces('서울', 'all')
     } catch (err) {
       console.error('[FITTERS STUDIO] 카카오맵 초기화 실패:', err)
       setMapError(true)
@@ -287,13 +320,22 @@ export default function MapPage() {
   // 지역 필터 클릭
   const handleRegionChange = useCallback((regionId: string) => {
     setSelectedRegion(regionId)
+    setSelectedSubRegion('all')
     setSearch('')
     if (!mapRef.current || !window.kakao?.maps) return
     const region = REGIONS.find((r) => r.id === regionId) ?? REGIONS[0]
     mapRef.current.setCenter(new window.kakao.maps.LatLng(region.lat, region.lng))
     mapRef.current.setLevel(region.level)
-    searchPlaces(regionId)
+    searchPlaces(regionId, 'all')
   }, [searchPlaces])
+
+  // 서브 지역(구) 필터 클릭
+  const handleSubRegionChange = useCallback((subRegion: string) => {
+    setSelectedSubRegion(subRegion)
+    setSearch('')
+    if (!mapRef.current || !window.kakao?.maps) return
+    searchPlaces(selectedRegion, subRegion)
+  }, [selectedRegion, searchPlaces])
 
   // 검색 입력
   const handleSearch = (value: string) => {
@@ -303,7 +345,7 @@ export default function MapPage() {
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (!search.trim() || !mapRef.current) return
-    searchPlaces(selectedRegion, search.trim())
+    searchPlaces(selectedRegion, selectedSubRegion, search.trim())
   }
 
   // 내 위치 — CrossFit + HYROX 반경 10km 다중 검색
@@ -333,6 +375,9 @@ export default function MapPage() {
 
         const onAllDone = () => {
           const unique = accumulated.filter((p) => {
+            const name = p.place_name.toUpperCase()
+            if (name.includes('F45') || name.includes('팀버핏')) return false
+
             if (seenIds.has(p.id)) return false
             seenIds.add(p.id)
             return true
@@ -468,6 +513,35 @@ export default function MapPage() {
                 </button>
               ))}
             </div>
+
+            {/* 서브 지역(구) 필터 - 선택된 지역에 하위 카테고리가 있을 때만 표시 */}
+            {SUB_REGIONS[selectedRegion] && SUB_REGIONS[selectedRegion].length > 0 && (
+              <div className="flex gap-2 overflow-x-auto pb-1 mt-2 scrollbar-none">
+                <button
+                  onClick={() => handleSubRegionChange('all')}
+                  className={`flex-shrink-0 px-3 py-1 rounded-full text-[11px] font-bold transition-colors ${
+                    selectedSubRegion === 'all'
+                      ? 'bg-rx-red text-white'
+                      : 'bg-rx-surface border border-rx-border text-rx-muted hover:text-white'
+                  }`}
+                >
+                  {t('regionAll')}
+                </button>
+                {SUB_REGIONS[selectedRegion].map((sub) => (
+                  <button
+                    key={sub}
+                    onClick={() => handleSubRegionChange(sub)}
+                    className={`flex-shrink-0 px-3 py-1 rounded-full text-[11px] font-bold transition-colors ${
+                      selectedSubRegion === sub
+                        ? 'bg-rx-red text-white'
+                        : 'bg-rx-surface border border-rx-border text-rx-muted hover:text-white'
+                    }`}
+                  >
+                    {sub}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         </div>
 
