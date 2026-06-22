@@ -84,7 +84,7 @@ const HARDCODED_COMPS: MajorComp[] = [
 ]
 
 // ─── HYROX 날짜 유틸 ──────────────────────────────────────────────────────────
-const TODAY = new Date('2026-05-03')
+const TODAY = new Date()
 
 function getDday(dateStr: string): string {
   const diff = Math.ceil((new Date(dateStr).getTime() - TODAY.getTime()) / (1000 * 60 * 60 * 24))
@@ -240,9 +240,8 @@ export default function CommunityPage() {
             <button
               key={tab_item.id}
               onClick={() => setTab(tab_item.id)}
-              className={`flex-1 py-2.5 rounded-lg text-xs font-bold transition-colors whitespace-nowrap ${
-                tab === tab_item.id ? 'gradient-bg text-white' : 'text-rx-muted hover:text-white'
-              }`}
+              className={`flex-1 py-2.5 rounded-lg text-xs font-bold transition-colors whitespace-nowrap ${tab === tab_item.id ? 'gradient-bg text-white' : 'text-rx-muted hover:text-white'
+                }`}
             >
               {tab_item.label}
             </button>
@@ -267,11 +266,10 @@ export default function CommunityPage() {
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 flex-wrap mb-1">
-                          <span className={`badge border text-xs ${
-                            isPast ? 'bg-rx-surface border-rx-border text-rx-muted'
-                            : isToday ? 'gradient-bg border-white/20 text-white'
-                            : 'bg-green-500/20 text-green-400 border-green-500/30'
-                          }`}>{ddayDisplay}</span>
+                          <span className={`badge border text-xs ${isPast ? 'bg-rx-surface border-rx-border text-rx-muted'
+                              : isToday ? 'gradient-bg border-white/20 text-white'
+                                : 'bg-green-500/20 text-green-400 border-green-500/30'
+                            }`}>{ddayDisplay}</span>
                           <span className="text-rx-muted text-xs">{event.country}</span>
                         </div>
                         <h3 className="font-black text-white text-lg leading-tight">{event.name}</h3>
