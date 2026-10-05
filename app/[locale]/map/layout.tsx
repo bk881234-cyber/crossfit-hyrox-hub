@@ -14,6 +14,8 @@ export const metadata: Metadata = {
     '내 주변 크로스핏',
     'crossfit box korea',
     '크로스핏 찾기',
+    '하이록스 훈련 박스',
+    '하이록스 준비 크로스핏',
   ],
   alternates: {
     canonical: 'https://www.fittersstudio.com/map',

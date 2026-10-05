@@ -3,7 +3,7 @@ import { Metadata } from 'next'
 export const metadata: Metadata = {
   title: 'WOD 타이머 | 크로스핏 AMRAP·EMOM·Tabata·For Time — FITTERS STUDIO',
   description:
-    'AMRAP·EMOM·Tabata·For Time·Interval 5가지 모드를 지원하는 크로스핏 전용 타이머. 소리 알림, 화면 꺼짐 방지, 10초 후 시작 옵션 포함. 무료 온라인 크로스핏 타이머.',
+    'AMRAP·EMOM·Tabata·For Time·Interval 5가지 모드를 지원하는 크로스핏·하이록스 전용 타이머. 소리 알림, 화면 꺼짐 방지, 10초 후 시작 옵션 포함. 무료 온라인 크로스핏 타이머.',
   keywords: [
     'WOD 타이머',
     '크로스핏 타이머',
@@ -14,6 +14,9 @@ export const metadata: Metadata = {
     '인터벌 타이머',
     'crossfit timer',
     '운동 타이머',
+    '하이록스 타이머',
+    '하이록스 인터벌 타이머',
+    '하이록스 훈련 타이머',
   ],
   alternates: {
     canonical: 'https://www.fittersstudio.com/timer',

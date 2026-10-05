@@ -15,6 +15,9 @@ export const metadata: Metadata = {
     '크로스핏 HYROX',
     '크로스핏 초보',
     '크로스핏 시작',
+    '하이록스란',
+    '하이록스 크로스핏 차이',
+    '하이록스 종목',
   ],
   alternates: {
     canonical: 'https://www.fittersstudio.com/about',
