@@ -9,6 +9,8 @@ import {
   getMovementBySlug,
   type Movement,
 } from '@/lib/movements-data'
+import { WODS } from '@/lib/wod-data'
+import { getMovementSlug } from '@/lib/movement-links'
 
 type Props = { params: { locale: string; slug: string } }
 
@@ -92,6 +94,10 @@ export default function MovementDetailPage({ params }: Props) {
 
   const categoryMovements = MOVEMENTS.filter(
     (m) => m.category === movement.category && m.slug !== movement.slug,
+  )
+
+  const relatedWods = WODS.filter((w) =>
+    w.movements.some((m) => getMovementSlug(m) === movement.slug),
   )
 
   return (
@@ -247,6 +253,40 @@ export default function MovementDetailPage({ params }: Props) {
             ))}
           </div>
         </section>
+
+        {/* WODs that use this movement */}
+        {relatedWods.length > 0 && (
+          <section className="mb-6">
+            <h2 className="text-lg font-black text-white mb-3">이 동작이 나오는 WOD</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              {relatedWods.map((w) => (
+                <Link
+                  key={w.id}
+                  href={`../wod/${w.id}`}
+                  className="tool-card group flex items-center justify-between hover:border-rx-red/60 transition-colors py-3 px-5"
+                >
+                  <div>
+                    <p className="text-white font-bold text-sm group-hover:text-rx-red transition-colors">
+                      {w.name}
+                    </p>
+                    <p className="text-rx-muted text-xs mt-0.5">{w.timeTarget}</p>
+                  </div>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1"
+                    className="text-rx-muted group-hover:text-rx-red group-hover:translate-x-1 transition-all flex-shrink-0"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* Related Movements in same category */}
         {categoryMovements.length > 0 && (

@@ -5,6 +5,7 @@ import { notFound } from 'next/navigation'
 import Header from '@/components/layout/Header'
 import MobileNav from '@/components/layout/MobileNav'
 import { WODS, type WOD } from '@/lib/wod-data'
+import { getMovementSlug } from '@/lib/movement-links'
 import WodHistoryPanel from '@/components/wod/WodHistoryPanel'
 
 export function generateStaticParams() {
@@ -210,17 +211,29 @@ export default async function WODDetailPage({ params }: Props) {
         <div className="card mb-6">
           <h2 className="font-black text-white text-xl mb-4">{t('keyMovements')}</h2>
           <div className="space-y-2">
-            {wod.movements.map((movement, i) => (
-              <div key={i} className="flex items-center gap-3 px-4 py-3 bg-rx-surface rounded-xl">
-                <span
-                  className="w-6 h-6 rounded-full text-white text-xs font-black flex items-center justify-center flex-shrink-0"
-                  style={{ background: 'linear-gradient(135deg, #E8321A, #FF2D8B)' }}
-                >
-                  {i + 1}
-                </span>
-                <span className="text-white font-medium">{movement}</span>
-              </div>
-            ))}
+            {wod.movements.map((movement, i) => {
+              const slug = getMovementSlug(movement)
+              return (
+                <div key={i} className="flex items-center gap-3 px-4 py-3 bg-rx-surface rounded-xl">
+                  <span
+                    className="w-6 h-6 rounded-full text-white text-xs font-black flex items-center justify-center flex-shrink-0"
+                    style={{ background: 'linear-gradient(135deg, #E8321A, #FF2D8B)' }}
+                  >
+                    {i + 1}
+                  </span>
+                  {slug ? (
+                    <Link
+                      href={`/movements/${slug}`}
+                      className="text-white font-medium hover:text-rx-red transition-colors underline decoration-white/20 underline-offset-4"
+                    >
+                      {movement}
+                    </Link>
+                  ) : (
+                    <span className="text-white font-medium">{movement}</span>
+                  )}
+                </div>
+              )
+            })}
           </div>
         </div>
 
