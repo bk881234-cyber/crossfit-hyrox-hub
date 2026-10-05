@@ -13,11 +13,11 @@ const notoSansKR = Noto_Sans_KR({
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.fittersstudio.com'),
   title: {
-    default: 'FITTERS STUDIO — 크로스피터를 위한 올인원 플랫폼',
-    template: '%s | FITTERS STUDIO',
+    default: '핏터스 스튜디오 (FITTERS STUDIO) — 크로스핏·HYROX 올인원 플랫폼',
+    template: '%s | 핏터스 스튜디오 (FITTERS STUDIO)',
   },
   description:
-    '1RM 계산기·WOD 타이머·WOD 라이브러리·드랍인 지도·대회 일정을 한곳에 — 크로스핏·HYROX 커뮤니티 플랫폼 FITTERS STUDIO',
+    '핏터스·피터스를 위한 1RM 계산기·WOD 타이머·WOD 라이브러리·드랍인 지도·대회 일정을 한곳에 — 크로스핏·HYROX 커뮤니티 플랫폼 핏터스 스튜디오 (FITTERS STUDIO)',
   icons: {
     icon: [
       { url: '/fittersstudio_symbol.png', type: 'image/png' },
@@ -28,6 +28,14 @@ export const metadata: Metadata = {
   },
 
   keywords: [
+    '핏터스',
+    '피터스',
+    '핏터스 스튜디오',
+    '피터스 스튜디오',
+    '핏터스스튜디오',
+    '피터스스튜디오',
+    '핏터즈',
+    '피터즈',
     '크로스핏',
     'HYROX',
     '1RM 계산기',
@@ -40,22 +48,25 @@ export const metadata: Metadata = {
   ],
   verification: {
     other: {
-      'naver-site-verification': '9f167b2764552644b1b0e0795a770734d8564d2f',
+      'naver-site-verification': [
+        '9f167b2764552644b1b0e0795a770734d8564d2f',
+        '2681da9e9f1013a8a47193aaff8acd03f63d39d5',
+      ],
     },
   },
   openGraph: {
-    title: 'FITTERS STUDIO — 크로스피터를 위한 올인원 플랫폼',
-    description: '1RM 계산기, WOD 타이머, 드랍인 지도, 대회 일정 — 크로스핏·HYROX 올인원 허브',
+    title: '핏터스 스튜디오 (FITTERS STUDIO) — 크로스피터를 위한 올인원 플랫폼',
+    description: '핏터스·피터스를 위한 1RM 계산기, WOD 타이머, 드랍인 지도, 대회 일정 — 크로스핏·HYROX 올인원 허브',
     url: 'https://www.fittersstudio.com',
     images: [{ url: '/OG_img.png', width: 1200, height: 630 }],
-    siteName: 'Fitters Studio',
+    siteName: '핏터스 스튜디오 (FITTERS STUDIO)',
     locale: 'ko_KR',
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'FITTERS STUDIO',
-    description: '크로스피터를 위한 모든 도구를 한곳에',
+    title: '핏터스 스튜디오 (FITTERS STUDIO)',
+    description: '핏터스·피터스를 위한 크로스피터 올인원 도구 모음',
     images: ['/OG_img.png'],
   },
   alternates: {
@@ -83,10 +94,11 @@ export const viewport: Viewport = {
 const organizationJsonLd = {
   '@context': 'https://schema.org',
   '@type': 'Organization',
-  name: 'Fitters Studio',
+  name: '핏터스 스튜디오 (FITTERS STUDIO)',
+  alternateName: ['핏터스', '피터스', '핏터스 스튜디오', '피터스 스튜디오', '핏터즈', '피터즈', 'Fitters Studio', 'FITTERS STUDIO'],
   url: 'https://www.fittersstudio.com',
   logo: 'https://www.fittersstudio.com/Fittersstudio_BI.png',
-  description: '크로스핏·HYROX 커뮤니티를 위한 올인원 정보 허브 플랫폼',
+  description: '핏터스·피터스 및 크로스핏·HYROX 커뮤니티를 위한 올인원 정보 허브 플랫폼 핏터스 스튜디오',
   sameAs: ['https://www.instagram.com/fitters.studio'],
   contactPoint: {
     '@type': 'ContactPoint',
@@ -98,9 +110,10 @@ const organizationJsonLd = {
 const websiteJsonLd = {
   '@context': 'https://schema.org',
   '@type': 'WebSite',
-  name: 'FITTERS STUDIO',
+  name: '핏터스 스튜디오 (FITTERS STUDIO)',
+  alternateName: ['핏터스', '피터스', '핏터스 스튜디오', '피터스 스튜디오', '핏터즈', '피터즈'],
   url: 'https://www.fittersstudio.com',
-  description: '크로스핏·HYROX 커뮤니티를 위한 올인원 정보 허브 플랫폼',
+  description: '핏터스·피터스를 위한 크로스핏·HYROX 커뮤니티 올인원 정보 허브 플랫폼',
   potentialAction: {
     '@type': 'SearchAction',
     target: 'https://www.fittersstudio.com/wod?q={search_term_string}',
