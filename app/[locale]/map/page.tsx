@@ -58,6 +58,21 @@ const SPONSOR_BOXES = [
   },
 ]
 
+// ── 정식 어필리에이트 등 "크로스핏/CrossFit/HYROX" 일반 키워드로는 안 잡히는
+//    실제 박스 — 상호명으로 직접 검색해 항상 뜨도록 보강 (crossfit.com 공식 지도로 검증) ──
+const VERIFIED_BOX_NAMES = [
+  '얼티밋트레이닝',
+  'CrossFit Apgujeong',
+  'Golden Crown CrossFit',
+  'Muhan CrossFit',
+  'CrossFit HON',
+  'CrossFit Yeongtong',
+  'N Camp CrossFit',
+  'CrossFit JSKW',
+  'CrossFit Higher Gym',
+  '스타디온 판교 크로스핏',
+]
+
 const FEATURE_OPTIONS = ['주차가능', '샤워실', '에어컨', '와이파이', '보충제판매', '개인락커']
 
 const emptyForm = {
@@ -225,7 +240,7 @@ export default function MapPage() {
     // 사용자 입력이 있으면 그대로, 없으면 지역+서브지역+키워드
     const keywords: string[] = customKeyword
       ? [customKeyword]
-      : [`${prefix}${subPrefix}크로스핏`, `${prefix}${subPrefix}CrossFit`, `${prefix}${subPrefix}HYROX`]
+      : [`${prefix}${subPrefix}크로스핏`, `${prefix}${subPrefix}CrossFit`, `${prefix}${subPrefix}HYROX`, ...VERIFIED_BOX_NAMES]
 
     const ps = new window.kakao.maps.services.Places()
     const accumulated: any[] = []
@@ -236,7 +251,7 @@ export default function MapPage() {
       // place.id 기준 중복 제거 후 렌더링
       const unique = accumulated.filter((p) => {
         const name = p.place_name.toUpperCase()
-        if (name.includes('F45') || name.includes('팀버핏')) return false
+        if (name.includes('F45') || name.includes('버핏')) return false
         
         if (seenIds.has(p.id)) return false
         seenIds.add(p.id)
@@ -368,7 +383,7 @@ export default function MapPage() {
         myLocationMarkerRef.current = myMarker
 
         const ps = new window.kakao.maps.services.Places()
-        const nearbyKeywords = ['크로스핏', 'CrossFit', 'HYROX']
+        const nearbyKeywords = ['크로스핏', 'CrossFit', 'HYROX', ...VERIFIED_BOX_NAMES]
         const accumulated: any[] = []
         const seenIds = new Set<string>()
         let pending = nearbyKeywords.length
@@ -376,7 +391,7 @@ export default function MapPage() {
         const onAllDone = () => {
           const unique = accumulated.filter((p) => {
             const name = p.place_name.toUpperCase()
-            if (name.includes('F45') || name.includes('팀버핏')) return false
+            if (name.includes('F45') || name.includes('버핏')) return false
 
             if (seenIds.has(p.id)) return false
             seenIds.add(p.id)
