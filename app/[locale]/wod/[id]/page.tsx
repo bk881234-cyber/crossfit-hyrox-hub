@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import { getTranslations } from 'next-intl/server'
 import { Link } from '@/navigation'
 import { notFound } from 'next/navigation'
@@ -9,6 +10,51 @@ import WodHistoryPanel from '@/components/wod/WodHistoryPanel'
 export function generateStaticParams() {
   const locales = ['ko', 'en']
   return locales.flatMap((locale) => WODS.map((wod) => ({ locale, id: wod.id })))
+}
+
+const WOD_TYPE_LABELS: Record<WOD['type'], string> = {
+  girl: 'Girl WOD',
+  hero: 'Hero WOD',
+  open: 'CrossFit Open WOD',
+  benchmark: '벤치마크 WOD',
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { id } = await params
+  const wod = WODS.find((w) => w.id === id)
+  if (!wod) return {}
+
+  const typeLabel = WOD_TYPE_LABELS[wod.type]
+  const title = `${wod.name} 와드 — ${typeLabel} 기록·스케일링 가이드 | FITTERS STUDIO`
+  const description = `크로스핏 ${wod.name} WOD 완전 가이드. ${wod.movements.join(', ')} 동작, 목표 기록 ${wod.timeTarget}. 스케일링 옵션과 타이머 연동까지 한 번에 — ${typeLabel} ${wod.name} 기록 측정.`
+  const url = `https://www.fittersstudio.com/wod/${wod.id}`
+
+  return {
+    title,
+    description,
+    keywords: [wod.name, `${wod.name} wod`, `${wod.name} 크로스핏`, `${wod.name} 와드`, typeLabel, ...wod.movements, ...wod.tags],
+    openGraph: {
+      title: `${wod.name} WOD | FITTERS STUDIO`,
+      description,
+      url,
+      siteName: 'FITTERS STUDIO',
+      images: [{ url: '/OG_img.png', width: 1200, height: 630 }],
+      locale: 'ko_KR',
+      type: 'article',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${wod.name} WOD | FITTERS STUDIO`,
+      description,
+    },
+    alternates: {
+      canonical: url,
+      languages: {
+        ko: `https://www.fittersstudio.com/ko/wod/${wod.id}`,
+        en: `https://www.fittersstudio.com/en/wod/${wod.id}`,
+      },
+    },
+  }
 }
 
 const TYPE_COLORS: Record<WOD['type'], string> = {
