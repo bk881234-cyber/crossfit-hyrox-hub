@@ -109,6 +109,7 @@ const websiteJsonLd = {
 }
 
 const adsensePubId = process.env.NEXT_PUBLIC_ADSENSE_ID || 'ca-pub-6607759856824002'
+const gaId = process.env.NEXT_PUBLIC_GA_ID || 'G-KEXR0BMH62'
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -134,6 +135,20 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className={`${notoSansKR.variable} bg-rx-bg min-h-screen`} suppressHydrationWarning>
         {children}
+        {/* Google Analytics 4 */}
+        {gaId && (
+          <>
+            <Script src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`} strategy="afterInteractive" />
+            <Script id="ga4-init" strategy="afterInteractive">
+              {`
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', '${gaId}');
+              `}
+            </Script>
+          </>
+        )}
       </body>
     </html>
   )
