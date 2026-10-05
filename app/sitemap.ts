@@ -14,8 +14,10 @@ type StaticPage = {
 const STATIC_PAGES: StaticPage[] = [
   { path: '', changeFrequency: 'daily', priority: 1.0 },
   { path: '/calculator', changeFrequency: 'monthly', priority: 0.9 },
+  { path: '/calculator/1rm', changeFrequency: 'weekly', priority: 0.7 },
   { path: '/timer', changeFrequency: 'monthly', priority: 0.9 },
   { path: '/wod', changeFrequency: 'weekly', priority: 0.9 },
+  { path: '/wod/log', changeFrequency: 'weekly', priority: 0.6 },
   { path: '/movements', changeFrequency: 'weekly', priority: 0.8 },
   { path: '/map', changeFrequency: 'weekly', priority: 0.8 },
   { path: '/community', changeFrequency: 'daily', priority: 0.8 },

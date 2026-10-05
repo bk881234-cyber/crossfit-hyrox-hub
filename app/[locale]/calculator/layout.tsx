@@ -12,6 +12,10 @@ export const metadata: Metadata = {
     '운동 중량 계산',
     '크로스핏 퍼센트 테이블',
     'one rep max calculator',
+    'kg lb 변환',
+    '킬로그램 파운드 변환',
+    '바벨 무게 계산기',
+    '1rm kg to lb',
   ],
   alternates: {
     canonical: 'https://www.fittersstudio.com/calculator',

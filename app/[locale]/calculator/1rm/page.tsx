@@ -5,6 +5,15 @@ export const metadata: Metadata = {
   title: '나의 PR 기록하기 — 1RM 성장 추적',
   description:
     '나의 데드리프트, 백 스쿼트, 벤치프레스 등 PR을 기록하고 관리하며 성장과정을 공유하세요.',
+  keywords: [
+    'PR 기록',
+    '1RM 기록 트래커',
+    '스쿼트 PR 기록',
+    '데드리프트 PR 기록',
+    '벤치프레스 기록',
+    '운동 기록 관리',
+    '근력 성장 그래프',
+  ],
   openGraph: {
     title: 'FITTERS STUDIO — 나의 PR 기록하기',
     description:
