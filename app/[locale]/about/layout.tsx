@@ -39,8 +39,8 @@ export default function AboutLayout({ children }: { children: React.ReactNode })
         dangerouslySetInnerHTML={{
           __html: JSON.stringify({
             '@context': 'https://schema.org',
-            '@type': 'Article',
-            headline: '크로스핏이란? 개념·철학·용어 완벽 가이드',
+            '@type': 'WebPage',
+            name: '크로스핏이란? 개념·철학·용어 완벽 가이드',
             description:
               '크로스핏의 기본 개념과 철학, WOD·AMRAP·EMOM·RX·Tabata·Interval 주요 용어 사전을 정리한 입문 가이드.',
             url: 'https://www.fittersstudio.com/about',
