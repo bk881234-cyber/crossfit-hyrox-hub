@@ -71,6 +71,7 @@ const VERIFIED_BOX_NAMES = [
   'CrossFit JSKW',
   'CrossFit Higher Gym',
   '스타디온 판교 크로스핏',
+  'HACA TRAINING',
 ]
 
 const FEATURE_OPTIONS = ['주차가능', '샤워실', '에어컨', '와이파이', '보충제판매', '개인락커']
