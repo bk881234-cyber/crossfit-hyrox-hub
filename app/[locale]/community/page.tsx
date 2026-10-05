@@ -38,48 +38,53 @@ type AnyComp = MajorComp | RegisteredComp
 const HARDCODED_COMPS: MajorComp[] = [
   {
     id: 'teamoffour', name: '팀오브포', nameEn: 'Team of Four',
-    scale: '4인 팀 대회', period: '매년 4~6월 (예정)',
+    scale: '4인 팀 대회 (남2 여2 / 동일성별 팀)', period: '2026년 4월~6월 (시즌 예정)',
     instagramUrl: 'https://www.instagram.com/teamof_four', isHardcoded: true,
   },
   {
     id: 'kboxrise', name: '케이박스라이즈', nameEn: 'K-Box Rise',
-    scale: '박스 단위 팀 대회 · 국내 최대 규모급', period: '매년 5~7월 (예정)',
+    scale: '박스 단위 팀 대회 · 국내 최대 규모 대표 대회', period: '2026년 5월~7월 (시즌 예정)',
     instagramUrl: 'https://www.instagram.com/k_box_rise', isHardcoded: true,
   },
   {
     id: 'makia', name: '마키아', nameEn: 'Makia',
-    scale: '개인/팀 대회 · 제주도 개최', period: '예선 2026년 5월 · 본대회 2026년 여름',
+    scale: '개인/팀 대회 · 제주 축제형 종합 대회', period: '예선 2026년 5월 · 본대회 2026년 여름',
     instagramUrl: 'https://www.instagram.com/makia_official_', isHardcoded: true,
   },
   {
     id: 'battlecrew', name: '배틀크루', nameEn: 'Battle Crew',
-    scale: '크루(4~6명) 단위 · 전국 선발전→챔피언십 구조', period: '매년 5~9월 (예정)',
+    scale: '크루(4~6명) 단위 · 전국 지역 예선→파이널 챔피언십', period: '2026년 5월~9월 (진행 예정)',
     instagramUrl: 'https://www.instagram.com/battlecrew_korea', isHardcoded: true,
   },
   {
     id: 'suff', name: '서프', nameEn: 'SUFF',
-    scale: '여름 시즌 대표 대회', period: '매년 7~8월 (예정)',
+    scale: '서머 피트니스 페스티벌 · 대표 해변/여름 대회', period: '2026년 7월~8월 (예정)',
     instagramUrl: 'https://www.instagram.com/suff_estival', isHardcoded: true,
   },
   {
     id: 'cfkoreaopen', name: '크로스핏 코리아 오픈', nameEn: 'CrossFit Korea Open',
-    scale: 'CrossFit Korea 공식 주관', period: '매년 2~3월 (예정)',
+    scale: 'CrossFit LLC / Korea 공식 주관 오픈 챌린지', period: '2026년 2월~3월 (공식 진행)',
     instagramUrl: 'https://www.instagram.com/crossfitkorea', isHardcoded: true,
   },
   {
     id: 'nwnd', name: '엔스윈드', nameEn: 'NWND',
-    scale: '개인/팀 대회', period: '매년 4~6월 (예정)',
+    scale: '개인/팀 피트니스 챔피언십', period: '2026년 4월~6월 (예정)',
     instagramUrl: 'https://www.instagram.com/nwnd_kr', isHardcoded: true,
   },
   {
     id: 'enuf', name: '이너프', nameEn: 'ENUF',
-    scale: '개인/팀 대회', period: '매년 5~7월 (예정)',
+    scale: '개인/팀 아웃도어 피트니스 챌린지', period: '2026년 5월~7월 (예정)',
     instagramUrl: 'https://www.instagram.com/enuf.sports', isHardcoded: true,
   },
   {
     id: 'girlfit', name: '걸핏코리아', nameEn: 'GirlFit Korea',
-    scale: '여성 전용 크로스핏 대회', period: '매년 4~6월 (예정)',
+    scale: '여성 전용 피트니스 & 크로스핏 대회', period: '2026년 4월~6월 (예정)',
     instagramUrl: 'https://www.instagram.com/girlfit_korea', isHardcoded: true,
+  },
+  {
+    id: 'kffa', name: '대한기능성피트니스협회 대회', nameEn: 'KFFA Championship',
+    scale: '국가대표 선발전 및 전국 챔피언십', period: '2026년 6월~8월 (예정)',
+    instagramUrl: 'https://www.instagram.com/kffa_official', isHardcoded: true,
   },
 ]
 
