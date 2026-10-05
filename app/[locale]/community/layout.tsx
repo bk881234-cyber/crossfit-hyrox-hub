@@ -38,11 +38,11 @@ export default function CommunityLayout({ children }: { children: React.ReactNod
         dangerouslySetInnerHTML={{
           __html: JSON.stringify({
             '@context': 'https://schema.org',
-            '@type': 'Event',
+            '@type': 'CollectionPage',
             name: '2025 HYROX Korea & 크로스핏 대회 일정 — FITTERS STUDIO',
             description: 'HYROX Korea 서울·부산·인천 일정 및 국내 크로스핏 주요 대회 정보.',
             url: 'https://www.fittersstudio.com/community',
-            organizer: {
+            publisher: {
               '@type': 'Organization',
               name: 'Fitters Studio',
               url: 'https://www.fittersstudio.com',
