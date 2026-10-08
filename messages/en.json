@@ -407,6 +407,9 @@
   "wodLog": {
     "title": "WOD LOG",
     "subtitle": "Save your workout records and track your progress",
+    "guestNoticeTitle": "Saved only to this browser for now",
+    "guestNoticeDesc": "Without logging in, your logs are stored only on this device and browser — clearing your cache or switching devices will lose them. Log in to save safely to the cloud and access them anywhere.",
+    "guestNoticeLoginBtn": "Log in",
     "tabAdd": "Add Record",
     "tabList": "List ({count})",
     "tabCalendar": "Calendar",

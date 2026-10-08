@@ -317,6 +317,22 @@ function WodLogContent() {
           <p className="text-rx-muted text-sm mt-1">{t('subtitle')}</p>
         </div>
 
+        {/* ─ Guest mode notice: local-only storage, not synced/backed up ─ */}
+        {!user && (
+          <div className="flex items-start gap-3 mb-6 p-4 rounded-xl bg-rx-surface border border-rx-orange/30">
+            <svg className="text-rx-orange flex-shrink-0 mt-0.5" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" />
+            </svg>
+            <div className="flex-1">
+              <p className="text-white text-sm font-bold mb-1">{t('guestNoticeTitle')}</p>
+              <p className="text-rx-muted text-xs leading-relaxed">{t('guestNoticeDesc')}</p>
+            </div>
+            <Link href="/login" className="btn-primary text-xs px-4 py-2 rounded-lg flex-shrink-0 whitespace-nowrap">
+              {t('guestNoticeLoginBtn')}
+            </Link>
+          </div>
+        )}
+
         {/* ─ View Tabs ─ */}
         <div className="flex gap-2 mb-6 bg-rx-surface border border-rx-border rounded-xl p-1">
           {[
