@@ -118,9 +118,9 @@ export default function Header() {
 
         {/* Right side: actions + auth + language */}
         <div className="flex items-center gap-2 ml-auto">
-          {/* Add Record Button */}
+          {/* Add Record Button — straight to login when signed out */}
           <Link
-            href="/wod/log"
+            href={user ? '/wod/log' : '/login?callbackUrl=/wod/log'}
             className="hidden md:flex px-4 py-1.5 rounded-lg text-xs font-black text-white gradient-bg hover:opacity-90 transition-opacity mr-1"
           >
             {tNav('addLog')}

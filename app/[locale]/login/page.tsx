@@ -19,7 +19,12 @@ export default function LoginPage() {
 
   const handleGoogleLogin = async () => {
     setLoading('google')
-    const redirectTo = `${window.location.origin}/auth/callback?next=${encodeURIComponent(callbackUrl)}&locale=${locale}`
+    // /auth/complete reads these after the OAuth round-trip to send the user
+    // back to where they started (the server-side callback route has no
+    // access to localStorage, so this has to be written here, client-side).
+    localStorage.setItem('auth_redirect_to', callbackUrl)
+    localStorage.setItem('auth_locale', locale)
+    const redirectTo = `${window.location.origin}/auth/callback`
     await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: { redirectTo },
@@ -79,7 +84,10 @@ export default function LoginPage() {
           {/* Error message */}
           {errorParam && (
             <div className="mb-4 px-4 py-3 rounded-xl bg-rx-red/10 border border-rx-red/30 text-rx-red text-sm text-center">
-              {tAuth('loginError')}
+              <p>{tAuth('loginError')}</p>
+              {errorParam !== 'auth_callback_failed' && (
+                <p className="text-rx-red/70 text-xs mt-1 break-words">{errorParam}</p>
+              )}
             </div>
           )}
 
