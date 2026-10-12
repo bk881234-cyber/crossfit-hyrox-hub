@@ -42,22 +42,6 @@ const SUB_REGIONS: Record<string, string[]> = {
   '제주': ['제주시', '서귀포시'],
 }
 
-// ── 추천 파트너 박스 (실제 데이터) ──────────────────────────────────────────
-const SPONSOR_BOXES = [
-  {
-    id: 'ultimate-isu',
-    name: '얼티밋 트레이닝 이수',
-    tag: '파트너',
-    address: '서울 동작구 동작대로13길 12 지하 1층',
-    near: '이수역 7번 출구 · 사당역 10번 출구',
-    phone: '02-525-2022',
-    website: 'http://ultimatetraining.kr',
-    instagram: '',
-    features: ['크로스핏', '맞춤 코칭', '체성분 분석'],
-    dropinFee: '문의',
-  },
-]
-
 // ── 정식 어필리에이트 등 "크로스핏/CrossFit/HYROX" 일반 키워드로는 안 잡히는
 //    실제 박스 — 상호명으로 직접 검색해 항상 뜨도록 보강 (crossfit.com 공식 지도로 검증) ──
 const VERIFIED_BOX_NAMES = [
@@ -715,19 +699,6 @@ export default function MapPage() {
             </p>
           </section>
 
-          {/* 추천 파트너 박스 */}
-          <section className="mb-10">
-            <div className="flex items-center gap-2 mb-5">
-              <h2 className="text-xl font-black text-white">{t('partnerBoxes')}</h2>
-              <span className="badge bg-rx-orange/20 text-rx-orange border-rx-orange/30">{t('sponsor')}</span>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {SPONSOR_BOXES.map((box) => (
-                <SponsorBoxCard key={box.id} box={box} t={t} />
-              ))}
-            </div>
-          </section>
-
           {/* 박스 등록 CTA */}
           <section className="mb-10 p-6 rounded-2xl border border-rx-border bg-rx-surface text-center">
             <svg className="text-rx-muted mx-auto mb-3" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
@@ -852,88 +823,6 @@ export default function MapPage() {
       )}
 
       <MobileNav />
-    </div>
-  )
-}
-
-// ── 추천 파트너 박스 카드 ─────────────────────────────────────────────────────
-interface SponsorBox {
-  id: string
-  name: string
-  tag: string
-  address: string
-  near: string
-  phone: string
-  website: string
-  instagram: string
-  features: string[]
-  dropinFee: string
-}
-
-function SponsorBoxCard({ box, t }: { box: SponsorBox; t: (key: string) => string }) {
-  return (
-    <div className="card border-rx-orange/30 hover:border-rx-orange/60 transition-all duration-200">
-      <div className="flex items-start justify-between mb-3">
-        <div className="flex-1">
-          <div className="flex items-center gap-2 mb-1">
-            <h3 className="font-black text-white text-base">{box.name}</h3>
-            <span className="badge bg-rx-orange/20 text-rx-orange border-rx-orange/30">{box.tag}</span>
-          </div>
-          <p className="text-rx-muted text-xs">{box.near}</p>
-        </div>
-        <div className="text-right flex-shrink-0">
-          <p className="text-rx-muted text-xs mb-0.5">{t('dropinFee')}</p>
-          <p className="text-rx-muted font-black text-sm">{box.dropinFee}</p>
-        </div>
-      </div>
-
-      <div className="flex items-start gap-2 mb-3">
-        <svg className="text-rx-muted flex-shrink-0 mt-0.5" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" />
-        </svg>
-        <p className="text-rx-muted text-xs leading-snug">{box.address}</p>
-      </div>
-
-      <div className="flex flex-wrap gap-1 mb-4">
-        {box.features.map((f) => (
-          <span key={f} className="text-xs px-2 py-0.5 rounded-full bg-rx-surface border border-rx-border text-rx-muted">{f}</span>
-        ))}
-      </div>
-
-      <div className="flex gap-2 pt-3 border-t border-rx-border flex-wrap">
-        <a
-          href={`tel:${box.phone}`}
-          className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-rx-surface border border-rx-border text-rx-muted hover:text-white hover:border-rx-orange/50 text-xs font-bold transition-colors"
-        >
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.11 6.11l1.97-1.97a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" />
-          </svg>
-          {t('phone')}
-        </a>
-        <a
-          href={box.website}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-rx-surface border border-rx-border text-rx-muted hover:text-white hover:border-rx-orange/50 text-xs font-bold transition-colors"
-        >
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-            <circle cx="12" cy="12" r="10" />
-            <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
-          </svg>
-          {t('website')}
-        </a>
-        <a
-          href={`https://map.kakao.com/link/search/${encodeURIComponent(box.name)}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="ml-auto flex items-center gap-1.5 px-3 py-2 rounded-lg bg-rx-surface border border-rx-border text-rx-muted hover:text-white hover:border-rx-red/50 text-xs font-bold transition-colors"
-        >
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" />
-          </svg>
-          {t('directions')}
-        </a>
-      </div>
     </div>
   )
 }
