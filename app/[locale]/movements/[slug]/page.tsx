@@ -24,24 +24,33 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const movement = getMovementBySlug(params.slug)
   if (!movement) return {}
 
-  const title = `${movement.name} 완전 가이드 — 기술 기준·일반 실수·스케일링`
-  const description = `${movement.nameEn} 크로스핏 동작 완전 분석. 기술 기준 ${movement.technicalStandards.length}가지, 일반적 실수 ${movement.commonFaults.length}가지, ${movement.scaling.length}단계 스케일링 방법을 포함한 상세 가이드.`
+  const isEn = params.locale === 'en'
+  const title = isEn
+    ? `${movement.nameEn} Guide — Technique, Common Faults & Scaling | FITTERS STUDIO`
+    : `${movement.name} 완전 가이드 — 기술 기준·일반 실수·스케일링`
+  const description = isEn
+    ? `A complete breakdown of the CrossFit ${movement.nameEn}: ${movement.technicalStandards.length} technical standards, ${movement.commonFaults.length} common faults, and ${movement.scaling.length} scaling levels.`
+    : `${movement.nameEn} 크로스핏 동작 완전 분석. 기술 기준 ${movement.technicalStandards.length}가지, 일반적 실수 ${movement.commonFaults.length}가지, ${movement.scaling.length}단계 스케일링 방법을 포함한 상세 가이드.`
+  const displayName = isEn ? movement.nameEn : movement.name
   const url = `https://www.fittersstudio.com/${params.locale}/movements/${movement.slug}`
 
   return {
     title,
     description,
+    keywords: isEn
+      ? [movement.nameEn, `${movement.nameEn} technique`, `${movement.nameEn} form`, `how to do ${movement.nameEn}`, 'crossfit movement guide']
+      : undefined,
     openGraph: {
-      title: `FITTERS STUDIO — ${movement.name}`,
+      title: `FITTERS STUDIO — ${displayName}`,
       description,
       url,
       siteName: 'FITTERS STUDIO',
       type: 'article',
-      locale: 'ko_KR',
+      locale: isEn ? 'en_US' : 'ko_KR',
     },
     twitter: {
       card: 'summary_large_image',
-      title: `FITTERS STUDIO — ${movement.name}`,
+      title: `FITTERS STUDIO — ${displayName}`,
       description,
     },
     alternates: localizedAlternates(params.locale, `/movements/${movement.slug}`),

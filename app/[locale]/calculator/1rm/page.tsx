@@ -3,32 +3,39 @@ import StrengthHubClient from '@/components/calculator/StrengthHubClient'
 import { localizedAlternates } from '@/lib/seo'
 
 export async function generateMetadata({ params: { locale } }: { params: { locale: string } }): Promise<Metadata> {
+  const isEn = locale === 'en'
   return {
-    title: '나의 PR 기록하기 — 1RM 성장 추적',
-    description:
-      '나의 데드리프트, 백 스쿼트, 벤치프레스 등 PR을 기록하고 관리하며 성장과정을 공유하세요.',
-    keywords: [
-      'PR 기록',
-      '1RM 기록 트래커',
-      '스쿼트 PR 기록',
-      '데드리프트 PR 기록',
-      '벤치프레스 기록',
-      '운동 기록 관리',
-      '근력 성장 그래프',
-    ],
+    title: isEn ? 'PR Tracker — Log Your 1RM Progress | FITTERS STUDIO' : '나의 PR 기록하기 — 1RM 성장 추적',
+    description: isEn
+      ? 'Track your deadlift, back squat, and bench press PRs with growth charts and shareable progress — free.'
+      : '나의 데드리프트, 백 스쿼트, 벤치프레스 등 PR을 기록하고 관리하며 성장과정을 공유하세요.',
+    keywords: isEn
+      ? ['pr tracker', '1rm tracker', 'squat pr log', 'deadlift pr tracker', 'bench press log', 'strength progress tracker']
+      : [
+          'PR 기록',
+          '1RM 기록 트래커',
+          '스쿼트 PR 기록',
+          '데드리프트 PR 기록',
+          '벤치프레스 기록',
+          '운동 기록 관리',
+          '근력 성장 그래프',
+        ],
     openGraph: {
-      title: 'FITTERS STUDIO — 나의 PR 기록하기',
-      description:
-        '나의 PR을 기록하고 관리하며 성장과정을 공유하세요. 6개월 트렌드 차트와 소셜 공유 기능 포함.',
+      title: isEn ? 'FITTERS STUDIO — PR Tracker' : 'FITTERS STUDIO — 나의 PR 기록하기',
+      description: isEn
+        ? 'Track and share your PR progress with a 6-month trend chart.'
+        : '나의 PR을 기록하고 관리하며 성장과정을 공유하세요. 6개월 트렌드 차트와 소셜 공유 기능 포함.',
       url: 'https://www.fittersstudio.com/calculator/1rm',
       siteName: 'FITTERS STUDIO',
       type: 'website',
-      locale: 'ko_KR',
+      locale: isEn ? 'en_US' : 'ko_KR',
     },
     twitter: {
       card: 'summary_large_image',
-      title: 'FITTERS STUDIO — 나의 PR 기록하기',
-      description: '나의 PR을 기록하고 관리하며 성장과정을 공유하세요.',
+      title: isEn ? 'FITTERS STUDIO — PR Tracker' : 'FITTERS STUDIO — 나의 PR 기록하기',
+      description: isEn
+        ? 'Track and share your PR progress.'
+        : '나의 PR을 기록하고 관리하며 성장과정을 공유하세요.',
     },
     alternates: localizedAlternates(locale, '/calculator/1rm'),
   }

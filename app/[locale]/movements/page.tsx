@@ -7,23 +7,31 @@ import { MOVEMENTS, type MovementCategory } from '@/lib/movements-data'
 import { localizedAlternates } from '@/lib/seo'
 
 export async function generateMetadata({ params: { locale } }: { params: { locale: string } }): Promise<Metadata> {
+  const isEn = locale === 'en'
   return {
-    title: '크로스핏 동작 가이드 — 15가지 핵심 무브먼트 완전 정복',
-    description:
-      '풀업, 데드리프트, 더블언더 등 크로스핏 필수 동작 15가지의 기술 기준, 일반적 실수, 스케일링 방법을 상세히 설명합니다. 초보자부터 RX 선수까지 모든 레벨을 위한 완전한 무브먼트 가이드.',
+    title: isEn
+      ? 'CrossFit Movement Guide — 15 Core Exercises Explained | FITTERS STUDIO'
+      : '크로스핏 동작 가이드 — 15가지 핵심 무브먼트 완전 정복',
+    description: isEn
+      ? 'Pull-ups, deadlifts, double-unders, and more — technical standards, common faults, and scaling options for 15 essential CrossFit movements, from beginner to RX.'
+      : '풀업, 데드리프트, 더블언더 등 크로스핏 필수 동작 15가지의 기술 기준, 일반적 실수, 스케일링 방법을 상세히 설명합니다. 초보자부터 RX 선수까지 모든 레벨을 위한 완전한 무브먼트 가이드.',
+    keywords: isEn
+      ? ['crossfit movements', 'crossfit exercise guide', 'pull up technique', 'deadlift form', 'crossfit scaling', 'crossfit movement standards']
+      : undefined,
     openGraph: {
-      title: 'FITTERS STUDIO — 크로스핏 동작 완전 가이드',
-      description:
-        '상체 파워, 하체 근력, 대사 컨디셔닝 카테고리별 15가지 핵심 무브먼트. 기술 기준·일반 실수·스케일링 방법 포함.',
+      title: isEn ? 'FITTERS STUDIO — Complete CrossFit Movement Guide' : 'FITTERS STUDIO — 크로스핏 동작 완전 가이드',
+      description: isEn
+        ? '15 core movements across upper-body power, lower-body strength, and metabolic conditioning — technical standards, common faults, and scaling included.'
+        : '상체 파워, 하체 근력, 대사 컨디셔닝 카테고리별 15가지 핵심 무브먼트. 기술 기준·일반 실수·스케일링 방법 포함.',
       url: 'https://www.fittersstudio.com/movements',
       siteName: 'FITTERS STUDIO',
       type: 'website',
-      locale: 'ko_KR',
+      locale: isEn ? 'en_US' : 'ko_KR',
     },
     twitter: {
       card: 'summary_large_image',
-      title: 'FITTERS STUDIO — 크로스핏 동작 가이드',
-      description: '크로스핏 15가지 핵심 무브먼트 완전 분석',
+      title: isEn ? 'FITTERS STUDIO — CrossFit Movement Guide' : 'FITTERS STUDIO — 크로스핏 동작 가이드',
+      description: isEn ? 'A complete breakdown of 15 core CrossFit movements.' : '크로스핏 15가지 핵심 무브먼트 완전 분석',
     },
     alternates: localizedAlternates(locale, '/movements'),
   }
