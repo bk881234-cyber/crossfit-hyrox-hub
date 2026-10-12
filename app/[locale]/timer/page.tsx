@@ -325,7 +325,7 @@ export default function TimerPage() {
       stop()
       return
     }
-    if (countdownEnabled && elapsed === 0) {
+    if (countdownEnabled && elapsedRef.current === 0) {
       await requestWakeLock()
       const ctx = getAudioCtx()
       setCountingDown(true)
