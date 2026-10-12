@@ -919,7 +919,7 @@ export default function TimerPage() {
           <div className="overflow-y-auto h-[calc(50vh-80px)] px-5 pb-safe">
             {workoutLogs.length === 0 ? (
               <p className="text-white/30 text-sm text-center py-8">
-                라운드를 완료하면 기록이 표시됩니다
+                {t('noLogsYet')}
               </p>
             ) : (
               <>
@@ -944,7 +944,7 @@ export default function TimerPage() {
                     } else {
                       return (
                         <div key={i} className="flex items-center py-2.5 border-b border-white/[0.06]">
-                          <span className="text-blue-400/60 text-xs w-20 shrink-0">휴식</span>
+                          <span className="text-blue-400/60 text-xs w-20 shrink-0">{t('restLabel')}</span>
                           <span className="text-blue-300/70 font-bold flex-1 font-mono text-sm">{formatTime(log.lapTime)}</span>
                           <span className="text-blue-400/30 text-xs min-w-[40px] text-right">–</span>
                         </div>
@@ -954,7 +954,7 @@ export default function TimerPage() {
                 })()}
                 {/* Summary row */}
                 <div className="flex items-center py-3 mt-1">
-                  <span className="text-white/30 text-xs w-20 shrink-0">합계</span>
+                  <span className="text-white/30 text-xs w-20 shrink-0">{t('totalLabel')}</span>
                   <span className="text-white/50 text-sm font-bold flex-1">{lapRound} rounds</span>
                   <span className="text-white/40 text-xs font-mono">{formatTime(elapsed)}</span>
                 </div>

@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import {
   AreaChart, Area, ResponsiveContainer, Tooltip, YAxis,
 } from 'recharts'
+import { useTranslations, useLocale } from 'next-intl'
 import Header from '@/components/layout/Header'
 import MobileNav from '@/components/layout/MobileNav'
 import { Link } from '@/navigation'
@@ -79,12 +80,13 @@ async function sharePR(
   liftNameEn: string,
   weight: number,
   unit: WeightUnit,
+  shareTitle: string,
 ): Promise<'shared' | 'copied' | 'failed'> {
   const url = typeof window !== 'undefined' ? window.location.href : 'https://www.fittersstudio.com/calculator/1rm'
   const text = `🔥 ${liftNameEn} PR UPDATED: ${weight}${unit} on FITTERS STUDIO! 🚀 Track yours: ${url}`
   try {
     if (typeof navigator !== 'undefined' && navigator.share) {
-      await navigator.share({ title: 'FITTERS STUDIO — 나의 PR 기록하기', text, url })
+      await navigator.share({ title: shareTitle, text, url })
       return 'shared'
     }
     await navigator.clipboard.writeText(text)
@@ -95,13 +97,13 @@ async function sharePR(
 }
 
 // ─── Sparkline ────────────────────────────────────────────────
-function Sparkline({ data, id }: { data: { w: number }[]; id: string }) {
+function Sparkline({ data, id, t }: { data: { w: number }[]; id: string; t: (key: string) => string }) {
   if (data.length < 2) {
     return (
       <div className="h-16 flex items-center justify-center rounded-lg"
         style={{ background: 'rgba(255,255,255,0.03)' }}>
         <span className="text-rx-muted" style={{ fontSize: 16 }}>
-          {data.length === 1 ? '기록 1개' : '기록 없음'}
+          {data.length === 1 ? t('oneRecord') : t('noRecords')}
         </span>
       </div>
     )
@@ -146,9 +148,11 @@ interface CardProps {
   displayUnit: WeightUnit
   selected: boolean
   onSelect: () => void
+  locale: string
+  t: (key: string, values?: Record<string, string | number>) => string
 }
 
-function LiftCard({ lift, records, displayUnit, selected, onSelect }: CardProps) {
+function LiftCard({ lift, records, displayUnit, selected, onSelect, locale, t }: CardProps) {
   const pr = getPR(records, displayUnit)
   const chartData = getChartData(records, displayUnit)
   const trend = getTrend(chartData)
@@ -181,7 +185,7 @@ function LiftCard({ lift, records, displayUnit, selected, onSelect }: CardProps)
       </div>
 
       {/* Lift name */}
-      <p className="text-rx-muted font-medium truncate mb-1" style={{ fontSize: 16 }}>{lift.name}</p>
+      <p className="text-rx-muted font-medium truncate mb-1" style={{ fontSize: 16 }}>{locale === 'en' ? lift.nameEn : lift.name}</p>
 
       {/* PR weight */}
       <div className="flex items-baseline gap-1 mb-2 min-h-[34px]">
@@ -196,12 +200,12 @@ function LiftCard({ lift, records, displayUnit, selected, onSelect }: CardProps)
       </div>
 
       {/* Sparkline */}
-      <Sparkline data={chartData} id={lift.key} />
+      <Sparkline data={chartData} id={lift.key} t={t} />
 
       {/* Footer */}
       <div className="flex items-center justify-between mt-2">
         <span className="text-rx-muted" style={{ fontSize: 16 }}>
-          {records.length > 0 ? `${records.length}회 기록` : '첫 기록 추가'}
+          {records.length > 0 ? t('recordsCount', { count: records.length }) : t('firstRecord')}
         </span>
         <svg
           width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -216,7 +220,7 @@ function LiftCard({ lift, records, displayUnit, selected, onSelect }: CardProps)
 }
 
 // ─── Share button ─────────────────────────────────────────────
-function ShareBtn({ onClick, state }: { onClick: () => void; state: 'idle' | 'copied' | 'shared' }) {
+function ShareBtn({ onClick, state, t }: { onClick: () => void; state: 'idle' | 'copied' | 'shared'; t: (key: string) => string }) {
   return (
     <button
       onClick={onClick}
@@ -233,14 +237,14 @@ function ShareBtn({ onClick, state }: { onClick: () => void; state: 'idle' | 'co
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
             <polyline points="20 6 9 17 4 12" />
           </svg>
-          복사됨!
+          {t('copied')}
         </>
       ) : state === 'shared' ? (
         <>
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
             <polyline points="20 6 9 17 4 12" />
           </svg>
-          공유됨!
+          {t('shared')}
         </>
       ) : (
         <>
@@ -249,7 +253,7 @@ function ShareBtn({ onClick, state }: { onClick: () => void; state: 'idle' | 'co
             <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
             <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
           </svg>
-          나의 PR 공유하기
+          {t('shareMyPr')}
         </>
       )}
     </button>
@@ -258,6 +262,8 @@ function ShareBtn({ onClick, state }: { onClick: () => void; state: 'idle' | 'co
 
 // ─── Main component ───────────────────────────────────────────
 export default function StrengthHubClient() {
+  const t = useTranslations('prTracker')
+  const locale = useLocale()
   const supabase   = useMemo(() => createClient(), [])
   const [user,     setUser]     = useState<User | null>(null)
   const [records,  setRecords]  = useState<Record<LiftType, OneRmRecord[]>>(emptyRecords)
@@ -347,7 +353,7 @@ export default function StrengthHubClient() {
     const pr   = getPR(records[selected], dispUnit)
     if (!pr) return
     const w = fromKg(toKg(pr.weight, pr.unit), dispUnit)
-    const result = await sharePR(lift.nameEn, w, dispUnit)
+    const result = await sharePR(lift.nameEn, w, dispUnit, t('shareTitle'))
     if (result !== 'failed') {
       setShareState(result)
       setTimeout(() => setShareState('idle'), 2800)
@@ -383,13 +389,13 @@ export default function StrengthHubClient() {
           <div>
             <div className="flex items-center gap-2 mb-1">
               <Link href="/calculator" className="text-rx-muted hover:text-white transition-colors" style={{ fontSize: 16 }}>
-                ← 계산기
+                ← {t('backToCalculator')}
               </Link>
             </div>
             <h1 className="font-black text-white uppercase tracking-tight" style={{ fontSize: 38, lineHeight: 1 }}>
-              나의 PR <span className="gradient-text">기록하기</span>
+              {t('pageTitlePart1')} <span className="gradient-text">{t('pageTitlePart2')}</span>
             </h1>
-            <p className="text-rx-muted mt-1" style={{ fontSize: 16 }}>나의 PR을 기록하고 관리하며 성장과정을 공유하세요.</p>
+            <p className="text-rx-muted mt-1" style={{ fontSize: 16 }}>{t('pageSubtitle')}</p>
           </div>
 
           {/* kg / lbs toggle */}
@@ -418,11 +424,11 @@ export default function StrengthHubClient() {
           >
             <p style={{ fontSize: 40 }}>💪</p>
             <p className="text-white font-bold mt-3 mb-2" style={{ fontSize: 18 }}>
-              로그인하면 나의 1RM을 추적할 수 있어요
+              {t('loginGateTitle')}
             </p>
-            <p className="text-rx-muted mb-6" style={{ fontSize: 16 }}>클라우드에 안전하게 저장 · 어디서든 확인</p>
+            <p className="text-rx-muted mb-6" style={{ fontSize: 16 }}>{t('loginGateDesc')}</p>
             <Link href="/login" className="btn-primary" style={{ fontSize: 16 }}>
-              로그인하기
+              {t('loginGateBtn')}
             </Link>
           </motion.div>
         )}
@@ -442,6 +448,8 @@ export default function StrengthHubClient() {
                 displayUnit={dispUnit}
                 selected={selected === lift.key}
                 onSelect={() => handleSelect(lift.key)}
+                locale={locale}
+                t={t}
               />
             </motion.div>
           ))}
@@ -466,7 +474,7 @@ export default function StrengthHubClient() {
                     <div className="flex items-center gap-2 mb-1">
                       <span style={{ fontSize: 26 }}>{selConfig.emoji}</span>
                       <h2 className="font-black text-white uppercase tracking-tight" style={{ fontSize: 24 }}>
-                        {selConfig.name}
+                        {locale === 'en' ? selConfig.nameEn : selConfig.name}
                       </h2>
                     </div>
                     {selPR ? (
@@ -478,12 +486,12 @@ export default function StrengthHubClient() {
                         {' '}· {selPR.date}
                       </p>
                     ) : (
-                      <p className="text-rx-muted" style={{ fontSize: 16 }}>아직 기록이 없습니다</p>
+                      <p className="text-rx-muted" style={{ fontSize: 16 }}>{t('noPrYet')}</p>
                     )}
                   </div>
 
                   {selPR && (
-                    <ShareBtn onClick={handleShare} state={shareState} />
+                    <ShareBtn onClick={handleShare} state={shareState} t={t} />
                   )}
                 </div>
 
@@ -493,12 +501,12 @@ export default function StrengthHubClient() {
                     className="rounded-xl p-4 mb-5"
                     style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}
                   >
-                    <p className="text-white font-bold mb-3" style={{ fontSize: 16 }}>새 기록 추가</p>
+                    <p className="text-white font-bold mb-3" style={{ fontSize: 16 }}>{t('addNewRecord')}</p>
                     <div className="flex gap-2 flex-wrap items-end">
                       {/* Weight */}
                       <div className="flex-1" style={{ minWidth: 110 }}>
                         <label className="text-rx-muted uppercase tracking-wider block mb-1" style={{ fontSize: 16 }}>
-                          무게
+                          {t('weightLabel')}
                         </label>
                         <div className="flex gap-1">
                           <input
@@ -520,7 +528,7 @@ export default function StrengthHubClient() {
                       {/* Date */}
                       <div>
                         <label className="text-rx-muted uppercase tracking-wider block mb-1" style={{ fontSize: 16 }}>
-                          날짜
+                          {t('dateLabel')}
                         </label>
                         <input
                           type="date" value={logDate} onChange={e => setLogDate(e.target.value)}
@@ -540,9 +548,9 @@ export default function StrengthHubClient() {
                             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                               <polyline points="20 6 9 17 4 12" />
                             </svg>
-                            저장됨!
+                            {t('saved')}
                           </span>
-                        ) : saving ? '저장 중...' : '저장'}
+                        ) : saving ? t('saving') : t('save')}
                       </button>
                     </div>
                   </div>
@@ -551,7 +559,7 @@ export default function StrengthHubClient() {
                 {/* ── History table ── */}
                 {selRecords.length === 0 ? (
                   <div className="text-center py-10">
-                    <p className="text-rx-muted" style={{ fontSize: 16 }}>첫 기록을 추가해보세요!</p>
+                    <p className="text-rx-muted" style={{ fontSize: 16 }}>{t('addFirstRecord')}</p>
                   </div>
                 ) : (
                   <motion.div
@@ -563,9 +571,9 @@ export default function StrengthHubClient() {
                     <table className="w-full" style={{ fontSize: 16 }}>
                       <thead>
                         <tr className="border-b border-rx-border">
-                          <th className="text-left text-rx-muted font-bold py-2.5 pr-4">날짜</th>
-                          <th className="text-right text-rx-muted font-bold py-2.5 pr-4">무게</th>
-                          <th className="text-right text-rx-muted font-bold py-2.5 pr-4">이전 대비</th>
+                          <th className="text-left text-rx-muted font-bold py-2.5 pr-4">{t('colDate')}</th>
+                          <th className="text-right text-rx-muted font-bold py-2.5 pr-4">{t('colWeight')}</th>
+                          <th className="text-right text-rx-muted font-bold py-2.5 pr-4">{t('colVsPrevious')}</th>
                           <th className="py-2.5 w-8"></th>
                         </tr>
                       </thead>

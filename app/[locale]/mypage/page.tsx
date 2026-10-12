@@ -3,7 +3,7 @@ import { useState, useEffect, useMemo } from 'react'
 import { motion } from 'framer-motion'
 import Image from 'next/image'
 import { useRouter, Link } from '@/navigation'
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 import Header from '@/components/layout/Header'
 import MobileNav from '@/components/layout/MobileNav'
 import { createClient } from '@/lib/supabase/client'
@@ -104,6 +104,7 @@ function HeatCell({ count, date }: { count: number; date: string }) {
 // ─── Page ────────────────────────────────────────────────────
 export default function MyPage() {
   const t = useTranslations('mypage')
+  const locale = useLocale()
   const router = useRouter()
   const supabase = useMemo(() => createClient(), [])
 
@@ -232,13 +233,13 @@ export default function MyPage() {
     weeks.forEach((week, i) => {
       const m = new Date(week[0].date).getMonth()
       if (m !== lastMonth) {
-        monthLabels.push({ label: `${m + 1}월`, col: i })
+        monthLabels.push({ label: locale === 'en' ? `${m + 1}/` : `${m + 1}월`, col: i })
         lastMonth = m
       }
     })
 
     return { weeks, monthLabels }
-  }, [logs])
+  }, [logs, locale])
 
   const recentLogs = logs.slice(0, 10)
 

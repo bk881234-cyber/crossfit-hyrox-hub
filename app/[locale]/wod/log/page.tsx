@@ -282,7 +282,7 @@ function WodLogContent() {
       setTimeout(() => setSaved(false), 3000)
     } catch (err: any) {
       console.error('Save error:', err)
-      setError(err.message || '저장 중 오류가 발생했습니다.')
+      setError(err.message || t('saveError'))
     } finally {
       setLoading(false)
     }
@@ -480,7 +480,7 @@ function WodLogContent() {
           <div>
             {filterDate && (
               <div className="flex items-center gap-2 mb-4 p-3 bg-rx-surface border border-rx-border rounded-xl">
-                <span className="text-white text-sm font-bold">{filterDate} 기록</span>
+                <span className="text-white text-sm font-bold">{t('filterDateLogs', { date: filterDate })}</span>
                 <button onClick={() => setFilterDate('')} className="ml-auto text-rx-muted hover:text-white text-xs">{t('viewAll')}</button>
               </div>
             )}

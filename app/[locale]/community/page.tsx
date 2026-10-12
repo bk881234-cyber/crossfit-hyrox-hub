@@ -7,7 +7,7 @@ import { HYROX_EVENTS, BOARD_POSTS, type BoardPost } from '@/lib/community-data'
 import { createClient } from '@/lib/supabase/client'
 import type { User } from '@supabase/supabase-js'
 import type { BoardPostRow } from '@/lib/supabase-types'
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 
 function boardRowToPost(row: BoardPostRow): BoardPost {
   return {
@@ -30,7 +30,9 @@ interface MajorComp {
   name: string        // 한국명
   nameEn: string      // 영문명
   scale: string
+  scaleEn: string
   period: string      // "매년 4~6월 (예정)" 형식
+  periodEn: string
   instagramUrl: string
   isHardcoded: true
 }
@@ -55,52 +57,62 @@ type AnyComp = MajorComp | RegisteredComp
 const HARDCODED_COMPS: MajorComp[] = [
   {
     id: 'teamoffour', name: '팀오브포', nameEn: 'Team of Four',
-    scale: '4인 팀 대회 (남2 여2 / 동일성별 팀)', period: '2026년 4월~6월 (시즌 예정)',
+    scale: '4인 팀 대회 (남2 여2 / 동일성별 팀)', scaleEn: '4-person team event (2 men, 2 women / same-gender teams)',
+    period: '2026년 4월~6월 (시즌 예정)', periodEn: 'Apr–Jun 2026 (season expected)',
     instagramUrl: 'https://www.instagram.com/teamof_four', isHardcoded: true,
   },
   {
     id: 'kboxrise', name: '케이박스라이즈', nameEn: 'K-Box Rise',
-    scale: '박스 단위 팀 대회 · 국내 최대 규모 대표 대회', period: '2026년 5월~7월 (시즌 예정)',
+    scale: '박스 단위 팀 대회 · 국내 최대 규모 대표 대회', scaleEn: 'Box-vs-box team event · one of the largest in Korea',
+    period: '2026년 5월~7월 (시즌 예정)', periodEn: 'May–Jul 2026 (season expected)',
     instagramUrl: 'https://www.instagram.com/k_box_rise', isHardcoded: true,
   },
   {
     id: 'makia', name: '마키아', nameEn: 'Makia',
-    scale: '개인/팀 대회 · 제주 축제형 종합 대회', period: '예선 2026년 5월 · 본대회 2026년 여름',
+    scale: '개인/팀 대회 · 제주 축제형 종합 대회', scaleEn: 'Individual/team event · festival-style competition in Jeju',
+    period: '예선 2026년 5월 · 본대회 2026년 여름', periodEn: 'Qualifiers May 2026 · Finals summer 2026',
     instagramUrl: 'https://www.instagram.com/makia_official_', isHardcoded: true,
   },
   {
     id: 'battlecrew', name: '배틀크루', nameEn: 'Battle Crew',
-    scale: '크루(4~6명) 단위 · 전국 지역 예선→파이널 챔피언십', period: '2026년 5월~9월 (진행 예정)',
+    scale: '크루(4~6명) 단위 · 전국 지역 예선→파이널 챔피언십', scaleEn: 'Crew-based (4–6 people) · regional qualifiers → national finals',
+    period: '2026년 5월~9월 (진행 예정)', periodEn: 'May–Sep 2026 (expected)',
     instagramUrl: 'https://www.instagram.com/battlecrew_korea', isHardcoded: true,
   },
   {
     id: 'suff', name: '서프', nameEn: 'SUFF',
-    scale: '서머 피트니스 페스티벌 · 대표 해변/여름 대회', period: '2026년 7월~8월 (예정)',
+    scale: '서머 피트니스 페스티벌 · 대표 해변/여름 대회', scaleEn: 'Summer fitness festival · flagship beach/summer event',
+    period: '2026년 7월~8월 (예정)', periodEn: 'Jul–Aug 2026 (expected)',
     instagramUrl: 'https://www.instagram.com/suff_estival', isHardcoded: true,
   },
   {
     id: 'cfkoreaopen', name: '크로스핏 코리아 오픈', nameEn: 'CrossFit Korea Open',
-    scale: 'CrossFit LLC / Korea 공식 주관 오픈 챌린지', period: '2026년 2월~3월 (공식 진행)',
+    scale: 'CrossFit LLC / Korea 공식 주관 오픈 챌린지', scaleEn: 'Official open challenge hosted by CrossFit LLC / Korea',
+    period: '2026년 2월~3월 (공식 진행)', periodEn: 'Feb–Mar 2026 (official)',
     instagramUrl: 'https://www.instagram.com/crossfitkorea', isHardcoded: true,
   },
   {
     id: 'nwnd', name: '엔스윈드', nameEn: 'NWND',
-    scale: '개인/팀 피트니스 챔피언십', period: '2026년 4월~6월 (예정)',
+    scale: '개인/팀 피트니스 챔피언십', scaleEn: 'Individual/team fitness championship',
+    period: '2026년 4월~6월 (예정)', periodEn: 'Apr–Jun 2026 (expected)',
     instagramUrl: 'https://www.instagram.com/nwnd_kr', isHardcoded: true,
   },
   {
     id: 'enuf', name: '이너프', nameEn: 'ENUF',
-    scale: '개인/팀 아웃도어 피트니스 챌린지', period: '2026년 5월~7월 (예정)',
+    scale: '개인/팀 아웃도어 피트니스 챌린지', scaleEn: 'Individual/team outdoor fitness challenge',
+    period: '2026년 5월~7월 (예정)', periodEn: 'May–Jul 2026 (expected)',
     instagramUrl: 'https://www.instagram.com/enuf.sports', isHardcoded: true,
   },
   {
     id: 'girlfit', name: '걸핏코리아', nameEn: 'GirlFit Korea',
-    scale: '여성 전용 피트니스 & 크로스핏 대회', period: '2026년 4월~6월 (예정)',
+    scale: '여성 전용 피트니스 & 크로스핏 대회', scaleEn: "Women-only fitness & CrossFit competition",
+    period: '2026년 4월~6월 (예정)', periodEn: 'Apr–Jun 2026 (expected)',
     instagramUrl: 'https://www.instagram.com/girlfit_korea', isHardcoded: true,
   },
   {
     id: 'kffa', name: '대한기능성피트니스협회 대회', nameEn: 'KFFA Championship',
-    scale: '국가대표 선발전 및 전국 챔피언십', period: '2026년 6월~8월 (예정)',
+    scale: '국가대표 선발전 및 전국 챔피언십', scaleEn: 'National team trials and national championship',
+    period: '2026년 6월~8월 (예정)', periodEn: 'Jun–Aug 2026 (expected)',
     instagramUrl: 'https://www.instagram.com/kffa_official', isHardcoded: true,
   },
 ]
@@ -138,6 +150,7 @@ const emptyPost = {
 // ─── 메인 컴포넌트 ────────────────────────────────────────────────────────────
 export default function CommunityPage() {
   const t = useTranslations('community')
+  const locale = useLocale()
   const router = useRouter()
   const supabase = useMemo(() => createClient(), [])
 
@@ -318,7 +331,7 @@ export default function CommunityPage() {
                         <p className="text-rx-muted text-sm mt-1">{formatDate(event.date)}</p>
                         <p className="text-rx-muted text-xs mt-1">{event.venue}</p>
                         {event.participants && (
-                          <p className="text-rx-muted text-xs mt-1">예상 참가: {event.participants.toLocaleString()}명</p>
+                          <p className="text-rx-muted text-xs mt-1">{t('hyroxExpectedParticipants', { count: event.participants.toLocaleString() })}</p>
                         )}
                       </div>
                       <div className="flex-shrink-0 text-right">
@@ -358,7 +371,7 @@ export default function CommunityPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {allComps.map((comp) => (
                 comp.isHardcoded
-                  ? <HardcodedCompCard key={comp.id} comp={comp as MajorComp} t={t} />
+                  ? <HardcodedCompCard key={comp.id} comp={comp as MajorComp} t={t} locale={locale} />
                   : <RegisteredCompCard key={comp.id} comp={comp as RegisteredComp} t={t} />
               ))}
             </div>
@@ -414,7 +427,7 @@ export default function CommunityPage() {
                 <h3 className="font-black text-white text-xl mb-2">{t('successTitle')}</h3>
                 <p className="text-rx-muted text-sm mb-2">{t('successCompDesc')}</p>
                 <p className="text-rx-muted text-sm mb-6">{t('successCompNote')}</p>
-                <button onClick={closeCompModal} className="btn-primary px-8">확인</button>
+                <button onClick={closeCompModal} className="btn-primary px-8">{t('confirmBtn')}</button>
               </div>
             ) : (
               <div className="space-y-4">
@@ -422,7 +435,7 @@ export default function CommunityPage() {
                   <>
                     <div>
                       <label className="text-rx-muted text-sm block mb-1">{t('fApplicant')}</label>
-                      <input type="text" className="input" placeholder="홍길동"
+                      <input type="text" className="input" placeholder={t('contactNamePh')}
                         value={compForm.contactName}
                         onChange={e => setCompForm(p => ({ ...p, contactName: e.target.value }))} />
                     </div>
@@ -482,7 +495,7 @@ export default function CommunityPage() {
 
                 {/* validation hint */}
                 {(!compForm.name.trim() || !compForm.organizer.trim() || !compForm.date) && (
-                  <p className="text-rx-muted text-xs">* 표시 항목은 필수입니다.</p>
+                  <p className="text-rx-muted text-xs">{t('requiredNote')}</p>
                 )}
 
                 <div className="flex gap-3 pt-2">
@@ -576,20 +589,21 @@ function IgIcon() {
 }
 
 // ─── 하드코딩 대회 카드 ─────────────────────────────────────────────────────────
-function HardcodedCompCard({ comp, t }: { comp: MajorComp; t: (key: string, values?: Record<string, string | number | Date>) => string }) {
+function HardcodedCompCard({ comp, t, locale }: { comp: MajorComp; t: (key: string, values?: Record<string, string | number | Date>) => string; locale: string }) {
+  const isEn = locale === 'en'
   return (
     <div className="card hover:border-rx-red/40 transition-all flex flex-col">
       <div className="flex-1">
-        <p className="text-rx-muted text-xs mb-0.5">{comp.nameEn}</p>
-        <h3 className="font-black text-white text-lg mb-3">{comp.name}</h3>
+        <p className="text-rx-muted text-xs mb-0.5">{isEn ? comp.name : comp.nameEn}</p>
+        <h3 className="font-black text-white text-lg mb-3">{isEn ? comp.nameEn : comp.name}</h3>
         <div className="space-y-1.5 mb-3">
           <div className="flex items-start gap-2">
             <span className="text-rx-muted text-xs w-10 flex-shrink-0 pt-0.5">{t('majorScale')}</span>
-            <span className="text-white text-sm leading-snug">{comp.scale}</span>
+            <span className="text-white text-sm leading-snug">{isEn ? comp.scaleEn : comp.scale}</span>
           </div>
           <div className="flex items-start gap-2">
             <span className="text-rx-muted text-xs w-10 flex-shrink-0 pt-0.5">{t('majorPeriod')}</span>
-            <span className="text-rx-orange text-sm font-bold leading-snug">{comp.period}</span>
+            <span className="text-rx-orange text-sm font-bold leading-snug">{isEn ? comp.periodEn : comp.period}</span>
           </div>
         </div>
         <p className="text-rx-muted text-xs mb-4">{t('majorNote')}</p>
@@ -649,7 +663,7 @@ function RegisteredCompCard({ comp, t }: { comp: RegisteredComp; t: (key: string
             <polyline points="15 3 21 3 21 9" />
             <line x1="10" y1="14" x2="21" y2="3" />
           </svg>
-          신청 링크
+          {t('applyLink')}
         </a>
       )}
     </div>

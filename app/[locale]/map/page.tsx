@@ -3,7 +3,7 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import Script from 'next/script'
 import Header from '@/components/layout/Header'
 import MobileNav from '@/components/layout/MobileNav'
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 
 declare global {
   interface Window { kakao: any }
@@ -17,17 +17,45 @@ function loadKakaoMaps(callback: () => void) {
 
 // ── 지역 데이터 (좌표 + 줌 레벨) ──────────────────────────────────────────
 const REGIONS = [
-  { id: 'all',  label: '전체',   lat: 36.5,    lng: 127.8,   level: 13 },
-  { id: '서울',  label: '서울',   lat: 37.5665, lng: 126.9780, level: 9  },
-  { id: '경기',  label: '경기',   lat: 37.4138, lng: 127.5183, level: 10 },
-  { id: '인천',  label: '인천',   lat: 37.4563, lng: 126.7052, level: 10 },
-  { id: '부산',  label: '부산',   lat: 35.1796, lng: 129.0756, level: 10 },
-  { id: '대구',  label: '대구',   lat: 35.8714, lng: 128.6014, level: 10 },
-  { id: '대전',  label: '대전',   lat: 36.3504, lng: 127.3845, level: 10 },
-  { id: '광주',  label: '광주',   lat: 35.1595, lng: 126.8526, level: 10 },
-  { id: '울산',  label: '울산',   lat: 35.5384, lng: 129.3114, level: 10 },
-  { id: '제주',  label: '제주도', lat: 33.4996, lng: 126.5312, level: 10 },
+  { id: 'all',  label: '전체',   labelEn: 'All',     lat: 36.5,    lng: 127.8,   level: 13 },
+  { id: '서울',  label: '서울',   labelEn: 'Seoul',   lat: 37.5665, lng: 126.9780, level: 9  },
+  { id: '경기',  label: '경기',   labelEn: 'Gyeonggi', lat: 37.4138, lng: 127.5183, level: 10 },
+  { id: '인천',  label: '인천',   labelEn: 'Incheon', lat: 37.4563, lng: 126.7052, level: 10 },
+  { id: '부산',  label: '부산',   labelEn: 'Busan',   lat: 35.1796, lng: 129.0756, level: 10 },
+  { id: '대구',  label: '대구',   labelEn: 'Daegu',   lat: 35.8714, lng: 128.6014, level: 10 },
+  { id: '대전',  label: '대전',   labelEn: 'Daejeon', lat: 36.3504, lng: 127.3845, level: 10 },
+  { id: '광주',  label: '광주',   labelEn: 'Gwangju', lat: 35.1595, lng: 126.8526, level: 10 },
+  { id: '울산',  label: '울산',   labelEn: 'Ulsan',   lat: 35.5384, lng: 129.3114, level: 10 },
+  { id: '제주',  label: '제주도', labelEn: 'Jeju',    lat: 33.4996, lng: 126.5312, level: 10 },
 ]
+
+// ── 구/시/군 이름 로마자 표기 (영문 로케일 표시용, 카카오 검색어 자체는 한글 유지) ──
+const DISTRICT_LABELS_EN: Record<string, string> = {
+  '강남구': 'Gangnam-gu', '강동구': 'Gangdong-gu', '강북구': 'Gangbuk-gu', '강서구': 'Gangseo-gu',
+  '관악구': 'Gwanak-gu', '광진구': 'Gwangjin-gu', '구로구': 'Guro-gu', '금천구': 'Geumcheon-gu',
+  '노원구': 'Nowon-gu', '도봉구': 'Dobong-gu', '동대문구': 'Dongdaemun-gu', '동작구': 'Dongjak-gu',
+  '마포구': 'Mapo-gu', '서대문구': 'Seodaemun-gu', '서초구': 'Seocho-gu', '성동구': 'Seongdong-gu',
+  '성북구': 'Seongbuk-gu', '송파구': 'Songpa-gu', '양천구': 'Yangcheon-gu', '영등포구': 'Yeongdeungpo-gu',
+  '용산구': 'Yongsan-gu', '은평구': 'Eunpyeong-gu', '종로구': 'Jongno-gu', '중구': 'Jung-gu',
+  '중랑구': 'Jungnang-gu',
+  '수원시': 'Suwon-si', '고양시': 'Goyang-si', '용인시': 'Yongin-si', '성남시': 'Seongnam-si',
+  '부천시': 'Bucheon-si', '화성시': 'Hwaseong-si', '안산시': 'Ansan-si', '남양주시': 'Namyangju-si',
+  '안양시': 'Anyang-si', '평택시': 'Pyeongtaek-si', '시흥시': 'Siheung-si', '파주시': 'Paju-si',
+  '의정부시': 'Uijeongbu-si', '김포시': 'Gimpo-si', '광주시': 'Gwangju-si', '광명시': 'Gwangmyeong-si',
+  '하남시': 'Hanam-si', '군포시': 'Gunpo-si', '오산시': 'Osan-si', '이천시': 'Icheon-si',
+  '양주시': 'Yangju-si', '구리시': 'Guri-si', '안성시': 'Anseong-si', '의왕시': 'Uiwang-si',
+  '포천시': 'Pocheon-si', '양평군': 'Yangpyeong-gun', '여주시': 'Yeoju-si', '동두천시': 'Dongducheon-si',
+  '과천시': 'Gwacheon-si', '가평군': 'Gapyeong-gun', '연천군': 'Yeoncheon-gun',
+  '미추홀구': 'Michuhol-gu', '남동구': 'Namdong-gu', '부평구': 'Bupyeong-gu', '계양구': 'Gyeyang-gu',
+  '서구': 'Seo-gu', '강화군': 'Ganghwa-gun', '옹진군': 'Ongjin-gun',
+  '동구': 'Dong-gu', '영도구': 'Yeongdo-gu', '부산진구': 'Busanjin-gu', '동래구': 'Dongnae-gu',
+  '남구': 'Nam-gu', '북구': 'Buk-gu', '해운대구': 'Haeundae-gu', '사하구': 'Saha-gu',
+  '금정구': 'Geumjeong-gu', '연제구': 'Yeonje-gu', '수영구': 'Suyeong-gu', '사상구': 'Sasang-gu',
+  '기장군': 'Gijang-gun',
+  '수성구': 'Suseong-gu', '달서구': 'Dalseo-gu', '달성군': 'Dalseong-gun', '군위군': 'Gunwi-gun',
+  '유성구': 'Yuseong-gu', '대덕구': 'Daedeok-gu', '광산구': 'Gwangsan-gu', '울주군': 'Ulju-gun',
+  '제주시': 'Jeju-si', '서귀포시': 'Seogwipo-si',
+}
 
 // ── 세부 지역 (구/시 단위) 데이터 ──────────────────────────────────────────
 const SUB_REGIONS: Record<string, string[]> = {
@@ -149,6 +177,7 @@ function buildOverlayEl(
 
 export default function MapPage() {
   const t = useTranslations('map')
+  const locale = useLocale()
 
   const [selectedRegion, setSelectedRegion] = useState('서울')
   const [selectedSubRegion, setSelectedSubRegion] = useState('all')
@@ -509,7 +538,7 @@ export default function MapPage() {
                       : 'bg-rx-surface border border-rx-border text-rx-muted hover:text-white'
                   }`}
                 >
-                  {region.id === 'all' ? t('regionAll') : region.label}
+                  {region.id === 'all' ? t('regionAll') : locale === 'en' ? region.labelEn : region.label}
                 </button>
               ))}
             </div>
@@ -537,7 +566,7 @@ export default function MapPage() {
                         : 'bg-rx-surface border border-rx-border text-rx-muted hover:text-white'
                     }`}
                   >
-                    {sub}
+                    {locale === 'en' ? (DISTRICT_LABELS_EN[sub] ?? sub) : sub}
                   </button>
                 ))}
               </div>
@@ -743,7 +772,7 @@ export default function MapPage() {
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <label className="text-rx-muted text-sm block mb-1">{t('fName')}</label>
-                    <input type="text" className="input" placeholder="홍길동"
+                    <input type="text" className="input" placeholder={locale === 'en' ? 'John Doe' : '홍길동'}
                       value={form.contactName} onChange={(e) => setForm((p) => ({ ...p, contactName: e.target.value }))} />
                   </div>
                   <div>

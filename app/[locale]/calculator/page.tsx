@@ -10,12 +10,12 @@ type Unit = 'kg' | 'lb'
 const PERCENTAGES = [100, 95, 90, 85, 80, 75, 70, 65, 60]
 
 const BODYWEIGHT_MOVEMENTS = [
-  { name: '풀업', multiplier: 1.0 },
-  { name: '딥스', multiplier: 1.0 },
-  { name: '푸시업', multiplier: 0.65 },
-  { name: '핸드스탠드 푸시업', multiplier: 1.0 },
-  { name: '머슬업', multiplier: 1.1 },
-]
+  { key: 'bwNamePullup', multiplier: 1.0 },
+  { key: 'bwNameDip', multiplier: 1.0 },
+  { key: 'bwNamePushup', multiplier: 0.65 },
+  { key: 'bwNameHspu', multiplier: 1.0 },
+  { key: 'bwNameMuscleup', multiplier: 1.1 },
+] as const
 
 function epley(weight: number, reps: number): number {
   if (reps === 1) return weight
@@ -265,14 +265,14 @@ export default function CalculatorPage() {
                   {BODYWEIGHT_MOVEMENTS.map((m) => {
                     const baseKg = Math.round(bw * m.multiplier * 10) / 10
                     return (
-                      <div key={m.name} className="flex items-center justify-between px-4 py-3 rounded-lg bg-rx-surface">
-                        <span className="text-white font-medium">{m.name}</span>
+                      <div key={m.key} className="flex items-center justify-between px-4 py-3 rounded-lg bg-rx-surface">
+                        <span className="text-white font-medium">{t(m.key)}</span>
                         <span className="font-black gradient-text">{baseKg} kg</span>
                       </div>
                     )
                   })}
                 </div>
-                <p className="text-rx-muted text-xs mt-3 text-center">* 체중 기준 권장 사용 중량입니다</p>
+                <p className="text-rx-muted text-xs mt-3 text-center">{t('bwTableNote')}</p>
               </div>
             )}
 
