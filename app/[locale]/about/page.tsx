@@ -102,6 +102,14 @@ export default function AboutPage() {
     { step: '05', title: 'Join the Community', desc: 'Community is the heart of CrossFit. Train with others and challenge yourself in competitions.' },
   ]
 
+  const philosophyIntro = locale === 'en'
+    ? <>CrossFit goes beyond repeating simple movements — it aims to maximize <strong className="text-white">quality of life</strong> and build <strong className="text-white">General Physical Preparedness (GPP)</strong>, the kind of fitness that can handle any challenge.</>
+    : <>크로스핏은 단순한 동작의 반복을 넘어 <strong className="text-white">삶의 질 향상</strong>과 어떤 도전에도 대응 가능한 <strong className="text-white">범용적 신체 능력(GPP)</strong> 극대화를 목표로 합니다.</>
+
+  const hyroxIntro = locale === 'en'
+    ? <>HYROX is a <strong className="text-white">fitness racing competition</strong> that started in Germany in 2017. It&apos;s a standardized race of 8×1km runs alternating with 8 functional exercise stations, run in the exact same format worldwide — a new standard for a <strong className="text-white">mass-participation fitness competition</strong> anyone can enter.</>
+    : <>HYROX는 2017년 독일에서 시작된 <strong className="text-white">피트니스 레이싱 대회</strong>입니다. 1km 런 8회와 8개의 기능적 운동 스테이션으로 구성된 표준화된 레이스로, 전 세계 동일한 형식으로 진행됩니다. 누구나 참가 가능한 <strong className="text-white">대중 피트니스 대회</strong>의 새로운 표준입니다.</>
+
   const glossary = locale === 'en' ? glossaryEn : glossaryKo
   const comparisonRows = locale === 'en' ? comparisonRowsEn : comparisonRowsKo
   const startingSteps = locale === 'en' ? startingStepsEn : startingStepsKo
@@ -142,12 +150,18 @@ export default function AboutPage() {
               <div className="flex flex-col gap-6 max-w-3xl">
                 <div>
                   <p className="text-white/80 text-sm md:text-base leading-relaxed mb-6">
-                    크로스핏은 단순한 동작의 반복을 넘어 <strong className="text-white">삶의 질 향상</strong>과 어떤 도전에도 대응 가능한 <strong className="text-white">범용적 신체 능력(GPP)</strong> 극대화를 목표로 합니다.
+                    {philosophyIntro}
                   </p>
                   <blockquote className="border-l-2 pl-5 py-2 mb-4" style={{ borderColor: '#E8321A', background: 'rgba(232,50,26,0.05)' }}>
                     <p className="text-white/90 italic text-base md:text-lg font-medium leading-relaxed">
-                      &ldquo;끊임없이 변화하는 기능적 동작을 고강도로 수행하는 것&rdquo;<br />
-                      <span className="text-rx-muted text-xs mt-2 block not-italic uppercase tracking-widest">Constantly varied functional movements performed at high intensity</span>
+                      {locale === 'en' ? (
+                        <>&ldquo;Constantly varied functional movements performed at high intensity&rdquo;</>
+                      ) : (
+                        <>
+                          &ldquo;끊임없이 변화하는 기능적 동작을 고강도로 수행하는 것&rdquo;<br />
+                          <span className="text-rx-muted text-xs mt-2 block not-italic uppercase tracking-widest">Constantly varied functional movements performed at high intensity</span>
+                        </>
+                      )}
                     </p>
                   </blockquote>
                 </div>
@@ -271,7 +285,7 @@ export default function AboutPage() {
               What is <span className="gradient-text">HYROX?</span>
             </h2>
             <p className="text-white/70 text-sm leading-relaxed mb-8 max-w-2xl">
-              HYROX는 2017년 독일에서 시작된 <strong className="text-white">피트니스 레이싱 대회</strong>입니다. 1km 런 8회와 8개의 기능적 운동 스테이션으로 구성된 표준화된 레이스로, 전 세계 동일한 형식으로 진행됩니다. 누구나 참가 가능한 <strong className="text-white">대중 피트니스 대회</strong>의 새로운 표준입니다.
+              {hyroxIntro}
             </p>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
