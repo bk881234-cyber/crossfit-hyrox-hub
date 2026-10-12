@@ -1,9 +1,26 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
+import { useRouter } from '@/navigation'
 import Header from '@/components/layout/Header'
 import MobileNav from '@/components/layout/MobileNav'
 import { HYROX_EVENTS, BOARD_POSTS, type BoardPost } from '@/lib/community-data'
+import { createClient } from '@/lib/supabase/client'
+import type { User } from '@supabase/supabase-js'
+import type { BoardPostRow } from '@/lib/supabase-types'
 import { useTranslations } from 'next-intl'
+
+function boardRowToPost(row: BoardPostRow): BoardPost {
+  return {
+    id: row.id,
+    title: row.title,
+    content: row.content,
+    author: row.author,
+    createdAt: row.created_at.slice(0, 10),
+    likes: 0,
+    comments: 0,
+    tags: row.tags,
+  }
+}
 
 type Tab = 'hyrox' | 'major' | 'board'
 
@@ -115,13 +132,25 @@ const emptyComp = {
 }
 
 const emptyPost = {
-  nickname: '', title: '', content: '', tags: '',
+  title: '', content: '', tags: '',
 }
 
 // ─── 메인 컴포넌트 ────────────────────────────────────────────────────────────
 export default function CommunityPage() {
   const t = useTranslations('community')
-  const isLoggedIn = false
+  const router = useRouter()
+  const supabase = useMemo(() => createClient(), [])
+
+  const [user, setUser] = useState<User | null>(null)
+  const isLoggedIn = !!user
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => setUser(data.user))
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null)
+    })
+    return () => subscription.unsubscribe()
+  }, [supabase])
 
   const [tab, setTab] = useState<Tab>('major')
 
@@ -143,20 +172,18 @@ export default function CommunityPage() {
   const [compForm, setCompForm] = useState(emptyComp)
   const [compSubmitted, setCompSubmitted] = useState(false)
 
-  // 자유게시판: localStorage에서 사용자 작성 글 복원 후 기본 데이터와 병합
-  const [boardPosts, setBoardPosts] = useState<BoardPost[]>(() => {
-    if (typeof window === 'undefined') return BOARD_POSTS
-    try {
-      const saved: BoardPost[] = JSON.parse(localStorage.getItem('board_posts') || '[]')
-      return [...saved, ...BOARD_POSTS]
-    } catch { return BOARD_POSTS }
-  })
+  // 자유게시판: Supabase에서 실제 작성된 글을 불러와 시드 데이터 뒤에 병합
+  const [boardPosts, setBoardPosts] = useState<BoardPost[]>(BOARD_POSTS)
 
-  // boardPosts 변경 시 사용자 작성 글만 localStorage에 저장
   useEffect(() => {
-    const userPosts = boardPosts.filter(p => p.id.startsWith('post-user-'))
-    localStorage.setItem('board_posts', JSON.stringify(userPosts))
-  }, [boardPosts])
+    supabase
+      .from('board_posts')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .then(({ data }) => {
+        if (data) setBoardPosts([...(data as BoardPostRow[]).map(boardRowToPost), ...BOARD_POSTS])
+      })
+  }, [supabase])
 
   // likes 변경 시 localStorage에 저장
   useEffect(() => {
@@ -199,10 +226,16 @@ export default function CommunityPage() {
     setCompSubmitted(false)
   }
 
-  // ── 게시글 작성 제출 ────────────────────────────────────────────────────────
-  const handlePostSubmit = () => {
+  // ── 글쓰기 버튼: 비로그인이면 바로 로그인 화면으로 ──────────────────────────────
+  const openWriteModal = () => {
+    if (!user) { router.push('/login?callbackUrl=/community%23board'); return }
+    setShowWriteModal(true)
+  }
+
+  // ── 게시글 작성 제출 (Supabase에 저장, 모두에게 공유됨) ─────────────────────────
+  const handlePostSubmit = async () => {
     setWriteError('')
-    if (!writeForm.nickname.trim()) { setWriteError(t('errNickname')); return }
+    if (!user) { router.push('/login?callbackUrl=/community%23board'); return }
     if (!writeForm.title.trim()) { setWriteError(t('errTitle')); return }
     if (!writeForm.content.trim()) { setWriteError(t('errContent')); return }
 
@@ -212,17 +245,21 @@ export default function CommunityPage() {
       .filter(Boolean)
       .slice(0, 5)
 
-    const newPost: BoardPost = {
-      id: `post-user-${Date.now()}`,
-      title: writeForm.title.trim(),
-      content: writeForm.content.trim(),
-      author: writeForm.nickname.trim(),
-      createdAt: nowStr(),
-      likes: 0,
-      comments: 0,
-      tags,
-    }
-    setBoardPosts(prev => [newPost, ...prev])
+    const author =
+      (user.user_metadata?.full_name as string | undefined) ??
+      (user.user_metadata?.name as string | undefined) ??
+      user.email?.split('@')[0] ??
+      'Athlete'
+
+    const { data, error } = await supabase
+      .from('board_posts')
+      .insert({ user_id: user.id, author, title: writeForm.title.trim(), content: writeForm.content.trim(), tags })
+      .select()
+      .single()
+
+    if (error || !data) { setWriteError(t('errContent')); return }
+
+    setBoardPosts(prev => [boardRowToPost(data as BoardPostRow), ...prev])
     setShowWriteModal(false)
     setWriteForm(emptyPost)
     setWriteError('')
@@ -334,7 +371,7 @@ export default function CommunityPage() {
             <div className="flex items-center justify-between mb-4">
               <p className="text-rx-muted text-sm">{t('boardCount', { count: boardPosts.length })}</p>
               <button
-                onClick={() => setShowWriteModal(true)}
+                onClick={openWriteModal}
                 className="flex items-center gap-1.5 px-4 py-2 rounded-lg gradient-bg text-white text-xs font-bold hover:opacity-90 transition-opacity"
               >
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
@@ -479,12 +516,6 @@ export default function CommunityPage() {
             </div>
 
             <div className="space-y-4">
-              <div>
-                <label className="text-rx-muted text-sm block mb-1">{t('bNickname')}</label>
-                <input type="text" className="input" placeholder={t('bNicknamePh')}
-                  value={writeForm.nickname}
-                  onChange={e => setWriteForm(p => ({ ...p, nickname: e.target.value }))} />
-              </div>
               <div>
                 <label className="text-rx-muted text-sm block mb-1">{t('bTitle')}</label>
                 <input type="text" className="input" placeholder={t('bTitlePh')}

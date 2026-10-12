@@ -41,3 +41,15 @@ export interface OneRmRecord {
 }
 
 export type OneRmInsert = Omit<OneRmRecord, 'id' | 'created_at'>
+
+export interface BoardPostRow {
+  id: string
+  user_id: string
+  author: string
+  title: string
+  content: string
+  tags: string[]
+  created_at: string
+}
+
+export type BoardPostInsert = Omit<BoardPostRow, 'id' | 'created_at'>
