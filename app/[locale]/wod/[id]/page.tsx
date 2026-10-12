@@ -6,6 +6,7 @@ import Header from '@/components/layout/Header'
 import MobileNav from '@/components/layout/MobileNav'
 import { WODS, type WOD } from '@/lib/wod-data'
 import { getMovementSlug } from '@/lib/movement-links'
+import { localizedAlternates } from '@/lib/seo'
 import WodHistoryPanel from '@/components/wod/WodHistoryPanel'
 
 export function generateStaticParams() {
@@ -21,14 +22,14 @@ const WOD_TYPE_LABELS: Record<WOD['type'], string> = {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { id } = await params
+  const { id, locale } = await params
   const wod = WODS.find((w) => w.id === id)
   if (!wod) return {}
 
   const typeLabel = WOD_TYPE_LABELS[wod.type]
   const title = `${wod.name} 와드 — ${typeLabel} 기록·스케일링 가이드 | FITTERS STUDIO`
   const description = `크로스핏 ${wod.name} WOD 완전 가이드. ${wod.movements.join(', ')} 동작, 목표 기록 ${wod.timeTarget}. 스케일링 옵션과 타이머 연동까지 한 번에 — ${typeLabel} ${wod.name} 기록 측정.`
-  const url = `https://www.fittersstudio.com/wod/${wod.id}`
+  const url = `https://www.fittersstudio.com/${locale}/wod/${wod.id}`
 
   return {
     title,
@@ -48,13 +49,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title: `${wod.name} WOD | FITTERS STUDIO`,
       description,
     },
-    alternates: {
-      canonical: url,
-      languages: {
-        ko: `https://www.fittersstudio.com/ko/wod/${wod.id}`,
-        en: `https://www.fittersstudio.com/en/wod/${wod.id}`,
-      },
-    },
+    alternates: localizedAlternates(locale, `/wod/${wod.id}`),
   }
 }
 

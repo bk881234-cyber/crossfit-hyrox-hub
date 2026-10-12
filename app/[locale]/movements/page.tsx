@@ -4,28 +4,29 @@ import { getTranslations } from 'next-intl/server'
 import Header from '@/components/layout/Header'
 import MobileNav from '@/components/layout/MobileNav'
 import { MOVEMENTS, type MovementCategory } from '@/lib/movements-data'
+import { localizedAlternates } from '@/lib/seo'
 
-export const metadata: Metadata = {
-  title: '크로스핏 동작 가이드 — 15가지 핵심 무브먼트 완전 정복',
-  description:
-    '풀업, 데드리프트, 더블언더 등 크로스핏 필수 동작 15가지의 기술 기준, 일반적 실수, 스케일링 방법을 상세히 설명합니다. 초보자부터 RX 선수까지 모든 레벨을 위한 완전한 무브먼트 가이드.',
-  openGraph: {
-    title: 'FITTERS STUDIO — 크로스핏 동작 완전 가이드',
+export async function generateMetadata({ params: { locale } }: { params: { locale: string } }): Promise<Metadata> {
+  return {
+    title: '크로스핏 동작 가이드 — 15가지 핵심 무브먼트 완전 정복',
     description:
-      '상체 파워, 하체 근력, 대사 컨디셔닝 카테고리별 15가지 핵심 무브먼트. 기술 기준·일반 실수·스케일링 방법 포함.',
-    url: 'https://www.fittersstudio.com/movements',
-    siteName: 'FITTERS STUDIO',
-    type: 'website',
-    locale: 'ko_KR',
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'FITTERS STUDIO — 크로스핏 동작 가이드',
-    description: '크로스핏 15가지 핵심 무브먼트 완전 분석',
-  },
-  alternates: {
-    canonical: 'https://www.fittersstudio.com/movements',
-  },
+      '풀업, 데드리프트, 더블언더 등 크로스핏 필수 동작 15가지의 기술 기준, 일반적 실수, 스케일링 방법을 상세히 설명합니다. 초보자부터 RX 선수까지 모든 레벨을 위한 완전한 무브먼트 가이드.',
+    openGraph: {
+      title: 'FITTERS STUDIO — 크로스핏 동작 완전 가이드',
+      description:
+        '상체 파워, 하체 근력, 대사 컨디셔닝 카테고리별 15가지 핵심 무브먼트. 기술 기준·일반 실수·스케일링 방법 포함.',
+      url: 'https://www.fittersstudio.com/movements',
+      siteName: 'FITTERS STUDIO',
+      type: 'website',
+      locale: 'ko_KR',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: 'FITTERS STUDIO — 크로스핏 동작 가이드',
+      description: '크로스핏 15가지 핵심 무브먼트 완전 분석',
+    },
+    alternates: localizedAlternates(locale, '/movements'),
+  }
 }
 
 const CATEGORY_ORDER: MovementCategory[] = ['upper_power', 'lower_strength', 'metabolic']

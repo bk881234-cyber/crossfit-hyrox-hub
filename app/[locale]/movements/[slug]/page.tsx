@@ -11,6 +11,7 @@ import {
 } from '@/lib/movements-data'
 import { WODS } from '@/lib/wod-data'
 import { getMovementSlug } from '@/lib/movement-links'
+import { localizedAlternates } from '@/lib/seo'
 
 type Props = { params: { locale: string; slug: string } }
 
@@ -25,7 +26,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   const title = `${movement.name} 완전 가이드 — 기술 기준·일반 실수·스케일링`
   const description = `${movement.nameEn} 크로스핏 동작 완전 분석. 기술 기준 ${movement.technicalStandards.length}가지, 일반적 실수 ${movement.commonFaults.length}가지, ${movement.scaling.length}단계 스케일링 방법을 포함한 상세 가이드.`
-  const url = `https://www.fittersstudio.com/movements/${movement.slug}`
+  const url = `https://www.fittersstudio.com/${params.locale}/movements/${movement.slug}`
 
   return {
     title,
@@ -43,7 +44,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title: `FITTERS STUDIO — ${movement.name}`,
       description,
     },
-    alternates: { canonical: url },
+    alternates: localizedAlternates(params.locale, `/movements/${movement.slug}`),
   }
 }
 
