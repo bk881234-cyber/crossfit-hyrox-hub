@@ -12,6 +12,7 @@ export function localizedAlternates(locale: string, path: string) {
     languages: {
       ko: `${BASE_URL}/ko${path}`,
       en: `${BASE_URL}/en${path}`,
+      'x-default': `${BASE_URL}/en${path}`,
     },
   }
 }

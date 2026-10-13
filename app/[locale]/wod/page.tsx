@@ -1,6 +1,6 @@
 'use client'
 import React, { useState, useMemo } from 'react'
-import Link from 'next/link'
+import { Link } from '@/navigation'
 import { useTranslations, useLocale } from 'next-intl'
 import Header from '@/components/layout/Header'
 import MobileNav from '@/components/layout/MobileNav'

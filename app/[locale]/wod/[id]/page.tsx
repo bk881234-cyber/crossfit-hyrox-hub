@@ -41,7 +41,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     ? `${wod.name} WOD — ${typeLabel} Times, Scaling & Guide | FITTERS STUDIO`
     : `${wod.name} 와드 — ${typeLabel} 기록·스케일링 가이드 | FITTERS STUDIO`
   const description = isEn
-    ? `Complete guide to the CrossFit ${wod.name} WOD. Movements: ${wod.movements.join(', ')}. Target time: ${wod.timeTarget}. Scaling options and a built-in timer — everything to log your ${wod.name} time.`
+    ? `${wod.name} CrossFit WOD: ${wod.movements.slice(0, 4).join(', ')}. Target times, scaling options and a built-in timer to log your ${wod.name} score.`
     : `크로스핏 ${wod.name} WOD 완전 가이드. ${wod.movements.join(', ')} 동작, 목표 기록 ${wod.timeTarget}. 스케일링 옵션과 타이머 연동까지 한 번에 — ${typeLabel} ${wod.name} 기록 측정.`
   const url = `https://www.fittersstudio.com/${locale}/wod/${wod.id}`
 

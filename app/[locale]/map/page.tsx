@@ -510,6 +510,7 @@ export default function MapPage() {
       )}
       <Header />
       <main className="pt-20 pb-24 md:pb-10">
+        <h1 className="sr-only">{t('title')} — {t('subtitle')}</h1>
 
         {/* ── 상단 고정 검색 + 지역 필터 ───────────────────────────────────── */}
         <div

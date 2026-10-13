@@ -9,6 +9,7 @@
 }
 
 html, body {
+  overflow-x: clip;
   background-color: #0A0A0A;
   color: #FFFFFF;
   font-family: var(--font-noto-sans), 'Noto Sans KR', system-ui, sans-serif;

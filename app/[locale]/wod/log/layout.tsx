@@ -28,7 +28,7 @@ export async function generateMetadata({ params: { locale } }: { params: { local
       description: isEn
         ? 'Log your WOD times and compare against past attempts.'
         : '와드별 완료 시간을 기록하고 이전 기록과 비교하세요.',
-      url: 'https://www.fittersstudio.com/wod/log',
+      url: `https://www.fittersstudio.com/${locale}/wod/log`,
       images: [{ url: '/OG_img.png', width: 1200, height: 630 }],
     },
   }

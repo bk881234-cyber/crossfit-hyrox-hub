@@ -296,7 +296,7 @@ export default function CommunityPage() {
             <button
               key={tab_item.id}
               onClick={() => setTab(tab_item.id)}
-              className={`flex-1 py-2.5 rounded-lg text-xs font-bold transition-colors whitespace-nowrap ${tab === tab_item.id ? 'gradient-bg text-white' : 'text-rx-muted hover:text-white'
+              className={`flex-1 min-w-0 px-1 py-2.5 rounded-lg text-xs font-bold transition-colors whitespace-nowrap ${tab === tab_item.id ? 'gradient-bg text-white' : 'text-rx-muted hover:text-white'
                 }`}
             >
               {tab_item.label}

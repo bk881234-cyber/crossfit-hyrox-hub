@@ -7,6 +7,7 @@ import { NextIntlClientProvider } from 'next-intl'
 import { getMessages } from 'next-intl/server'
 import { notFound } from 'next/navigation'
 import Footer from '@/components/layout/Footer'
+import AdSenseLoader from '@/components/layout/AdSenseLoader'
 import { localizedAlternates } from '@/lib/seo'
 
 const locales = ['ko', 'en'] as const
@@ -123,16 +124,10 @@ export default async function LocaleLayout({ children, params: { locale } }: Pro
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd(locale)) }}
         />
-        {/* Google AdSense 자동 광고 */}
-        {adsensePubId && (
-          <script
-            async
-            src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${adsensePubId}`}
-            crossOrigin="anonymous"
-          ></script>
-        )}
+        {adsensePubId && <meta name="google-adsense-account" content={adsensePubId} />}
       </head>
       <body className={`${notoSansKR.variable} bg-rx-bg min-h-screen`} suppressHydrationWarning>
+        {adsensePubId && <AdSenseLoader pubId={adsensePubId} />}
         <NextIntlClientProvider messages={messages}>
           {children}
           <Footer />

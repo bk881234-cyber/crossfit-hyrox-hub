@@ -1,6 +1,6 @@
 'use client'
 import { useState, useEffect, useMemo, Suspense } from 'react'
-import Link from 'next/link'
+import { Link } from '@/navigation'
 import { useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import Header from '@/components/layout/Header'

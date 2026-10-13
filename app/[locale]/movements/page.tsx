@@ -24,7 +24,7 @@ export async function generateMetadata({ params: { locale } }: { params: { local
       description: isEn
         ? '15 core movements across upper-body power, lower-body strength, and metabolic conditioning — technical standards, common faults, and scaling included.'
         : '상체 파워, 하체 근력, 대사 컨디셔닝 카테고리별 15가지 핵심 무브먼트. 기술 기준·일반 실수·스케일링 방법 포함.',
-      url: 'https://www.fittersstudio.com/movements',
+      url: `https://www.fittersstudio.com/${locale}/movements`,
       siteName: 'FITTERS STUDIO',
       type: 'website',
       locale: isEn ? 'en_US' : 'ko_KR',

@@ -368,7 +368,8 @@ export default function StrengthHubClient() {
   // ── Loading ──
   if (loading) {
     return (
-      <div className="min-h-screen bg-rx-bg flex items-center justify-center">
+      <div className="min-h-screen bg-rx-bg flex flex-col items-center justify-center">
+        <h1 className="sr-only">{t('pageTitlePart1')} {t('pageTitlePart2')} — {t('pageSubtitle')}</h1>
         <div className="w-9 h-9 rounded-full border-2 border-rx-pink border-t-transparent animate-spin" />
       </div>
     )

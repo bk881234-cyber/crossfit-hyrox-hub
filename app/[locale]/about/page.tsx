@@ -1,6 +1,6 @@
 'use client'
 import { useEffect, useRef } from 'react'
-import Link from 'next/link'
+import { Link } from '@/navigation'
 import { useTranslations, useLocale } from 'next-intl'
 import Header from '@/components/layout/Header'
 import MobileNav from '@/components/layout/MobileNav'
@@ -230,7 +230,7 @@ export default function AboutPage() {
         <section className="px-4 py-16 max-w-[992px] mx-auto">
           <div ref={r3}>
             <p className="text-rx-muted text-xs tracking-widest uppercase mb-3">{t('s3Label')}</p>
-            <h2 className="font-heading font-black text-3xl md:text-5xl uppercase text-white tracking-tight mb-8 whitespace-nowrap">{t('s3Title')} <span className="gradient-text">Glossary</span></h2>
+            <h2 className="font-heading font-black text-3xl md:text-5xl uppercase text-white tracking-tight mb-8 whitespace-nowrap">{t('s3Title')}{locale !== 'en' && <> <span className="gradient-text">Glossary</span></>}</h2>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {glossary.map((g) => (

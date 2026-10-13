@@ -25,7 +25,7 @@ export async function generateMetadata({ params: { locale } }: { params: { local
       description: isEn
         ? 'Track and share your PR progress with a 6-month trend chart.'
         : '나의 PR을 기록하고 관리하며 성장과정을 공유하세요. 6개월 트렌드 차트와 소셜 공유 기능 포함.',
-      url: 'https://www.fittersstudio.com/calculator/1rm',
+      url: `https://www.fittersstudio.com/${locale}/calculator/1rm`,
       siteName: 'FITTERS STUDIO',
       type: 'website',
       locale: isEn ? 'en_US' : 'ko_KR',

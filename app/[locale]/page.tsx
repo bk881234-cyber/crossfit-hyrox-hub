@@ -568,7 +568,7 @@ export default function HomePage() {
             {/* Left: Text */}
             <div className="flex flex-col">
               <h2 className="font-heading font-black text-5xl md:text-6xl uppercase gradient-text tracking-tight mb-6 leading-none">
-                What is<br />CrossFit?
+                What is{' '}<br />CrossFit?
               </h2>
               <p className="text-white/70 md:text-base" style={{ lineHeight: 1.8, marginBottom: '24px' }}
                 dangerouslySetInnerHTML={{ __html: t('aboutDesc') }}

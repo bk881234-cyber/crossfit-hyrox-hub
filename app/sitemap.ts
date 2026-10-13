@@ -39,6 +39,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
           languages: {
             ko: `${baseUrl}/ko${path}`,
             en: `${baseUrl}/en${path}`,
+            "x-default": `${baseUrl}/en${path}`,
           },
         },
       })
@@ -56,6 +57,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
           languages: {
             ko: `${baseUrl}/ko/wod/${wod.id}`,
             en: `${baseUrl}/en/wod/${wod.id}`,
+            "x-default": `${baseUrl}/en/wod/${wod.id}`,
           },
         },
       })
@@ -73,6 +75,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
           languages: {
             ko: `${baseUrl}/ko/movements/${movement.slug}`,
             en: `${baseUrl}/en/movements/${movement.slug}`,
+            "x-default": `${baseUrl}/en/movements/${movement.slug}`,
           },
         },
       })

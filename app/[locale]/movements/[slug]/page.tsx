@@ -28,7 +28,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   const isEn = params.locale === 'en'
   const title = isEn
-    ? `${movement.nameEn} Guide — Technique, Common Faults & Scaling | FITTERS STUDIO`
+    ? `${movement.nameEn} Guide: Technique & Scaling | FITTERS STUDIO`
     : `${movement.name} 완전 가이드 — 기술 기준·일반 실수·스케일링`
   const description = isEn
     ? `A complete breakdown of the CrossFit ${movement.nameEn}: ${movement.technicalStandards.length} technical standards, ${movement.commonFaults.length} common faults, and ${movement.scaling.length} scaling levels.`
