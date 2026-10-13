@@ -4,6 +4,7 @@ import { getTranslations } from 'next-intl/server'
 import Header from '@/components/layout/Header'
 import MobileNav from '@/components/layout/MobileNav'
 import { MOVEMENTS, type MovementCategory } from '@/lib/movements-data'
+import { localizeMovement, DIFFICULTY_LABELS_EN } from '@/lib/movements-data-en'
 import { localizedAlternates } from '@/lib/seo'
 
 export async function generateMetadata({ params: { locale } }: { params: { locale: string } }): Promise<Metadata> {
@@ -55,7 +56,9 @@ const CATEGORY_ICONS: Record<MovementCategory, string> = {
   metabolic: '🔥',
 }
 
-export default async function MovementsIndexPage() {
+export default async function MovementsIndexPage({ params: { locale } }: { params: { locale: string } }) {
+  const isEn = locale === 'en'
+  const diffLabels = isEn ? DIFFICULTY_LABELS_EN : DIFFICULTY_LABELS
   const t = await getTranslations('movements')
 
   const catInfo: Record<MovementCategory, { label: string; desc: string }> = {
@@ -82,8 +85,8 @@ export default async function MovementsIndexPage() {
               '@context': 'https://schema.org',
               '@type': 'BreadcrumbList',
               itemListElement: [
-                { '@type': 'ListItem', position: 1, name: '홈', item: 'https://www.fittersstudio.com' },
-                { '@type': 'ListItem', position: 2, name: '무브먼트 가이드', item: 'https://www.fittersstudio.com/movements' },
+                { '@type': 'ListItem', position: 1, name: isEn ? 'Home' : '홈', item: `https://www.fittersstudio.com/${locale}` },
+                { '@type': 'ListItem', position: 2, name: isEn ? 'Movement Guide' : '무브먼트 가이드', item: `https://www.fittersstudio.com/${locale}/movements` },
               ],
             }),
           }}
@@ -91,7 +94,7 @@ export default async function MovementsIndexPage() {
 
         {/* Category sections */}
         {CATEGORY_ORDER.map((cat) => {
-          const movements = MOVEMENTS.filter((m) => m.category === cat)
+          const movements = MOVEMENTS.filter((m) => m.category === cat).map((m) => localizeMovement(m, locale))
           return (
             <section key={cat} className="mb-10">
               <div className="flex items-center gap-2 mb-2">
@@ -112,7 +115,7 @@ export default async function MovementsIndexPage() {
                         {m.name}
                       </h3>
                       <span className={`text-xs font-bold flex-shrink-0 ${DIFFICULTY_COLORS[m.difficulty]}`}>
-                        ★ {DIFFICULTY_LABELS[m.difficulty]}
+                        ★ {diffLabels[m.difficulty]}
                       </span>
                     </div>
 

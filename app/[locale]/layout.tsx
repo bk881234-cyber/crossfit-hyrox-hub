@@ -31,6 +31,23 @@ export async function generateMetadata({ params: { locale } }: Props): Promise<M
     keywords: isEn
       ? ['crossfit tools', 'hyrox training', 'wod timer', '1rm calculator', 'crossfit workout library', 'free crossfit app', 'crossfit box finder']
       : ['핏터스', '피터스', '핏터스 스튜디오', '피터스 스튜디오', '크로스핏', 'HYROX', '1RM 계산기', 'WOD 타이머', 'WOD 라이브러리', '드랍인 지도', '크로스핏 대회'],
+    openGraph: {
+      title: isEn ? 'FITTERS STUDIO — Free CrossFit & HYROX Toolkit' : '핏터스 스튜디오 (FITTERS STUDIO) — 크로스피터를 위한 올인원 플랫폼',
+      description: isEn
+        ? 'Free 1RM calculator, WOD timer, workout library, box finder, and competition calendar for CrossFit and HYROX athletes.'
+        : '핏터스·피터스를 위한 1RM 계산기, WOD 타이머, 드랍인 지도, 대회 일정 — 크로스핏·HYROX 올인원 허브',
+      url: `https://www.fittersstudio.com/${locale}`,
+      siteName: 'FITTERS STUDIO',
+      type: 'website',
+      locale: isEn ? 'en_US' : 'ko_KR',
+      images: [{ url: '/OG_img.png', width: 1200, height: 630 }],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: isEn ? 'FITTERS STUDIO — Free CrossFit & HYROX Toolkit' : '핏터스 스튜디오 (FITTERS STUDIO)',
+      description: isEn ? 'Free all-in-one toolkit for CrossFit and HYROX athletes' : '핏터스·피터스를 위한 크로스피터 올인원 도구 모음',
+      images: ['/OG_img.png'],
+    },
     alternates: localizedAlternates(locale, ''),
   }
 }

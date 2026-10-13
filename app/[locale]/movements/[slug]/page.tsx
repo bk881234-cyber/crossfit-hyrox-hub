@@ -9,7 +9,9 @@ import {
   getMovementBySlug,
   type Movement,
 } from '@/lib/movements-data'
+import { localizeMovement, CATEGORY_LABELS_EN, DIFFICULTY_LABELS_EN } from '@/lib/movements-data-en'
 import { WODS } from '@/lib/wod-data'
+import { localizeWod } from '@/lib/wod-data-en'
 import { getMovementSlug } from '@/lib/movement-links'
 import { localizedAlternates } from '@/lib/seo'
 
@@ -58,6 +60,22 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 const DIFFICULTY_LABELS = ['', '입문', '초급', '중급', '상급', '전문가']
+const UI = {
+  ko: {
+    home: '홈', guide: '무브먼트 가이드', muscles: '주요 근육', overview: '동작 개요', steps: '단계별 수행 방법',
+    standards: '기술 기준 (Technical Standards)', faults: '일반적 실수 (Common Faults)', scaling: '스케일링 (Scaling)',
+    relatedWods: '이 동작이 나오는 WOD', sameCat: '같은 카테고리 동작', all: '모든 동작 보기',
+    howTo: (n: string) => `${n} 올바른 방법`,
+    howToDesc: (n: string) => `크로스핏 ${n} 동작의 단계별 수행 방법. 기술 기준과 일반적 실수를 포함한 완전한 가이드.`,
+  },
+  en: {
+    home: 'Home', guide: 'Movement Guide', muscles: 'Primary muscles', overview: 'Overview', steps: 'Step-by-step',
+    standards: 'Technical Standards', faults: 'Common Faults', scaling: 'Scaling',
+    relatedWods: 'WODs featuring this movement', sameCat: 'More in this category', all: 'View all movements',
+    howTo: (n: string) => `How to do the ${n} correctly`,
+    howToDesc: (n: string) => `Step-by-step instructions for the CrossFit ${n}, including technical standards and common faults.`,
+  },
+}
 const DIFFICULTY_COLORS = [
   '',
   'text-green-400 border-green-400/30 bg-green-400/10',
@@ -69,12 +87,13 @@ const DIFFICULTY_COLORS = [
 
 const SCALING_COLORS = ['bg-green-500/20 text-green-400', 'bg-yellow-500/20 text-yellow-400', 'bg-rx-orange/20 text-rx-orange']
 
-function buildHowToSchema(movement: Movement) {
+function buildHowToSchema(movement: Movement, locale: string) {
+  const ui = locale === 'en' ? UI.en : UI.ko
   return {
     '@context': 'https://schema.org',
     '@type': 'HowTo',
-    name: `${movement.name} 올바른 방법`,
-    description: `크로스핏 ${movement.nameEn} 동작의 단계별 수행 방법. 기술 기준과 일반적 실수를 포함한 완전한 가이드.`,
+    name: ui.howTo(movement.name),
+    description: ui.howToDesc(movement.nameEn),
     tool: movement.equipment.map((eq) => ({ '@type': 'HowToTool', name: eq })),
     step: movement.howToSteps.map((s, i) => ({
       '@type': 'HowToStep',
@@ -86,29 +105,36 @@ function buildHowToSchema(movement: Movement) {
   }
 }
 
-function buildBreadcrumbSchema(movement: Movement) {
+function buildBreadcrumbSchema(movement: Movement, locale: string) {
+  const ui = locale === 'en' ? UI.en : UI.ko
   return {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
     itemListElement: [
-      { '@type': 'ListItem', position: 1, name: '홈', item: 'https://www.fittersstudio.com' },
-      { '@type': 'ListItem', position: 2, name: '무브먼트 가이드', item: 'https://www.fittersstudio.com/movements' },
-      { '@type': 'ListItem', position: 3, name: movement.name, item: `https://www.fittersstudio.com/movements/${movement.slug}` },
+      { '@type': 'ListItem', position: 1, name: ui.home, item: `https://www.fittersstudio.com/${locale}` },
+      { '@type': 'ListItem', position: 2, name: ui.guide, item: `https://www.fittersstudio.com/${locale}/movements` },
+      { '@type': 'ListItem', position: 3, name: movement.name, item: `https://www.fittersstudio.com/${locale}/movements/${movement.slug}` },
     ],
   }
 }
 
 export default function MovementDetailPage({ params }: Props) {
-  const movement = getMovementBySlug(params.slug)
-  if (!movement) notFound()
+  const base = getMovementBySlug(params.slug)
+  if (!base) notFound()
+  const locale = params.locale
+  const isEn = locale === 'en'
+  const ui = isEn ? UI.en : UI.ko
+  const movement = localizeMovement(base, locale)
+  const diffLabels = isEn ? DIFFICULTY_LABELS_EN : DIFFICULTY_LABELS
+  const catLabels = isEn ? CATEGORY_LABELS_EN : CATEGORY_LABELS
 
   const categoryMovements = MOVEMENTS.filter(
     (m) => m.category === movement.category && m.slug !== movement.slug,
-  )
+  ).map((m) => localizeMovement(m, locale))
 
   const relatedWods = WODS.filter((w) =>
     w.movements.some((m) => getMovementSlug(m) === movement.slug),
-  )
+  ).map((w) => localizeWod(w, locale))
 
   return (
     <div className="min-h-screen bg-rx-bg">
@@ -117,17 +143,17 @@ export default function MovementDetailPage({ params }: Props) {
       {/* JSON-LD Structured Data */}
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(buildHowToSchema(movement)) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(buildHowToSchema(movement, locale)) }}
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(buildBreadcrumbSchema(movement)) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(buildBreadcrumbSchema(movement, locale)) }}
       />
 
       <main className="pt-20 pb-24 md:pb-10 px-4 max-w-[992px] mx-auto">
         {/* Breadcrumb */}
         <nav className="flex items-center gap-1.5 text-xs text-rx-muted mb-4" aria-label="breadcrumb">
-          <Link href="../movements" className="hover:text-white transition-colors">무브먼트 가이드</Link>
+          <Link href="../movements" className="hover:text-white transition-colors">{ui.guide}</Link>
           <span>/</span>
           <span className="text-white">{movement.nameEn}</span>
         </nav>
@@ -136,10 +162,10 @@ export default function MovementDetailPage({ params }: Props) {
         <div className="mb-6">
           <div className="flex flex-wrap items-center gap-2 mb-2">
             <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold border ${DIFFICULTY_COLORS[movement.difficulty]}`}>
-              ★ {DIFFICULTY_LABELS[movement.difficulty]}
+              ★ {diffLabels[movement.difficulty]}
             </span>
             <span className="px-2.5 py-0.5 rounded-full text-xs font-bold border border-rx-border text-rx-muted">
-              {CATEGORY_LABELS[movement.category]}
+              {catLabels[movement.category]}
             </span>
           </div>
 
@@ -147,7 +173,7 @@ export default function MovementDetailPage({ params }: Props) {
             {movement.name}
           </h1>
           <p className="text-rx-muted text-sm">
-            주요 근육: {movement.primaryMuscles.join(' · ')}
+            {ui.muscles}: {movement.primaryMuscles.join(' · ')}
           </p>
           <div className="flex flex-wrap gap-1.5 mt-2">
             {movement.equipment.map((eq) => (
@@ -163,7 +189,7 @@ export default function MovementDetailPage({ params }: Props) {
 
         {/* Overview */}
         <section className="mb-10">
-          <h2 className="text-xl font-black text-white mb-4">동작 개요</h2>
+          <h2 className="text-xl font-black text-white mb-4">{ui.overview}</h2>
           <div className="space-y-4">
             {movement.overview.split('\n\n').map((para, i) => (
               <p key={i} className="text-white/70 text-base leading-relaxed">
@@ -175,7 +201,7 @@ export default function MovementDetailPage({ params }: Props) {
 
         {/* How To Steps */}
         <section className="mb-10">
-          <h2 className="text-xl font-black text-white mb-5">단계별 수행 방법</h2>
+          <h2 className="text-xl font-black text-white mb-5">{ui.steps}</h2>
           <div className="space-y-6">
             {movement.howToSteps.map((step, i) => (
               <div key={i} className="flex gap-4">
@@ -193,7 +219,7 @@ export default function MovementDetailPage({ params }: Props) {
 
         {/* Technical Standards */}
         <section className="mb-10">
-          <h2 className="text-xl font-black text-white mb-4">기술 기준 (Technical Standards)</h2>
+          <h2 className="text-xl font-black text-white mb-4">{ui.standards}</h2>
           <div className="space-y-3">
             {movement.technicalStandards.map((std, i) => (
               <div key={i} className="flex gap-3 items-start p-4 rounded-xl bg-white/[0.03] border border-white/5">
@@ -216,7 +242,7 @@ export default function MovementDetailPage({ params }: Props) {
 
         {/* Common Faults */}
         <section className="mb-10">
-          <h2 className="text-xl font-black text-white mb-4">일반적 실수 (Common Faults)</h2>
+          <h2 className="text-xl font-black text-white mb-4">{ui.faults}</h2>
           <div className="space-y-4">
             {movement.commonFaults.map((fault, i) => {
               const [title, ...rest] = fault.split(':')
@@ -249,7 +275,7 @@ export default function MovementDetailPage({ params }: Props) {
 
         {/* Scaling */}
         <section className="mb-12">
-          <h2 className="text-xl font-black text-white mb-5">스케일링 (Scaling)</h2>
+          <h2 className="text-xl font-black text-white mb-5">{ui.scaling}</h2>
           <div className="grid gap-4">
             {movement.scaling.map((s, i) => (
               <div key={i} className="p-5 rounded-2xl bg-white/[0.03] border border-white/5 hover:border-white/10 transition-colors">
@@ -267,7 +293,7 @@ export default function MovementDetailPage({ params }: Props) {
         {/* WODs that use this movement */}
         {relatedWods.length > 0 && (
           <section className="mb-6">
-            <h2 className="text-lg font-black text-white mb-3">이 동작이 나오는 WOD</h2>
+            <h2 className="text-lg font-black text-white mb-3">{ui.relatedWods}</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               {relatedWods.map((w) => (
                 <Link
@@ -301,7 +327,7 @@ export default function MovementDetailPage({ params }: Props) {
         {/* Related Movements in same category */}
         {categoryMovements.length > 0 && (
           <section className="mb-6">
-            <h2 className="text-lg font-black text-white mb-3">같은 카테고리 동작</h2>
+            <h2 className="text-lg font-black text-white mb-3">{ui.sameCat}</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               {categoryMovements.map((m) => (
                 <Link
@@ -340,7 +366,7 @@ export default function MovementDetailPage({ params }: Props) {
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
             <path d="M19 12H5M12 5l-7 7 7 7" />
           </svg>
-          모든 동작 보기
+          {ui.all}
         </Link>
       </main>
       <MobileNav />

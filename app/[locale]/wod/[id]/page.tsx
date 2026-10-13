@@ -4,14 +4,15 @@ import { Link } from '@/navigation'
 import { notFound } from 'next/navigation'
 import Header from '@/components/layout/Header'
 import MobileNav from '@/components/layout/MobileNav'
-import { WODS, type WOD } from '@/lib/wod-data'
+import { WODS as WODS_KO, type WOD } from '@/lib/wod-data'
+import { localizeWod } from '@/lib/wod-data-en'
 import { getMovementSlug } from '@/lib/movement-links'
 import { localizedAlternates } from '@/lib/seo'
 import WodHistoryPanel from '@/components/wod/WodHistoryPanel'
 
 export function generateStaticParams() {
   const locales = ['ko', 'en']
-  return locales.flatMap((locale) => WODS.map((wod) => ({ locale, id: wod.id })))
+  return locales.flatMap((locale) => WODS_KO.map((wod) => ({ locale, id: wod.id })))
 }
 
 const WOD_TYPE_LABELS: Record<WOD['type'], string> = {
@@ -30,8 +31,9 @@ const WOD_TYPE_LABELS_EN: Record<WOD['type'], string> = {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id, locale } = await params
-  const wod = WODS.find((w) => w.id === id)
-  if (!wod) return {}
+  const base = WODS_KO.find((w) => w.id === id)
+  if (!base) return {}
+  const wod = localizeWod(base, locale)
 
   const isEn = locale === 'en'
   const typeLabel = isEn ? WOD_TYPE_LABELS_EN[wod.type] : WOD_TYPE_LABELS[wod.type]
@@ -115,9 +117,10 @@ interface Props {
 }
 
 export default async function WODDetailPage({ params }: Props) {
-  const { id } = await params
+  const { id, locale } = await params
   const t = await getTranslations('wod')
 
+  const WODS = WODS_KO.map((w) => localizeWod(w, locale))
   const wod = WODS.find((w) => w.id === id)
   if (!wod) notFound()
 

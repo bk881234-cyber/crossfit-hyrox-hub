@@ -1,10 +1,11 @@
 'use client'
 import React, { useState, useMemo } from 'react'
 import Link from 'next/link'
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 import Header from '@/components/layout/Header'
 import MobileNav from '@/components/layout/MobileNav'
-import { WODS, WOD_CATEGORIES, EQUIPMENT_FILTERS, type WOD } from '@/lib/wod-data'
+import { WODS as WODS_KO, WOD_CATEGORIES, EQUIPMENT_FILTERS, type WOD } from '@/lib/wod-data'
+import { localizeWod } from '@/lib/wod-data-en'
 
 const TYPE_COLORS: Record<WOD['type'], string> = {
   girl: 'bg-pink-500/20 text-pink-400 border-pink-500/30',
@@ -46,8 +47,19 @@ const EQUIPMENT_ICONS: Record<string, JSX.Element> = {
   ),
 }
 
+const CATEGORY_LABELS_EN: Record<string, string> = {
+  all: 'All',
+  girl: 'Girl WODs',
+  hero: 'Hero WODs',
+  open: 'CrossFit Open',
+  benchmark: 'Benchmark',
+}
+
 export default function WODPage() {
   const t = useTranslations('wod')
+  const locale = useLocale()
+  const isEn = locale === 'en'
+  const WODS = useMemo(() => WODS_KO.map((w) => localizeWod(w, locale)), [locale])
   const [category, setCategory] = useState('all')
   const [equipment, setEquipment] = useState('all')
   const [search, setSearch] = useState('')
@@ -86,7 +98,7 @@ export default function WODPage() {
       <main className="pt-20 pb-24 md:pb-10 px-4 max-w-[992px] mx-auto">
         {/* AdSense top */}
         <div className="hidden mt-4 mb-6 w-full h-16 bg-rx-surface border border-rx-border rounded-lg flex items-center justify-center">
-          <span className="text-rx-muted text-xs">광고 영역 (AdSense)</span>
+          <span className="text-rx-muted text-xs">{locale === 'en' ? 'Ad space (AdSense)' : '광고 영역 (AdSense)'}</span>
         </div>
 
         <div className="mb-6">
@@ -141,7 +153,7 @@ export default function WODPage() {
                     : 'bg-rx-surface border border-rx-border text-rx-muted hover:text-white'
                 }`}
               >
-                {cat.label}
+                {isEn ? CATEGORY_LABELS_EN[cat.id] ?? cat.label : cat.label}
               </button>
             ))}
           </div>
@@ -159,7 +171,7 @@ export default function WODPage() {
                 }`}
               >
                 {eq.id !== 'all' && <span>{EQUIPMENT_ICONS[eq.id]}</span>}
-                {eq.label}
+                {eq.id === 'all' ? (isEn ? 'All' : eq.label) : EQUIPMENT_LABELS[eq.id] ?? eq.label}
               </button>
             ))}
           </div>
@@ -224,7 +236,7 @@ export default function WODPage() {
               {/* AdSense between rows */}
               {(index + 1) % 9 === 0 && index < filtered.length - 1 && (
                 <div key={`ad-${index}`} className="hidden sm:col-span-2 lg:col-span-3 w-full h-16 bg-rx-surface border border-rx-border rounded-lg flex items-center justify-center">
-                  <span className="text-rx-muted text-xs">광고 영역 (AdSense)</span>
+                  <span className="text-rx-muted text-xs">{locale === 'en' ? 'Ad space (AdSense)' : '광고 영역 (AdSense)'}</span>
                 </div>
               )}
             </React.Fragment>
