@@ -4,6 +4,7 @@ import { useRouter } from '@/navigation'
 import Header from '@/components/layout/Header'
 import MobileNav from '@/components/layout/MobileNav'
 import { HYROX_EVENTS, BOARD_POSTS, type BoardPost } from '@/lib/community-data'
+import { localizeEvent, localizePost } from '@/lib/community-data-en'
 import { createClient } from '@/lib/supabase/client'
 import type { User } from '@supabase/supabase-js'
 import type { BoardPostRow } from '@/lib/supabase-types'
@@ -211,7 +212,7 @@ export default function CommunityPage() {
     ...HARDCODED_COMPS,
   ]
 
-  const sortedHyrox = [...HYROX_EVENTS].sort(
+  const sortedHyrox = HYROX_EVENTS.map((e) => localizeEvent(e, locale)).sort(
     (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
   )
 
@@ -397,7 +398,7 @@ export default function CommunityPage() {
               {boardPosts.map((post) => (
                 <BoardPostCard
                   key={post.id}
-                  post={post}
+                  post={localizePost(post, locale)}
                   liked={!!likes[post.id]}
                   onLike={() => toggleLike(post.id)}
                 />
@@ -594,7 +595,7 @@ function HardcodedCompCard({ comp, t, locale }: { comp: MajorComp; t: (key: stri
   return (
     <div className="card hover:border-rx-red/40 transition-all flex flex-col">
       <div className="flex-1">
-        <p className="text-rx-muted text-xs mb-0.5">{isEn ? comp.name : comp.nameEn}</p>
+        {!isEn && <p className="text-rx-muted text-xs mb-0.5">{comp.nameEn}</p>}
         <h3 className="font-black text-white text-lg mb-3">{isEn ? comp.nameEn : comp.name}</h3>
         <div className="space-y-1.5 mb-3">
           <div className="flex items-start gap-2">

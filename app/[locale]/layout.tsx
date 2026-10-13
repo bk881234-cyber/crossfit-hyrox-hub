@@ -1,4 +1,8 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
+import { Noto_Sans_KR } from 'next/font/google'
+import Script from 'next/script'
+import '../globals.css'
+import { rootMetadata, rootViewport } from '@/lib/root-metadata'
 import { NextIntlClientProvider } from 'next-intl'
 import { getMessages } from 'next-intl/server'
 import { notFound } from 'next/navigation'
@@ -6,6 +10,55 @@ import Footer from '@/components/layout/Footer'
 import { localizedAlternates } from '@/lib/seo'
 
 const locales = ['ko', 'en'] as const
+
+const notoSansKR = Noto_Sans_KR({
+  weight: ['400', '500', '700', '900'],
+  subsets: ['latin'],
+  variable: '--font-noto-sans',
+  display: 'swap',
+})
+
+export const viewport: Viewport = rootViewport
+
+const adsensePubId = process.env.NEXT_PUBLIC_ADSENSE_ID || 'ca-pub-6607759856824002'
+const gaId = process.env.NEXT_PUBLIC_GA_ID || 'G-KEXR0BMH62'
+
+// 사이트 전체 Organization / WebSite 구조화 데이터 (로케일별)
+const organizationJsonLd = (locale: string) => {
+  const isEn = locale === 'en'
+  return {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: isEn ? 'FITTERS STUDIO' : '핏터스 스튜디오 (FITTERS STUDIO)',
+  alternateName: isEn ? ['Fitters Studio', 'FITTERS STUDIO'] : ['핏터스', '피터스', '핏터스 스튜디오', '피터스 스튜디오', '핏터즈', '피터즈', 'Fitters Studio', 'FITTERS STUDIO'],
+  url: `https://www.fittersstudio.com/${locale}`,
+  logo: 'https://www.fittersstudio.com/Fittersstudio_BI.png',
+  description: isEn ? 'All-in-one information hub for the CrossFit and HYROX community: 1RM calculator, WOD timer, WOD library, box finder and competition calendar.' : '핏터스·피터스 및 크로스핏·HYROX 커뮤니티를 위한 올인원 정보 허브 플랫폼 핏터스 스튜디오',
+  sameAs: ['https://www.instagram.com/fitters.studio'],
+  contactPoint: {
+    '@type': 'ContactPoint',
+    email: 'bkbk881234@gmail.com',
+    contactType: 'customer support',
+  },
+}
+}
+
+const websiteJsonLd = (locale: string) => {
+  const isEn = locale === 'en'
+  return {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: isEn ? 'FITTERS STUDIO' : '핏터스 스튜디오 (FITTERS STUDIO)',
+  alternateName: isEn ? ['Fitters Studio'] : ['핏터스', '피터스', '핏터스 스튜디오', '피터스 스튜디오', '핏터즈', '피터즈'],
+  url: `https://www.fittersstudio.com/${locale}`,
+  description: isEn ? 'Free all-in-one toolkit and information hub for CrossFit and HYROX athletes.' : '핏터스·피터스를 위한 크로스핏·HYROX 커뮤니티 올인원 정보 허브 플랫폼',
+  potentialAction: {
+    '@type': 'SearchAction',
+    target: `https://www.fittersstudio.com/${locale}/wod?q={search_term_string}`,
+    'query-input': 'required name=search_term_string',
+  },
+}
+}
 
 interface Props {
   children: React.ReactNode
@@ -18,6 +71,7 @@ interface Props {
 export async function generateMetadata({ params: { locale } }: Props): Promise<Metadata> {
   const isEn = locale === 'en'
   return {
+    ...rootMetadata,
     // title.absolute: 루트 레이아웃의 템플릿("%s | 핏터스 스튜디오...")이
     // 겹쳐 붙지 않도록 완전한 최종 제목으로 고정한다.
     title: {
@@ -58,9 +112,46 @@ export default async function LocaleLayout({ children, params: { locale } }: Pro
   const messages = await getMessages()
 
   return (
-    <NextIntlClientProvider messages={messages}>
-      {children}
-      <Footer />
-    </NextIntlClientProvider>
+    <html suppressHydrationWarning lang={locale}>
+      <head>
+        {/* Organization & WebSite 구조화 데이터 */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd(locale)) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd(locale)) }}
+        />
+        {/* Google AdSense 자동 광고 */}
+        {adsensePubId && (
+          <script
+            async
+            src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${adsensePubId}`}
+            crossOrigin="anonymous"
+          ></script>
+        )}
+      </head>
+      <body className={`${notoSansKR.variable} bg-rx-bg min-h-screen`} suppressHydrationWarning>
+        <NextIntlClientProvider messages={messages}>
+          {children}
+          <Footer />
+        </NextIntlClientProvider>
+        {/* Google Analytics 4 */}
+        {gaId && (
+          <>
+            <Script src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`} strategy="afterInteractive" />
+            <Script id="ga4-init" strategy="afterInteractive">
+              {`
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', '${gaId}');
+              `}
+            </Script>
+          </>
+        )}
+      </body>
+    </html>
   )
 }

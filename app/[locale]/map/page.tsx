@@ -57,6 +57,27 @@ const DISTRICT_LABELS_EN: Record<string, string> = {
   '제주시': 'Jeju-si', '서귀포시': 'Seogwipo-si',
 }
 
+// 카카오 검색 결과의 시·군·구 이름이 DISTRICT_LABELS_EN에 없을 때 쓰는 로마자(국어 로마자 표기법) 변환
+const RR_INITIAL = ['g','kk','n','d','tt','r','m','b','pp','s','ss','','j','jj','ch','k','t','p','h']
+const RR_VOWEL = ['a','ae','ya','yae','eo','e','yeo','ye','o','wa','wae','oe','yo','u','wo','we','wi','yu','eu','ui','i']
+const RR_FINAL = ['','k','kk','k','n','n','n','t','l','k','m','l','l','l','p','l','m','p','p','t','t','ng','t','t','k','t','p','t']
+function romanizeKo(text: string): string {
+  let out = ''
+  for (const ch of text) {
+    const c = ch.charCodeAt(0) - 0xac00
+    if (c < 0 || c > 11171) { out += ch; continue }
+    out += RR_INITIAL[Math.floor(c / 588)] + RR_VOWEL[Math.floor((c % 588) / 28)] + RR_FINAL[c % 28]
+  }
+  return out
+}
+function districtLabelEn(name: string): string {
+  if (DISTRICT_LABELS_EN[name]) return DISTRICT_LABELS_EN[name]
+  const m = name.match(/^(.+?)(구|시|군)$/)
+  if (!m) return romanizeKo(name).replace(/^./, (x) => x.toUpperCase())
+  const stem = romanizeKo(m[1]).replace(/^./, (x) => x.toUpperCase())
+  return `${stem}-${m[2] === '구' ? 'gu' : m[2] === '시' ? 'si' : 'gun'}`
+}
+
 // ── 세부 지역 (구/시 단위) 데이터 ──────────────────────────────────────────
 const SUB_REGIONS: Record<string, string[]> = {
   '서울': ['강남구', '강동구', '강북구', '강서구', '관악구', '광진구', '구로구', '금천구', '노원구', '도봉구', '동대문구', '동작구', '마포구', '서대문구', '서초구', '성동구', '성북구', '송파구', '양천구', '영등포구', '용산구', '은평구', '종로구', '중구', '중랑구'],
@@ -566,7 +587,7 @@ export default function MapPage() {
                         : 'bg-rx-surface border border-rx-border text-rx-muted hover:text-white'
                     }`}
                   >
-                    {locale === 'en' ? (DISTRICT_LABELS_EN[sub] ?? sub) : sub}
+                    {locale === 'en' ? districtLabelEn(sub) : sub}
                   </button>
                 ))}
               </div>

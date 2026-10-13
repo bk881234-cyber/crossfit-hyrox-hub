@@ -33,13 +33,14 @@ export async function generateMetadata({ params: { locale } }: { params: { local
       description: isEn
         ? 'An interactive map of CrossFit boxes across Korea with drop-in fees and directions.'
         : '카카오 지도로 전국 크로스핏 박스 위치·드랍인 비용을 한눈에 확인하세요.',
-      url: 'https://www.fittersstudio.com/map',
+      url: `https://www.fittersstudio.com/${locale}/map`,
       images: [{ url: '/OG_img.png', width: 1200, height: 630 }],
     },
   }
 }
 
-export default function MapLayout({ children }: { children: React.ReactNode }) {
+export default function MapLayout({ children, params: { locale } }: { children: React.ReactNode; params: { locale: string } }) {
+  const isEn = locale === 'en'
   return (
     <>
       <script
@@ -48,9 +49,9 @@ export default function MapLayout({ children }: { children: React.ReactNode }) {
           __html: JSON.stringify({
             '@context': 'https://schema.org',
             '@type': 'Map',
-            name: '한국 크로스핏 박스 드랍인 지도 — FITTERS STUDIO',
-            description: '전국 크로스핏 박스 위치 및 드랍인 정보 지도.',
-            url: 'https://www.fittersstudio.com/map',
+            name: isEn ? 'Korea CrossFit Box Drop-in Map — FITTERS STUDIO' : '한국 크로스핏 박스 드랍인 지도 — FITTERS STUDIO',
+            description: isEn ? 'Map of CrossFit box locations and drop-in info across Korea.' : '전국 크로스핏 박스 위치 및 드랍인 정보 지도.',
+            url: `https://www.fittersstudio.com/${locale}/map`,
             creator: {
               '@type': 'Organization',
               name: 'Fitters Studio',

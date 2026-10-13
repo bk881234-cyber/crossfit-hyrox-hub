@@ -8,7 +8,7 @@ export async function generateMetadata({ params: { locale } }: { params: { local
       ? 'What Is CrossFit? Concepts, Terms & HYROX Explained | FITTERS STUDIO'
       : '크로스핏이란? | 크로스핏 개념·용어·HYROX 소개 — FITTERS STUDIO',
     description: isEn
-      ? "A beginner's guide to CrossFit: core philosophy, WOD/AMRAP/EMOM/RX/Scaled/Tabata/Interval terminology explained simply, how to get started, and how it relates to HYROX."
+      ? "A beginner guide to CrossFit: core philosophy, WOD/AMRAP/EMOM/RX/Scaled/Tabata/Interval terminology explained simply, how to get started, and how it relates to HYROX."
       : '크로스핏(CrossFit)이란 무엇인지, 기본 개념과 철학, WOD·AMRAP·EMOM·RX·Scaled·Tabata·Interval 용어 사전을 쉽게 설명합니다. 크로스핏 처음 시작하는 법과 HYROX 관계도 소개.',
     keywords: isEn
       ? ['what is crossfit', 'crossfit terms', 'wod meaning', 'amrap meaning', 'emom explained', 'crossfit for beginners', 'crossfit vs hyrox', 'rx scaled crossfit']
@@ -35,13 +35,14 @@ export async function generateMetadata({ params: { locale } }: { params: { local
       description: isEn
         ? 'A simple explainer of CrossFit terminology (WOD, AMRAP, EMOM, Tabata) and how to get started.'
         : 'WOD·AMRAP·EMOM·Tabata 등 크로스핏 용어 사전과 처음 시작하는 법을 쉽게 설명합니다.',
-      url: 'https://www.fittersstudio.com/about',
+      url: `https://www.fittersstudio.com/${locale}/about`,
       images: [{ url: '/OG_img.png', width: 1200, height: 630 }],
     },
   }
 }
 
-export default function AboutLayout({ children }: { children: React.ReactNode }) {
+export default function AboutLayout({ children, params: { locale } }: { children: React.ReactNode; params: { locale: string } }) {
+  const isEn = locale === 'en'
   return (
     <>
       <script
@@ -50,10 +51,10 @@ export default function AboutLayout({ children }: { children: React.ReactNode })
           __html: JSON.stringify({
             '@context': 'https://schema.org',
             '@type': 'WebPage',
-            name: '크로스핏이란? 개념·철학·용어 완벽 가이드',
+            name: isEn ? 'What is CrossFit? Concepts, Philosophy & Terminology Guide' : '크로스핏이란? 개념·철학·용어 완벽 가이드',
             description:
-              '크로스핏의 기본 개념과 철학, WOD·AMRAP·EMOM·RX·Tabata·Interval 주요 용어 사전을 정리한 입문 가이드.',
-            url: 'https://www.fittersstudio.com/about',
+              isEn ? 'A beginner guide to CrossFit concepts and philosophy, with a glossary of WOD, AMRAP, EMOM, RX, Tabata and Interval terms.' : '크로스핏의 기본 개념과 철학, WOD·AMRAP·EMOM·RX·Tabata·Interval 주요 용어 사전을 정리한 입문 가이드.',
+            url: `https://www.fittersstudio.com/${locale}/about`,
             publisher: {
               '@type': 'Organization',
               name: 'Fitters Studio',
@@ -61,7 +62,7 @@ export default function AboutLayout({ children }: { children: React.ReactNode })
               logo: { '@type': 'ImageObject', url: 'https://www.fittersstudio.com/Fittersstudio_BI.png' },
             },
             image: 'https://www.fittersstudio.com/OG_img.png',
-            inLanguage: 'ko',
+            inLanguage: locale,
           }),
         }}
       />

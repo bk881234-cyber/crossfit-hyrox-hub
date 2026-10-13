@@ -31,13 +31,14 @@ export async function generateMetadata({ params: { locale } }: { params: { local
       description: isEn
         ? 'HYROX Korea and major domestic CrossFit competition dates in one place. Register your own event.'
         : '2025 HYROX Korea 및 국내 크로스핏 대회 일정을 한 곳에서. 대회 직접 등록 가능.',
-      url: 'https://www.fittersstudio.com/community',
+      url: `https://www.fittersstudio.com/${locale}/community`,
       images: [{ url: '/OG_img.png', width: 1200, height: 630 }],
     },
   }
 }
 
-export default function CommunityLayout({ children }: { children: React.ReactNode }) {
+export default function CommunityLayout({ children, params: { locale } }: { children: React.ReactNode; params: { locale: string } }) {
+  const isEn = locale === 'en'
   return (
     <>
       <script
@@ -46,9 +47,9 @@ export default function CommunityLayout({ children }: { children: React.ReactNod
           __html: JSON.stringify({
             '@context': 'https://schema.org',
             '@type': 'CollectionPage',
-            name: '2025 HYROX Korea & 크로스핏 대회 일정 — FITTERS STUDIO',
-            description: 'HYROX Korea 서울·부산·인천 일정 및 국내 크로스핏 주요 대회 정보.',
-            url: 'https://www.fittersstudio.com/community',
+            name: isEn ? 'HYROX & CrossFit Competition Calendar — FITTERS STUDIO' : '2025 HYROX Korea & 크로스핏 대회 일정 — FITTERS STUDIO',
+            description: isEn ? 'HYROX event dates plus major CrossFit competitions in Korea.' : 'HYROX Korea 서울·부산·인천 일정 및 국내 크로스핏 주요 대회 정보.',
+            url: `https://www.fittersstudio.com/${locale}/community`,
             publisher: {
               '@type': 'Organization',
               name: 'Fitters Studio',

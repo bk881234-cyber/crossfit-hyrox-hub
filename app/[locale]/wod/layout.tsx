@@ -34,13 +34,14 @@ export async function generateMetadata({ params: { locale } }: { params: { local
       description: isEn
         ? 'Free search across 95+ Girl, Hero, and Open WODs, including the full 2017–2025 CrossFit Open.'
         : 'Girl·Hero·Open WOD 86개 이상 무료 검색. 2017~2025 CrossFit Open 전체 수록.',
-      url: 'https://www.fittersstudio.com/wod',
+      url: `https://www.fittersstudio.com/${locale}/wod`,
       images: [{ url: '/OG_img.png', width: 1200, height: 630 }],
     },
   }
 }
 
-export default function WodLayout({ children }: { children: React.ReactNode }) {
+export default function WodLayout({ children, params: { locale } }: { children: React.ReactNode; params: { locale: string } }) {
+  const isEn = locale === 'en'
   return (
     <>
       <script
@@ -49,9 +50,9 @@ export default function WodLayout({ children }: { children: React.ReactNode }) {
           __html: JSON.stringify({
             '@context': 'https://schema.org',
             '@type': 'Dataset',
-            name: 'CrossFit WOD 라이브러리 — FITTERS STUDIO',
-            description: 'Girl WOD, Hero WOD, CrossFit Open 2017~2025 WOD 데이터베이스.',
-            url: 'https://www.fittersstudio.com/wod',
+            name: isEn ? 'CrossFit WOD Library — FITTERS STUDIO' : 'CrossFit WOD 라이브러리 — FITTERS STUDIO',
+            description: isEn ? 'Database of Girl WODs, Hero WODs and CrossFit Open workouts from 2017 to 2025.' : 'Girl WOD, Hero WOD, CrossFit Open 2017~2025 WOD 데이터베이스.',
+            url: `https://www.fittersstudio.com/${locale}/wod`,
             creator: {
               '@type': 'Organization',
               name: 'Fitters Studio',

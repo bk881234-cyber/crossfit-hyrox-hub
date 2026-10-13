@@ -33,13 +33,14 @@ export async function generateMetadata({ params: { locale } }: { params: { local
       description: isEn
         ? 'Calculate barbell, dumbbell, and bodyweight 1RM with the Epley formula and see your 60–100% percentage table.'
         : '바벨·덤벨·맨몸 1RM을 Epley 공식으로 계산하고 60~100% 퍼센트 테이블을 확인하세요.',
-      url: 'https://www.fittersstudio.com/calculator',
+      url: `https://www.fittersstudio.com/${locale}/calculator`,
       images: [{ url: '/OG_img.png', width: 1200, height: 630 }],
     },
   }
 }
 
-export default function CalculatorLayout({ children }: { children: React.ReactNode }) {
+export default function CalculatorLayout({ children, params: { locale } }: { children: React.ReactNode; params: { locale: string } }) {
+  const isEn = locale === 'en'
   return (
     <>
       <script
@@ -48,9 +49,9 @@ export default function CalculatorLayout({ children }: { children: React.ReactNo
           __html: JSON.stringify({
             '@context': 'https://schema.org',
             '@type': 'WebApplication',
-            name: '1RM 계산기 — FITTERS STUDIO',
-            description: '크로스핏·파워리프팅 1RM 즉시 계산기. Epley 공식 기반 퍼센트 테이블 제공.',
-            url: 'https://www.fittersstudio.com/calculator',
+            name: isEn ? '1RM Calculator — FITTERS STUDIO' : '1RM 계산기 — FITTERS STUDIO',
+            description: isEn ? 'Instant 1RM calculator for CrossFit and powerlifting, with an Epley-based percentage table.' : '크로스핏·파워리프팅 1RM 즉시 계산기. Epley 공식 기반 퍼센트 테이블 제공.',
+            url: `https://www.fittersstudio.com/${locale}/calculator`,
             applicationCategory: 'HealthApplication',
             operatingSystem: 'Web',
             offers: { '@type': 'Offer', price: '0', priceCurrency: 'KRW' },

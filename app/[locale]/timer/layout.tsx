@@ -34,13 +34,14 @@ export async function generateMetadata({ params: { locale } }: { params: { local
       description: isEn
         ? 'Five CrossFit workout timer modes with sound alerts, screen-wake lock, and a 10-second countdown.'
         : '5가지 크로스핏 운동 모드 타이머. 소리 알림 + 화면 꺼짐 방지 + 10초 카운트다운.',
-      url: 'https://www.fittersstudio.com/timer',
+      url: `https://www.fittersstudio.com/${locale}/timer`,
       images: [{ url: '/OG_img.png', width: 1200, height: 630 }],
     },
   }
 }
 
-export default function TimerLayout({ children }: { children: React.ReactNode }) {
+export default function TimerLayout({ children, params: { locale } }: { children: React.ReactNode; params: { locale: string } }) {
+  const isEn = locale === 'en'
   return (
     <>
       <script
@@ -49,9 +50,9 @@ export default function TimerLayout({ children }: { children: React.ReactNode })
           __html: JSON.stringify({
             '@context': 'https://schema.org',
             '@type': 'WebApplication',
-            name: 'WOD 타이머 — FITTERS STUDIO',
-            description: 'AMRAP·EMOM·Tabata·For Time·Interval 5가지 모드 크로스핏 타이머.',
-            url: 'https://www.fittersstudio.com/timer',
+            name: isEn ? 'WOD Timer — FITTERS STUDIO' : 'WOD 타이머 — FITTERS STUDIO',
+            description: isEn ? 'CrossFit timer with 5 modes: AMRAP, EMOM, Tabata, For Time and Interval.' : 'AMRAP·EMOM·Tabata·For Time·Interval 5가지 모드 크로스핏 타이머.',
+            url: `https://www.fittersstudio.com/${locale}/timer`,
             applicationCategory: 'HealthApplication',
             operatingSystem: 'Web',
             offers: { '@type': 'Offer', price: '0', priceCurrency: 'KRW' },

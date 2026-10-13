@@ -1,6 +1,6 @@
 'use client'
 import { useState, useCallback } from 'react'
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 import Header from '@/components/layout/Header'
 import MobileNav from '@/components/layout/MobileNav'
 
@@ -34,6 +34,7 @@ type WeightTabState = { weightInput: string; reps: number }
 
 export default function CalculatorPage() {
   const t = useTranslations('calculator')
+  const isEn = useLocale() === 'en'
   const [tab, setTab] = useState<Tab>('barbell')
   const [unit, setUnit] = useState<Unit>('lb')
   // 바벨·덤벨 탭 각각 독립적인 상태
@@ -92,7 +93,7 @@ export default function CalculatorPage() {
       <main className="pt-20 pb-24 md:pb-10 px-4 max-w-[640px] mx-auto">
         {/* AdSense Placeholder */}
         <div className="hidden mt-4 mb-4 w-full h-16 bg-rx-surface border border-rx-border rounded-lg flex items-center justify-center">
-          <span className="text-rx-muted text-xs">광고 영역 (AdSense)</span>
+          <span className="text-rx-muted text-xs">{isEn ? 'Ad space (AdSense)' : '광고 영역 (AdSense)'}</span>
         </div>
 
         <h1 className="section-title mt-2">{t('title')}</h1>
@@ -304,7 +305,7 @@ export default function CalculatorPage() {
               : t('equipBodyweightDesc')}
           </p>
           <div className="hidden mt-3 h-12 bg-rx-card border border-rx-border rounded-lg flex items-center justify-center">
-            <span className="text-rx-muted text-xs">제휴 광고 영역 (Affiliate)</span>
+            <span className="text-rx-muted text-xs">{isEn ? 'Affiliate ad space' : '제휴 광고 영역 (Affiliate)'}</span>
           </div>
         </div>
       </main>

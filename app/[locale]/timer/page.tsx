@@ -1,6 +1,6 @@
 'use client'
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 import Header from '@/components/layout/Header'
 import MobileNav from '@/components/layout/MobileNav'
 
@@ -109,6 +109,7 @@ function beepTick(ctx: AudioContext) {
 
 export default function TimerPage() {
   const t = useTranslations('timer')
+  const isEn = useLocale() === 'en'
   const [mode, setMode] = useState<TimerMode>('amrap')
   const [config, setConfig] = useState<TimerConfig>({
     amrap: { minutes: 20 },
@@ -475,7 +476,7 @@ export default function TimerPage() {
       <main className="pt-20 pb-24 md:pb-10 px-4 max-w-[640px] mx-auto">
         {/* AdSense top */}
         <div className="hidden mt-4 mb-4 w-full h-16 bg-rx-surface border border-rx-border rounded-lg flex items-center justify-center">
-          <span className="text-rx-muted text-xs">광고 영역 (AdSense)</span>
+          <span className="text-rx-muted text-xs">{isEn ? 'Ad space (AdSense)' : '광고 영역 (AdSense)'}</span>
         </div>
 
         {!isFullscreen && <h1 className="section-title">{t('title')}</h1>}
@@ -851,7 +852,7 @@ export default function TimerPage() {
 
         {/* AdSense bottom */}
         <div className="hidden w-full h-16 bg-rx-surface border border-rx-border rounded-lg flex items-center justify-center">
-          <span className="text-rx-muted text-xs">광고 영역 (AdSense)</span>
+          <span className="text-rx-muted text-xs">{isEn ? 'Ad space (AdSense)' : '광고 영역 (AdSense)'}</span>
         </div>
       </main>
       {countingDown && (
