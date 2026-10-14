@@ -5,7 +5,7 @@ export async function generateMetadata({ params: { locale } }: { params: { local
   const isEn = locale === 'en'
   return {
     title: isEn
-      ? 'CrossFit & HYROX Competition Calendar Korea | FITTERS STUDIO'
+      ? 'HYROX & CrossFit Calendar 2026–27: Korea & Worldwide | FITTERS STUDIO'
       : '크로스핏 대회·HYROX 일정 커뮤니티 — FITTERS STUDIO',
     description: isEn
       ? 'HYROX race calendar for Korea and worldwide (Asia, Europe, Americas and more) by region, plus the 2027 CrossFit Open, major international and Korean CrossFit competitions — all in one place.'
@@ -47,7 +47,7 @@ export default function CommunityLayout({ children, params: { locale } }: { chil
           __html: JSON.stringify({
             '@context': 'https://schema.org',
             '@type': 'CollectionPage',
-            name: isEn ? 'HYROX & CrossFit Competition Calendar — FITTERS STUDIO' : '2025 HYROX Korea & 크로스핏 대회 일정 — FITTERS STUDIO',
+            name: isEn ? 'HYROX & CrossFit Competition Calendar — FITTERS STUDIO' : 'HYROX·크로스핏 대회 일정 (한국·해외) — FITTERS STUDIO',
             description: isEn ? 'HYROX event dates plus major CrossFit competitions in Korea.' : 'HYROX Korea 서울·인천 일정 및 국내 크로스핏 주요 대회 정보.',
             url: `https://www.fittersstudio.com/${locale}/community`,
             publisher: {
