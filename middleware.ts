@@ -4,7 +4,7 @@ import { createServerClient } from '@supabase/ssr'
 import { type NextRequest, NextResponse } from 'next/server'
 
 // 로그인 필요 경로 (locale prefix 제외한 실제 경로)
-const PROTECTED_ROUTES = ['/community/write']
+const PROTECTED_ROUTES = ['/competitions/write']
 
 // next-intl v4: createMiddleware(routing)
 const intlMiddleware = createIntlMiddleware(routing)

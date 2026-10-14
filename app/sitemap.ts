@@ -20,7 +20,7 @@ const STATIC_PAGES: StaticPage[] = [
   { path: '/wod/log', changeFrequency: 'weekly', priority: 0.6 },
   { path: '/movements', changeFrequency: 'weekly', priority: 0.8 },
   { path: '/map', changeFrequency: 'weekly', priority: 0.8 },
-  { path: '/community', changeFrequency: 'daily', priority: 0.8 },
+  { path: '/competitions', changeFrequency: 'daily', priority: 0.8 },
   { path: '/about', changeFrequency: 'monthly', priority: 0.7 },
 ]
 

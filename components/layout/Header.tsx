@@ -11,7 +11,7 @@ const navItems = [
   { href: '/timer', labelKey: 'timer' },
   { href: '/wod', labelKey: 'wod' },
   { href: '/movements', labelKey: 'movements' },
-  { href: '/community', labelKey: 'community' },
+  { href: '/competitions', labelKey: 'community' },
   { href: '/about', labelKey: 'about' },
   { href: '/map', labelKey: 'map' },
 ] as const

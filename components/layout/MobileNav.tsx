@@ -53,7 +53,7 @@ const tabs = [
     ),
   },
   {
-    href: '/community' as const,
+    href: '/competitions' as const,
     labelKey: 'community' as const,
     icon: (active: boolean) => (
       <svg width="21" height="21" viewBox="0 0 24 24" fill="none" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round"

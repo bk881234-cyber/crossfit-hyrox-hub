@@ -321,7 +321,7 @@ export default function AboutPage() {
                     <div className="text-rx-muted text-xs">{cat.desc}</div>
                   </div>
                 ))}
-                <Link href="/community#hyrox" className="btn-secondary text-sm py-3 rounded-xl text-center font-bold">
+                <Link href="/competitions#hyrox" className="btn-secondary text-sm py-3 rounded-xl text-center font-bold">
                   {t('hyroxScheduleLink')}
                 </Link>
               </div>

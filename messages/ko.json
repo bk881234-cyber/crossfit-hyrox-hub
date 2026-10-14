@@ -3,7 +3,7 @@
     "calculator": "1RM 계산기",
     "timer": "WOD 타이머",
     "wod": "WOD 라이브러리",
-    "community": "커뮤니티",
+    "community": "대회 일정",
     "about": "크로스핏이란?",
     "movements": "무브먼트",
     "map": "드랍인 지도",
@@ -50,7 +50,7 @@
     "timer": "타이머",
     "wod": "WOD",
     "map": "지도",
-    "community": "커뮤니티"
+    "community": "대회"
   },
   "home": {
     "heroBadge": "CrossFit & HYROX Platform",
@@ -70,13 +70,13 @@
       "mapLabel": "DROP-IN MAP",
       "mapDesc": "전국 크로스핏 박스 드랍인 요금·정보",
       "mapDetail": "전국 크로스핏 박스 드랍인 요금·정보를 한눈에 확인하세요.",
-      "communityLabel": "COMMUNITY",
-      "communityDesc": "HYROX 대회 일정 · 국내 크로스핏 대회 · 자유게시판",
-      "communityDetail": "HYROX 대회 일정 · 국내 크로스핏 대회 · 자유게시판"
+      "communityLabel": "COMPETITIONS",
+      "communityDesc": "HYROX 해외 · 크로스핏 대회 · 일정",
+      "communityDetail": "HYROX 해외 일정 · 크로스핏 대회 · 자유게시판"
     },
     "toolShortcut": "바로가기 →",
     "featuresTitle": "More Features",
-    "featuresDesc": "전국 크로스핏 박스 드랍인 지도 & HYROX 대회 커뮤니티",
+    "featuresDesc": "전국 크로스핏 박스 드랍인 지도 & HYROX·크로스핏 대회 일정",
     "statsTitle": "By the Numbers",
     "statsDesc": "FITTERS STUDIO가 제공하는 크로스핏 & HYROX 훈련 콘텐츠",
     "stats": {
@@ -347,8 +347,9 @@
     "ctaBtn": "WOD 보러 가기"
   },
   "community": {
-    "title": "커뮤니티",
-    "subtitle": "HYROX 대회 · 국내 대형 대회 · 자유게시판",
+    "title": "대회 일정",
+    "subtitle": "HYROX 한국·해외 · 크로스핏 대회 · 자유게시판",
+    "scheduleVerified": "일정 마지막 확인: {date} · 일정은 바뀔 수 있으니 신청 전 공식 페이지를 확인하세요.",
     "tabMajor": "국내 대형 대회",
     "tabHyrox": "HYROX 대회",
     "tabGlobal": "해외 크로스핏",

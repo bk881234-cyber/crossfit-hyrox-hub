@@ -3,7 +3,7 @@
     "calculator": "1RM Calc",
     "timer": "WOD Timer",
     "wod": "WOD Library",
-    "community": "Community",
+    "community": "Competitions",
     "about": "What is CrossFit?",
     "movements": "Movements",
     "map": "Drop-in Map",
@@ -50,7 +50,7 @@
     "timer": "Timer",
     "wod": "WOD",
     "map": "Map",
-    "community": "Community"
+    "community": "Events"
   },
   "home": {
     "heroBadge": "CrossFit & HYROX Platform",
@@ -70,13 +70,13 @@
       "mapLabel": "DROP-IN MAP",
       "mapDesc": "CrossFit Boxes Drop-in Map",
       "mapDetail": "Check drop-in prices and info for CrossFit boxes across the country at a glance.",
-      "communityLabel": "COMMUNITY",
-      "communityDesc": "HYROX Schedule · Local Comps · Board",
-      "communityDetail": "HYROX Schedule · Local Comps · Discussion Board"
+      "communityLabel": "COMPETITIONS",
+      "communityDesc": "HYROX Worldwide · CrossFit Comps · Calendar",
+      "communityDetail": "HYROX worldwide calendar · CrossFit competitions · Free board"
     },
     "toolShortcut": "Go to Tool →",
     "featuresTitle": "More Features",
-    "featuresDesc": "CrossFit Box Drop-in Map & HYROX Competition Community",
+    "featuresDesc": "CrossFit Box Drop-in Map & HYROX / CrossFit Competition Calendar",
     "statsTitle": "By the Numbers",
     "statsDesc": "CrossFit & HYROX training contents provided by FITTERS STUDIO",
     "stats": {
@@ -347,8 +347,9 @@
     "ctaBtn": "Go to WOD Library"
   },
   "community": {
-    "title": "Community",
-    "subtitle": "HYROX Events · Major Competitions · Free Board",
+    "title": "Competitions",
+    "subtitle": "HYROX Worldwide · CrossFit Competitions · Free Board",
+    "scheduleVerified": "Schedule last verified: {date} · Dates can change, so check the official page before registering.",
     "tabMajor": "Korean CrossFit",
     "tabHyrox": "HYROX Events",
     "tabGlobal": "Global CrossFit",

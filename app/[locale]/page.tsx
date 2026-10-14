@@ -433,7 +433,7 @@ export default function HomePage() {
 
   const auxTools = [
     { href: `/${locale}/map`, label: t('tools.mapLabel'), desc: t('tools.mapDesc'), detail: t('tools.mapDetail'), icon: icons.map },
-    { href: `/${locale}/community`, label: t('tools.communityLabel'), desc: t('tools.communityDesc'), detail: t('tools.communityDetail'), icon: icons.community },
+    { href: `/${locale}/competitions`, label: t('tools.communityLabel'), desc: t('tools.communityDesc'), detail: t('tools.communityDetail'), icon: icons.community },
   ]
 
   const stats = [

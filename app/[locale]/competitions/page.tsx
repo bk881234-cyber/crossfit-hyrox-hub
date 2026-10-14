@@ -3,7 +3,7 @@ import { useState, useEffect, useMemo } from 'react'
 import { useRouter } from '@/navigation'
 import Header from '@/components/layout/Header'
 import MobileNav from '@/components/layout/MobileNav'
-import { HYROX_EVENTS, BOARD_POSTS, type BoardPost } from '@/lib/community-data'
+import { HYROX_EVENTS, BOARD_POSTS, SCHEDULE_VERIFIED_AT, type BoardPost } from '@/lib/community-data'
 import { localizeEvent, localizePost } from '@/lib/community-data-en'
 import { CROSSFIT_GLOBAL_EVENTS, CROSSFIT_OFFICIAL_CALENDAR_URL } from '@/lib/crossfit-global'
 import type { HyroxRegion } from '@/lib/community-data'
@@ -172,7 +172,7 @@ const emptyPost = {
 }
 
 // ─── 메인 컴포넌트 ────────────────────────────────────────────────────────────
-export default function CommunityPage() {
+export default function CompetitionsPage() {
   const t = useTranslations('community')
   const locale = useLocale()
   const router = useRouter()
@@ -277,14 +277,14 @@ export default function CommunityPage() {
 
   // ── 글쓰기 버튼: 비로그인이면 바로 로그인 화면으로 ──────────────────────────────
   const openWriteModal = () => {
-    if (!user) { router.push('/login?callbackUrl=/community%23board'); return }
+    if (!user) { router.push('/login?callbackUrl=/competitions%23board'); return }
     setShowWriteModal(true)
   }
 
   // ── 게시글 작성 제출 (Supabase에 저장, 모두에게 공유됨) ─────────────────────────
   const handlePostSubmit = async () => {
     setWriteError('')
-    if (!user) { router.push('/login?callbackUrl=/community%23board'); return }
+    if (!user) { router.push('/login?callbackUrl=/competitions%23board'); return }
     if (!writeForm.title.trim()) { setWriteError(t('errTitle')); return }
     if (!writeForm.content.trim()) { setWriteError(t('errContent')); return }
 
@@ -320,6 +320,7 @@ export default function CommunityPage() {
       <main className="pt-20 pb-24 md:pb-10 px-4 max-w-[992px] mx-auto">
         <h1 className="section-title mt-4">{t('title')}</h1>
         <p className="section-sub">{t('subtitle')}</p>
+        <p className="text-rx-muted text-xs mb-4">{t('scheduleVerified', { date: SCHEDULE_VERIFIED_AT.replace(/-/g, '.') })}</p>
 
         {/* Tab Selector */}
         <div className="flex gap-1 bg-rx-surface rounded-xl p-1 mb-6">
