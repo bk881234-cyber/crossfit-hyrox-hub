@@ -25,7 +25,7 @@ export interface BoardPost {
 // 아래 일정은 전부 실제 공식 캘린더(roxradar, hyresult 등)로 검증한 데이터입니다.
 // 하이록스 코리아는 역사상 인천·서울 단 두 도시에서만 개최되었고, 부산·대구 대회는
 // 존재한 적이 없습니다 — 확인 안 되는 대회(2026년 도쿄·시카고 등)는 추측으로 지어내지
-// 않고 제외했습니다. 날짜 확인 기준: 2026-10-05.
+// 않고 제외했습니다. 날짜 확인 기준: 2026-10-05. (2026-10-14 정정: 서울 2026은 hyrox.com 공식 페이지 기준 킨텍스(고양) 11.13~15)
 export const HYROX_EVENTS: HyroxEvent[] = [
   // ===== 한국 =====
   {
@@ -64,11 +64,11 @@ export const HYROX_EVENTS: HyroxEvent[] = [
   },
   {
     id: 'hyrox-seoul-2026',
-    name: 'HYROX Seoul 2026 (11.14~15 양일간)',
+    name: 'HYROX Seoul 2026 (11.13~15 3일간)',
     city: '서울',
     country: '한국',
-    date: '2026-11-14',
-    venue: 'COEX, 강남구',
+    date: '2026-11-13',
+    venue: '킨텍스, 고양시 일산서구',
     registrationUrl: 'https://korea.hyrox.com/',
     isOpen: true,
   },

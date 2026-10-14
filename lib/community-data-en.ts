@@ -6,7 +6,7 @@ const EVENTS_EN: Record<string, Partial<EventEn>> = {
   'hyrox-incheon-2025': { city: 'Incheon', country: 'South Korea', venue: 'Songdo Convensia, Yeonsu-gu' },
   'hyrox-seoul-2025': { name: 'HYROX Seoul 2025 (first Seoul edition, Nov 8–9)', city: 'Seoul', country: 'South Korea', venue: 'COEX, Gangnam-gu' },
   'hyrox-incheon-2026': { city: 'Incheon', country: 'South Korea', venue: 'Songdo Convensia, Yeonsu-gu' },
-  'hyrox-seoul-2026': { name: 'HYROX Seoul 2026 (Nov 14–15)', city: 'Seoul', country: 'South Korea', venue: 'COEX, Gangnam-gu' },
+  'hyrox-seoul-2026': { name: 'HYROX Seoul 2026 (Nov 13–15)', city: 'Seoul', country: 'South Korea', venue: 'KINTEX, Goyang-si' },
   'hyrox-singapore-2026': { city: 'Singapore', country: 'Singapore' },
   'hyrox-sydney-2026': { city: 'Sydney', country: 'Australia' },
   'hyrox-hamburg-2026': { city: 'Hamburg', country: 'Germany' },
