@@ -12,7 +12,7 @@ export async function generateMetadata({ params: { locale } }: { params: { local
       : 'WOD 라이브러리 | 크로스핏 Named WOD·Open WOD 검색 — FITTERS STUDIO',
     description: isEn
       ? 'Search 95+ CrossFit WODs free — Girl WODs (Fran, Murph...), Hero WODs, and the full CrossFit Open 2017–2025, filterable by category and equipment.'
-      : 'Girl WOD(Fran, Murph 등), Hero WOD, CrossFit Open 2017~2025 전체 WOD를 검색·필터링. 총 86개 이상의 크로스핏 WOD 데이터베이스. 카테고리별·장비별 무료 검색.',
+      : 'Girl WOD(Fran, Murph 등), Hero WOD, CrossFit Open 2017~2025 전체 WOD를 검색·필터링. 총 95개의 크로스핏 WOD 데이터베이스. 카테고리별·장비별 무료 검색과 스케일링 가이드까지 한 번에.',
     keywords: isEn
       ? ['wod library', 'crossfit wod list', 'crossfit open wod', 'girl wod', 'hero wod', 'fran wod', 'murph wod', 'wod database', 'named crossfit workouts']
       : [
@@ -33,7 +33,7 @@ export async function generateMetadata({ params: { locale } }: { params: { local
         : 'WOD 라이브러리 — 크로스핏 Named·Open WOD 전체 검색 | FITTERS STUDIO',
       description: isEn
         ? 'Free search across 95+ Girl, Hero, and Open WODs, including the full 2017–2025 CrossFit Open.'
-        : 'Girl·Hero·Open WOD 86개 이상 무료 검색. 2017~2025 CrossFit Open 전체 수록.',
+        : 'Girl·Hero·Open WOD 95개 무료 검색. 2017~2025 CrossFit Open 전체 수록.',
       url: `https://www.fittersstudio.com/${locale}/wod`,
       images: [{ url: '/OG_img.png', width: 1200, height: 630 }],
     },

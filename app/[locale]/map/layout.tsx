@@ -9,7 +9,7 @@ export async function generateMetadata({ params: { locale } }: { params: { local
       : '드랍인 지도 | 전국 크로스핏 박스 위치·드랍인 비용 — FITTERS STUDIO',
     description: isEn
       ? 'Find CrossFit boxes across Korea — Seoul, Busan, Daegu, Incheon, and more — with drop-in fees, amenities, and directions on an interactive map. Perfect for travelers and expats.'
-      : '서울·부산·대구·대전·광주·수원·인천·제주 전국 크로스핏 박스 위치를 카카오 지도로 확인하세요. 드랍인 비용·편의시설·길찾기 정보를 한눈에. 내 주변 크로스핏 박스 찾기.',
+      : '서울·부산·대구·대전·광주·수원·인천·제주 전국 크로스핏 박스 위치를 카카오 지도로 확인하세요. 드랍인 비용·편의시설·길찾기 정보를 한눈에. 내 주변 크로스핏 박스 찾기, 길찾기, 해외 여행자를 위한 드랍인 정보까지 무료로 제공합니다.',
     keywords: isEn
       ? ['crossfit box korea', 'crossfit drop-in korea', 'crossfit seoul', 'crossfit near me korea', 'drop-in gym korea', 'crossfit gym finder korea', 'hyrox training korea']
       : [

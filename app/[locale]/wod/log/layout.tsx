@@ -8,8 +8,8 @@ export async function generateMetadata({ params: { locale } }: { params: { local
       ? 'WOD Log — Track Your CrossFit Workout Times | FITTERS STUDIO'
       : 'WOD 기록 관리 | 크로스핏 운동 기록 트래커 — FITTERS STUDIO',
     description: isEn
-      ? 'Log your WOD times for Fran, Murph, and more, and compare against your past attempts — a free CrossFit workout tracker.'
-      : 'Fran, Murph 등 와드별 완료 시간을 기록하고 이전 기록과 비교하세요. 크로스핏 WOD 기록 관리, 재도전 추적까지 한 곳에서.',
+      ? 'Log your WOD times for Fran, Murph, and more, and compare against your past attempts — a free CrossFit workout tracker with PR history and retry tracking.'
+      : 'Fran, Murph 등 와드별 완료 시간을 기록하고 이전 기록과 비교하세요. 크로스핏 WOD 기록 관리, 재도전 추적, 개인 최고 기록(PR) 확인까지 한 곳에서.',
     keywords: isEn
       ? ['wod log', 'crossfit workout log', 'crossfit tracker app', 'log wod times', 'crossfit progress tracker']
       : [

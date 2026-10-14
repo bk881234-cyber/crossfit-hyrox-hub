@@ -31,8 +31,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     ? `${movement.nameEn} Guide: Technique & Scaling | FITTERS STUDIO`
     : `${movement.name} 완전 가이드 — 기술 기준·일반 실수·스케일링`
   const description = isEn
-    ? `A complete breakdown of the CrossFit ${movement.nameEn}: ${movement.technicalStandards.length} technical standards, ${movement.commonFaults.length} common faults, and ${movement.scaling.length} scaling levels.`
-    : `${movement.nameEn} 크로스핏 동작 완전 분석. 기술 기준 ${movement.technicalStandards.length}가지, 일반적 실수 ${movement.commonFaults.length}가지, ${movement.scaling.length}단계 스케일링 방법을 포함한 상세 가이드.`
+    ? `A complete breakdown of the CrossFit ${movement.nameEn}: ${movement.technicalStandards.length} technical standards, ${movement.commonFaults.length} common faults, and ${movement.scaling.length} scaling levels, with step-by-step instructions for beginners through RX athletes.`
+    : `${movement.nameEn} 크로스핏 동작 완전 분석. 기술 기준 ${movement.technicalStandards.length}가지, 일반적 실수 ${movement.commonFaults.length}가지, ${movement.scaling.length}단계 스케일링 방법을 포함한 상세 가이드. 단계별 수행 방법과 관련 WOD까지 초보자부터 RX 선수까지 한눈에 확인하세요.`
   const displayName = isEn ? movement.nameEn : movement.name
   const url = `https://www.fittersstudio.com/${params.locale}/movements/${movement.slug}`
 

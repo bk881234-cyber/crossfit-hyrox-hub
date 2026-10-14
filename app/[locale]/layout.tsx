@@ -82,7 +82,7 @@ export async function generateMetadata({ params: { locale } }: Props): Promise<M
     },
     description: isEn
       ? 'Free 1RM calculator, WOD timer, workout library, box finder, and competition calendar for CrossFit and HYROX athletes worldwide.'
-      : '핏터스·피터스를 위한 1RM 계산기·WOD 타이머·WOD 라이브러리·드랍인 지도·대회 일정을 한곳에 — 크로스핏·HYROX 커뮤니티 플랫폼 핏터스 스튜디오 (FITTERS STUDIO)',
+      : '핏터스·피터스를 위한 1RM 계산기·WOD 타이머·WOD 라이브러리·드랍인 지도·대회 일정을 한곳에 — 크로스핏·HYROX 커뮤니티 플랫폼 핏터스 스튜디오 (FITTERS STUDIO). 가입 없이 무료로 바로 사용하세요.',
     keywords: isEn
       ? ['crossfit tools', 'hyrox training', 'wod timer', '1rm calculator', 'crossfit workout library', 'free crossfit app', 'crossfit box finder']
       : ['핏터스', '피터스', '핏터스 스튜디오', '피터스 스튜디오', '크로스핏', 'HYROX', '1RM 계산기', 'WOD 타이머', 'WOD 라이브러리', '드랍인 지도', '크로스핏 대회'],

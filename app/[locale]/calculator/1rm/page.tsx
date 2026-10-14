@@ -7,8 +7,8 @@ export async function generateMetadata({ params: { locale } }: { params: { local
   return {
     title: isEn ? 'PR Tracker — Log Your 1RM Progress | FITTERS STUDIO' : '나의 PR 기록하기 — 1RM 성장 추적',
     description: isEn
-      ? 'Track your deadlift, back squat, and bench press PRs with growth charts and shareable progress — free.'
-      : '나의 데드리프트, 백 스쿼트, 벤치프레스 등 PR을 기록하고 관리하며 성장과정을 공유하세요.',
+      ? 'Track your deadlift, back squat, and bench press PRs with growth charts, a 6-month trend and shareable progress cards — free to use.'
+      : '나의 데드리프트, 백 스쿼트, 벤치프레스 등 PR을 기록하고 관리하며 성장과정을 공유하세요. 6개월 성장 트렌드 차트와 SNS 공유 기능을 무료로 제공합니다.',
     keywords: isEn
       ? ['pr tracker', '1rm tracker', 'squat pr log', 'deadlift pr tracker', 'bench press log', 'strength progress tracker']
       : [
