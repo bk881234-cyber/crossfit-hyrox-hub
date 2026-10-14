@@ -1,9 +1,19 @@
+import { HYROX_WORLD_EVENTS } from './hyrox-world'
+
+export type HyroxRegion = 'korea' | 'asia' | 'oceania' | 'europe' | 'americas' | 'mea'
+
 export interface HyroxEvent {
   id: string
   name: string
   city: string
   country: string
+  /** 영문 도시·국가명 (해외 대회). 없으면 community-data-en.ts 의 번역표를 쓴다 */
+  cityEn?: string
+  countryEn?: string
+  region: HyroxRegion
   date: string
+  /** 여러 날 대회의 마지막 날 (없으면 하루짜리) */
+  endDate?: string
   venue: string
   registrationUrl: string
   isOpen: boolean
@@ -33,6 +43,7 @@ export const HYROX_EVENTS: HyroxEvent[] = [
     name: 'HYROX Incheon 2025',
     city: '인천',
     country: '한국',
+    region: 'korea',
     date: '2025-05-17',
     venue: '송도 컨벤시아, 연수구',
     registrationUrl: 'https://korea.hyrox.com/',
@@ -45,6 +56,7 @@ export const HYROX_EVENTS: HyroxEvent[] = [
     name: 'HYROX Seoul 2025 (한국 최초 서울 개최, 11.8~9 양일간)',
     city: '서울',
     country: '한국',
+    region: 'korea',
     date: '2025-11-08',
     venue: 'COEX, 강남구',
     registrationUrl: 'https://korea.hyrox.com/',
@@ -56,6 +68,7 @@ export const HYROX_EVENTS: HyroxEvent[] = [
     name: 'HYROX Incheon 2026',
     city: '인천',
     country: '한국',
+    region: 'korea',
     date: '2026-05-16',
     venue: '송도 컨벤시아, 연수구',
     registrationUrl: 'https://korea.hyrox.com/',
@@ -67,64 +80,27 @@ export const HYROX_EVENTS: HyroxEvent[] = [
     name: 'HYROX Seoul 2026 (11.13~15 3일간)',
     city: '서울',
     country: '한국',
+    region: 'korea',
     date: '2026-11-13',
+    endDate: '2026-11-15',
     venue: '킨텍스, 고양시 일산서구',
     registrationUrl: 'https://korea.hyrox.com/',
     isOpen: true,
   },
-  // ===== 해외 (검증된 주요 도시만) =====
   {
-    id: 'hyrox-singapore-2026',
-    name: 'HYROX Singapore 2026',
-    city: '싱가포르',
-    country: '싱가포르',
-    date: '2026-04-03',
-    venue: 'Singapore National Stadium',
-    registrationUrl: 'https://hyrox.com/find-my-race/',
-    isOpen: false,
-    isPast: true,
-  },
-  {
-    id: 'hyrox-sydney-2026',
-    name: 'HYROX Sydney 2026',
-    city: '시드니',
-    country: '호주',
-    date: '2026-07-01',
-    venue: 'ICC Sydney, Darling Harbour',
-    registrationUrl: 'https://hyrox.com/find-my-race/',
-    isOpen: false,
-    isPast: true,
-  },
-  {
-    id: 'hyrox-hamburg-2026',
-    name: 'HYROX Hamburg 2026',
-    city: '함부르크',
-    country: '독일',
-    date: '2026-10-28',
-    venue: 'Hamburg Messe, Messeplatz 1',
-    registrationUrl: 'https://hyrox.com/find-my-race/',
+    id: 'hyrox-incheon-2027',
+    name: 'HYROX Incheon 2027',
+    city: '인천',
+    country: '한국',
+    region: 'korea',
+    date: '2027-05-13',
+    endDate: '2027-05-16',
+    venue: '송도 컨벤시아, 연수구',
+    registrationUrl: 'https://korea.hyrox.com/',
     isOpen: true,
   },
-  {
-    id: 'hyrox-london-2026',
-    name: 'HYROX London 2026',
-    city: '런던',
-    country: '영국',
-    date: '2026-12-02',
-    venue: 'ExCeL London, Royal Docks',
-    registrationUrl: 'https://hyrox.com/find-my-race/',
-    isOpen: true,
-  },
-  {
-    id: 'hyrox-paris-2026',
-    name: 'HYROX Paris 2026',
-    city: '파리',
-    country: '프랑스',
-    date: '2026-12-12',
-    venue: 'Paris Expo Porte de Versailles',
-    registrationUrl: 'https://hyrox.com/find-my-race/',
-    isOpen: true,
-  },
+  // ===== 해외: 공식 일정표 기준 (lib/hyrox-world.ts) =====
+  ...HYROX_WORLD_EVENTS,
 ]
 
 export const BOARD_POSTS: BoardPost[] = [

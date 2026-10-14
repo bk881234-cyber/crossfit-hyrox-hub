@@ -8,7 +8,7 @@ export async function generateMetadata({ params: { locale } }: { params: { local
       ? 'CrossFit & HYROX Competition Calendar Korea | FITTERS STUDIO'
       : '크로스핏 대회·HYROX 일정 커뮤니티 — FITTERS STUDIO',
     description: isEn
-      ? 'HYROX Korea Seoul & Incheon dates, plus major Korean CrossFit competitions — Team of Four, Makia, Battle Crew, CrossFit Korea Open, and more — all in one place. Register your own event.'
+      ? 'HYROX race calendar for Korea and worldwide (Asia, Europe, Americas and more) by region, plus the 2027 CrossFit Open, major international and Korean CrossFit competitions — all in one place.'
       : '2026 HYROX Korea 서울(킨텍스)·인천 대회 일정과 해외 HYROX 대회, 팀오브포·마키아·배틀크루·크로스핏 코리아 오픈 등 국내 크로스핏 대회 정보를 한곳에서 확인하세요. 대회 직접 등록도 가능합니다.',
     keywords: isEn
       ? ['hyrox korea schedule', 'hyrox seoul', 'hyrox incheon', 'crossfit competition korea', 'korean crossfit events', 'crossfit korea open']

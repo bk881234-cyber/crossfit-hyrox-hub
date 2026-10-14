@@ -5,6 +5,8 @@ import Header from '@/components/layout/Header'
 import MobileNav from '@/components/layout/MobileNav'
 import { HYROX_EVENTS, BOARD_POSTS, type BoardPost } from '@/lib/community-data'
 import { localizeEvent, localizePost } from '@/lib/community-data-en'
+import { CROSSFIT_GLOBAL_EVENTS, CROSSFIT_OFFICIAL_CALENDAR_URL } from '@/lib/crossfit-global'
+import type { HyroxRegion } from '@/lib/community-data'
 import { createClient } from '@/lib/supabase/client'
 import type { User } from '@supabase/supabase-js'
 import type { BoardPostRow } from '@/lib/supabase-types'
@@ -23,7 +25,13 @@ function boardRowToPost(row: BoardPostRow): BoardPost {
   }
 }
 
-type Tab = 'hyrox' | 'major' | 'board'
+type Tab = 'hyrox' | 'major' | 'global' | 'board'
+type RegionFilter = 'all' | HyroxRegion
+const REGION_ORDER: RegionFilter[] = ['all', 'korea', 'asia', 'oceania', 'europe', 'americas', 'mea']
+const REGION_KEY: Record<RegionFilter, string> = {
+  all: 'regionAll', korea: 'regionKorea', asia: 'regionAsia', oceania: 'regionOceania',
+  europe: 'regionEurope', americas: 'regionAmericas', mea: 'regionMea',
+}
 
 // ─── 국내 대형 대회 타입 ───────────────────────────────────────────────────────
 interface MajorComp {
@@ -133,6 +141,21 @@ function formatDate(dateStr: string): string {
   return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')}`
 }
 
+function formatRange(start: string, end?: string): string {
+  if (!end || end === start) return formatDate(start)
+  const s = new Date(start)
+  const e = new Date(end)
+  const tail = s.getFullYear() === e.getFullYear()
+    ? `${String(e.getMonth() + 1).padStart(2, '0')}.${String(e.getDate()).padStart(2, '0')}`
+    : formatDate(end)
+  return `${formatDate(start)} – ${tail}`
+}
+
+function isEnded(start: string, end?: string): boolean {
+  const last = new Date(end ?? start).getTime() + 24 * 60 * 60 * 1000
+  return last < TODAY.getTime()
+}
+
 function nowStr(): string {
   return formatDate(TODAY.toISOString().slice(0, 10))
 }
@@ -167,6 +190,7 @@ export default function CommunityPage() {
   }, [supabase])
 
   const [tab, setTab] = useState<Tab>('major')
+  const [region, setRegion] = useState<RegionFilter>('all')
 
   // URL 해시(#hyrox 등)로 직접 접근 시 해당 탭 활성화
   useEffect(() => {
@@ -212,9 +236,20 @@ export default function CommunityPage() {
     ...HARDCODED_COMPS,
   ]
 
-  const sortedHyrox = HYROX_EVENTS.map((e) => localizeEvent(e, locale)).sort(
-    (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
-  )
+  const regionCounts = HYROX_EVENTS.reduce<Record<string, number>>((acc, e) => {
+    acc[e.region] = (acc[e.region] ?? 0) + 1
+    acc.all = (acc.all ?? 0) + 1
+    return acc
+  }, {})
+  const byTime = (a: { date: string }, b: { date: string }) => new Date(a.date).getTime() - new Date(b.date).getTime()
+  const hyroxFiltered = HYROX_EVENTS
+    .filter((e) => region === 'all' || e.region === region)
+    .map((e) => localizeEvent(e, locale))
+  // 예정된 대회는 가까운 순, 지난 대회는 맨 아래에 최근 순
+  const sortedHyrox = [
+    ...hyroxFiltered.filter((e) => !isEnded(e.date, e.endDate)).sort(byTime),
+    ...hyroxFiltered.filter((e) => isEnded(e.date, e.endDate)).sort((a, b) => byTime(b, a)),
+  ]
 
   const toggleLike = (id: string) =>
     setLikes(prev => ({ ...prev, [id]: !prev[id] }))
@@ -291,6 +326,7 @@ export default function CommunityPage() {
           {([
             { id: 'major', label: t('tabMajor') },
             { id: 'hyrox', label: t('tabHyrox') },
+            { id: 'global', label: t('tabGlobal') },
             { id: 'board', label: t('tabBoard') },
           ] as { id: Tab; label: string }[]).map((tab_item) => (
             <button
@@ -308,14 +344,28 @@ export default function CommunityPage() {
         {tab === 'hyrox' && (
           <div>
             <div className="flex items-center justify-between mb-4">
-              <p className="text-rx-muted text-sm">{t('hyroxCount', { count: HYROX_EVENTS.length })}</p>
+              <p className="text-rx-muted text-sm">{t('hyroxCount', { count: sortedHyrox.length })}</p>
               <span className="badge bg-blue-500/20 text-blue-400 border border-blue-500/30 text-xs">{t('hyroxSeason')}</span>
+            </div>
+            <div className="flex gap-2 mb-4 overflow-x-auto pb-1">
+              {REGION_ORDER.map((r) => (
+                <button
+                  key={r}
+                  onClick={() => setRegion(r)}
+                  className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-bold transition-all ${
+                    region === r ? 'gradient-bg text-white' : 'bg-rx-surface border border-rx-border text-rx-muted hover:text-white'
+                  }`}
+                >
+                  {t(REGION_KEY[r])} <span className="opacity-70">{regionCounts[r] ?? 0}</span>
+                </button>
+              ))}
             </div>
             <div className="space-y-3">
               {sortedHyrox.map((event) => {
-                const dday = getDday(event.date)
-                const isPast = dday === '종료'
-                const isToday = dday === 'D-Day'
+                const ended = isEnded(event.date, event.endDate)
+                const dday = ended ? '종료' : getDday(event.date)
+                const isPast = ended
+                const isToday = !ended && new Date(event.date).getTime() <= TODAY.getTime()
                 const ddayDisplay = isPast ? t('hyroxEnded') : isToday ? t('hyroxDDay') : dday
                 return (
                   <div key={event.id} className={`card ${isPast ? 'opacity-60' : 'hover:border-rx-red/40'} transition-all`}>
@@ -329,8 +379,8 @@ export default function CommunityPage() {
                           <span className="text-rx-muted text-xs">{event.country}</span>
                         </div>
                         <h3 className="font-black text-white text-lg leading-tight">{event.name}</h3>
-                        <p className="text-rx-muted text-sm mt-1">{formatDate(event.date)}</p>
-                        <p className="text-rx-muted text-xs mt-1">{event.venue}</p>
+                        <p className="text-rx-muted text-sm mt-1">{formatRange(event.date, event.endDate)}</p>
+                        {event.venue && <p className="text-rx-muted text-xs mt-1">{event.venue}</p>}
                         {event.participants && (
                           <p className="text-rx-muted text-xs mt-1">{t('hyroxExpectedParticipants', { count: event.participants.toLocaleString() })}</p>
                         )}
@@ -380,6 +430,43 @@ export default function CommunityPage() {
         )}
 
         {/* ── 자유게시판 탭 ─────────────────────────────────────────────────── */}
+        {/* ── 해외 크로스핏 탭 ─────────────────────────────────────────────── */}
+        {tab === 'global' && (
+          <div>
+            <p className="text-rx-muted text-sm mb-4">{t('globalNote')}</p>
+            {(['official', 'invitational'] as const).map((cat) => (
+              <div key={cat} className="mb-6">
+                <h2 className="font-black text-white text-base mb-3">{t(cat === 'official' ? 'globalOfficial' : 'globalInvitational')}</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {CROSSFIT_GLOBAL_EVENTS.filter((e) => e.category === cat).map((e) => {
+                    const ended = isEnded(e.date, e.endDate)
+                    return (
+                      <div key={e.id} className={`card flex flex-col ${ended ? 'opacity-60' : 'hover:border-rx-red/40'} transition-all`}>
+                        <div className="flex-1">
+                          <h3 className="font-black text-white text-lg mb-2">{locale === 'en' ? e.nameEn : e.name}</h3>
+                          <p className="text-rx-muted text-sm">{formatRange(e.date, e.endDate)}</p>
+                          <p className="text-rx-muted text-xs mt-1">{locale === 'en' ? e.placeEn : e.place}</p>
+                          <p className="text-rx-muted text-sm mt-3 leading-relaxed">{locale === 'en' ? e.descEn : e.descKo}</p>
+                        </div>
+                        <a href={e.url} target="_blank" rel="noopener noreferrer"
+                          className="mt-4 inline-block self-start bg-blue-500/20 text-blue-400 border border-blue-500/30 text-xs font-bold px-3 py-1.5 rounded-lg hover:bg-blue-500/30 transition-colors">
+                          {t('globalOfficialLink')}
+                        </a>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            ))}
+            <div className="card">
+              <p className="text-white font-bold mb-1">{t('globalMoreTitle')}</p>
+              <p className="text-rx-muted text-sm mb-3">{t('globalMoreDesc')}</p>
+              <a href={CROSSFIT_OFFICIAL_CALENDAR_URL} target="_blank" rel="noopener noreferrer"
+                className="inline-block text-blue-400 text-sm font-bold hover:underline">{t('globalOfficialCalendar')} →</a>
+            </div>
+          </div>
+        )}
+
         {tab === 'board' && (
           <div>
             <div className="flex items-center justify-between mb-4">
