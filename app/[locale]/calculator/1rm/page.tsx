@@ -1,5 +1,7 @@
 import type { Metadata } from 'next'
 import StrengthHubClient from '@/components/calculator/StrengthHubClient'
+import GuideSection from '@/components/layout/GuideSection'
+import { PR_GUIDE } from '@/lib/guide-content'
 import { localizedAlternates } from '@/lib/seo'
 
 export async function generateMetadata({ params: { locale } }: { params: { locale: string } }): Promise<Metadata> {
@@ -41,6 +43,11 @@ export async function generateMetadata({ params: { locale } }: { params: { local
   }
 }
 
-export default function StrengthHubPage() {
-  return <StrengthHubClient />
+export default function StrengthHubPage({ params: { locale } }: { params: { locale: string } }) {
+  return (
+    <>
+      <StrengthHubClient />
+      <GuideSection {...PR_GUIDE[locale === 'en' ? 'en' : 'ko']} />
+    </>
+  )
 }

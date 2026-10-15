@@ -3,6 +3,8 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import { useTranslations, useLocale } from 'next-intl'
 import Header from '@/components/layout/Header'
 import MobileNav from '@/components/layout/MobileNav'
+import GuideSection from '@/components/layout/GuideSection'
+import { TIMER_GUIDE } from '@/lib/guide-content'
 
 const XIcon = ({ size = 24 }: { size?: number }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -855,6 +857,7 @@ export default function TimerPage() {
           <span className="text-rx-muted text-xs">{isEn ? 'Ad space (AdSense)' : '광고 영역 (AdSense)'}</span>
         </div>
       </main>
+      {!isFullscreen && <GuideSection {...TIMER_GUIDE[isEn ? 'en' : 'ko']} />}
       {countingDown && (
         <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#0a0a0a]">
           <div className="text-center w-full">

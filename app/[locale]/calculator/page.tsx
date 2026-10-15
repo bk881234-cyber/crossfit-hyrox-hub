@@ -3,6 +3,8 @@ import { useState, useCallback } from 'react'
 import { useTranslations, useLocale } from 'next-intl'
 import Header from '@/components/layout/Header'
 import MobileNav from '@/components/layout/MobileNav'
+import GuideSection from '@/components/layout/GuideSection'
+import { CALCULATOR_GUIDE } from '@/lib/guide-content'
 
 type Tab = 'barbell' | 'dumbbell' | 'bodyweight'
 type Unit = 'kg' | 'lb'
@@ -309,6 +311,7 @@ export default function CalculatorPage() {
           </div>
         </div>
       </main>
+      <GuideSection {...CALCULATOR_GUIDE[isEn ? 'en' : 'ko']} />
       <MobileNav />
     </div>
   )

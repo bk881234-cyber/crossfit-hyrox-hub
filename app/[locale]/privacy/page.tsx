@@ -3,11 +3,15 @@ import { Link } from '@/navigation'
 import Header from '@/components/layout/Header'
 import MobileNav from '@/components/layout/MobileNav'
 import type { Metadata } from 'next'
+import { localizedAlternates } from '@/lib/seo'
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params
   const t = await getTranslations({ locale, namespace: 'privacy' })
-  return { title: t('pageTitle') }
+  return {
+    title: t('pageTitle'),
+    alternates: localizedAlternates(locale, '/privacy'),
+  }
 }
 
 export default async function PrivacyPage() {
