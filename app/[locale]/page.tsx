@@ -1,6 +1,7 @@
 'use client'
 import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
+import { WODS } from '@/lib/wod-data'
 import {
   motion,
   useMotionValue,
@@ -428,7 +429,7 @@ export default function HomePage() {
   const coreTools = [
     { href: `/${locale}/calculator`, label: t('tools.calculatorLabel'), desc: t('tools.calculatorDesc'), detail: t('tools.calculatorDetail'), icon: icons.calculator },
     { href: `/${locale}/timer`, label: t('tools.timerLabel'), desc: t('tools.timerDesc'), detail: t('tools.timerDetail'), icon: icons.timer },
-    { href: `/${locale}/wod`, label: t('tools.wodLabel'), desc: t('tools.wodDesc'), detail: t('tools.wodDetail'), icon: icons.wod },
+    { href: `/${locale}/wod`, label: t('tools.wodLabel'), desc: t('tools.wodDesc', { count: WODS.length }), detail: t('tools.wodDetail'), icon: icons.wod },
   ]
 
   const auxTools = [
@@ -437,7 +438,7 @@ export default function HomePage() {
   ]
 
   const stats = [
-    { end: 37, suffix: '+', label: t('stats.wods'), sub: t('stats.wodsSub') },
+    { end: WODS.length, suffix: '', label: t('stats.wods'), sub: t('stats.wodsSub') },
     { end: 20, suffix: '+', label: t('stats.boxes'), sub: t('stats.boxesSub') },
     { end: 5, suffix: locale === 'ko' ? '가지' : '', label: t('stats.timer'), sub: t('stats.timerSub') },
     { end: 100, suffix: '%', label: t('stats.free'), sub: t('stats.freeSub') },

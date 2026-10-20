@@ -6,6 +6,8 @@ import Header from '@/components/layout/Header'
 import MobileNav from '@/components/layout/MobileNav'
 import { WODS as WODS_KO, WOD_CATEGORIES, EQUIPMENT_FILTERS, type WOD } from '@/lib/wod-data'
 import { localizeWod } from '@/lib/wod-data-en'
+import GuideSection from '@/components/layout/GuideSection'
+import { wodLibraryGuide } from '@/lib/guide-content'
 
 const TYPE_COLORS: Record<WOD['type'], string> = {
   girl: 'bg-pink-500/20 text-pink-400 border-pink-500/30',
@@ -261,6 +263,7 @@ export default function WODPage() {
           </div>
         )}
       </main>
+      <GuideSection wide {...wodLibraryGuide(locale, { total: WODS_KO.length, girl: WODS_KO.filter((w) => w.type === 'girl').length, hero: WODS_KO.filter((w) => w.type === 'hero').length, open: WODS_KO.filter((w) => w.type === 'open').length })} />
       <MobileNav />
     </div>
   )

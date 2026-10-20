@@ -4,6 +4,7 @@ import { getTranslations } from 'next-intl/server'
 import Header from '@/components/layout/Header'
 import MobileNav from '@/components/layout/MobileNav'
 import { MOVEMENTS, type MovementCategory } from '@/lib/movements-data'
+import { WODS } from '@/lib/wod-data'
 import { localizeMovement, DIFFICULTY_LABELS_EN } from '@/lib/movements-data-en'
 import { localizedAlternates } from '@/lib/seo'
 
@@ -164,7 +165,7 @@ export default async function MovementsIndexPage({ params: { locale } }: { param
         }}>
           <p className="text-white font-black mb-1">{t('ctaTitle')}</p>
           <p className="text-rx-muted text-sm mb-3">
-            {t('ctaDesc')}
+            {t('ctaDesc', { count: WODS.length })}
           </p>
           <Link
             href="wod"

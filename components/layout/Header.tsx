@@ -95,14 +95,14 @@ export default function Header() {
         </Link>
 
         {/* Desktop Nav — absolute center */}
-        <nav className="hidden md:flex absolute left-1/2 -translate-x-1/2 items-center gap-0.5">
+        <nav className="hidden min-[1100px]:flex flex-1 min-w-0 justify-center items-center gap-0.5 mx-2">
           {navItems.map((item) => {
             const isActive = pathname === item.href || (item.href === '/wod' && pathname.startsWith('/wod'))
             return (
               <Link
                 key={item.href}
                 href={item.href}
-                className={`whitespace-nowrap px-2.5 py-1.5 rounded-md text-sm font-medium transition-colors ${isActive
+                className={`whitespace-nowrap px-2 xl:px-2.5 py-1.5 rounded-md text-[13px] xl:text-sm font-medium transition-colors ${isActive
                     ? 'text-white bg-white/10 font-bold'
                     : 'text-rx-muted hover:text-white hover:bg-rx-card'
                   }`}
@@ -121,7 +121,7 @@ export default function Header() {
           {/* Add Record Button — straight to login when signed out */}
           <Link
             href={user ? '/wod/log' : '/login?callbackUrl=/wod/log'}
-            className="hidden md:flex px-4 py-1.5 rounded-lg text-xs font-black text-white gradient-bg hover:opacity-90 transition-opacity mr-1"
+            className="hidden xl:flex px-4 py-1.5 rounded-lg text-xs font-black text-white gradient-bg hover:opacity-90 transition-opacity mr-1"
           >
             {tNav('addLog')}
           </Link>
@@ -176,7 +176,7 @@ export default function Header() {
           )}
 
           {/* Language toggle pill */}
-          <div className="hidden md:flex items-center bg-rx-surface border border-rx-border rounded-full overflow-hidden">
+          <div className="hidden min-[1100px]:flex items-center bg-rx-surface border border-rx-border rounded-full overflow-hidden">
             <button
               onClick={locale === 'en' ? handleLocaleSwitch : undefined}
               className={`px-2.5 py-1 text-[11px] font-bold transition-colors ${locale === 'ko' ? 'gradient-bg text-white' : 'text-rx-muted hover:text-white'}`}
@@ -192,7 +192,7 @@ export default function Header() {
           {/* Mobile hamburger */}
           <button
             onClick={() => setMenuOpen(true)}
-            className="md:hidden p-2 text-rx-muted hover:text-white transition-colors"
+            className="min-[1100px]:hidden p-2 text-rx-muted hover:text-white transition-colors"
             aria-label={tHeader('menuAriaLabel')}
           >
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">

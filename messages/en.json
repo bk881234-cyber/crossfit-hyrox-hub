@@ -65,7 +65,7 @@
       "timerDesc": "AMRAP · EMOM · Tabata · For Time · HIIT",
       "timerDetail": "5 modes, sound alerts + screen stays on.",
       "wodLabel": "WOD LIBRARY",
-      "wodDesc": "37+ Benchmark WOD Collection",
+      "wodDesc": "{count} Benchmark WODs",
       "wodDetail": "Girl · Hero · Open WODs. Includes scaling options.",
       "mapLabel": "DROP-IN MAP",
       "mapDesc": "CrossFit Boxes Drop-in Map",
@@ -87,7 +87,7 @@
       "timer": "Timer Modes",
       "timerSub": "AMRAP · EMOM · Tabata",
       "free": "Free",
-      "freeSub": "Ad-free tools"
+      "freeSub": "No sign-up needed"
     },
     "aboutTitle": "What is CrossFit?",
     "aboutDesc": "CrossFit is a training methodology that performs <strong>Functional Movements</strong> that are <strong>Constantly Varied</strong> at <strong>High Intensity</strong>. It improves real-life and sports performance by balancing the <strong>10 elements of fitness</strong>, including cardiovascular endurance, strength, power, flexibility, and agility.",
@@ -153,7 +153,7 @@
     "repsMin": "1 rep",
     "repsMid": "15 reps",
     "repsMax": "30 reps",
-    "repsBtn": "{r} reps",
+    "repsBtn": "{r, plural, one {# rep} other {# reps}}",
     "estimated1rm": "Estimated 1RM (Epley Formula)",
     "pctTable": "Percentage Table",
     "bwLabel": "Body Weight (kg)",
@@ -343,7 +343,7 @@
     "technicalStandards": "{count} Technical Standards",
     "scalingSteps": "{count} Scaling Steps",
     "ctaTitle": "Apply what you learned to WODs",
-    "ctaDesc": "Check 37 Girl, Hero, Open benchmark WODs and start today's challenge.",
+    "ctaDesc": "Check {count} Girl, Hero, Open benchmark WODs and start today's challenge.",
     "ctaBtn": "Go to WOD Library"
   },
   "community": {

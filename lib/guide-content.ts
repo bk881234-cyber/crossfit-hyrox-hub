@@ -188,3 +188,76 @@ export const PR_GUIDE: Record<Loc, { title: string; blocks: GuideBlock[] }> = {
     ],
   },
 }
+
+export function wodLibraryGuide(locale: string, counts: { total: number; girl: number; hero: number; open: number }): { title: string; blocks: GuideBlock[] } {
+  if (locale === 'en') {
+    return {
+      title: 'About the WOD Library',
+      blocks: [
+        {
+          heading: `What is in the library`,
+          paragraphs: [
+            `The library holds ${counts.total} CrossFit workouts: ${counts.girl} Girl WODs, ${counts.hero} Hero WODs and ${counts.open} CrossFit Open workouts. Every workout has its movements, target times, scaling options and tags, and you can jump straight to the built-in timer or log your score.`,
+          ],
+        },
+        {
+          heading: 'Girl, Hero and Open WODs',
+          items: [
+            'Girl WODs (Fran, Grace, Helen, Cindy…) are classic named benchmarks you can repeat to track fitness over time.',
+            'Hero WODs (Murph, DT, Michael…) honor service members and first responders and are often long and demanding.',
+            'CrossFit Open workouts come from the annual worldwide online competition, so you can redo past years and compare your score.',
+          ],
+        },
+        {
+          heading: 'How to read a workout',
+          paragraphs: [
+            'Weights are written as men/women (for example 43 kg/30 kg) and describe the RX standard. If you cannot move RX with good form, use the scaling options on each WOD page: lighter loads, easier movement variations or fewer reps.',
+            'Target times show rough levels such as Elite, Competitive and Recreational. Treat them as guidelines. A good first goal is simply to finish with solid technique and then beat your own time.',
+          ],
+        },
+        {
+          heading: 'Finding the right WOD',
+          items: [
+            'Use the search box to find a workout by name, movement or tag.',
+            'Filter by category (Girl, Hero, Open) or by the equipment you have.',
+            'Open a WOD to see related workouts that share the same movements.',
+          ],
+        },
+      ],
+    }
+  }
+  return {
+    title: 'WOD 라이브러리 소개',
+    blocks: [
+      {
+        heading: '라이브러리 구성',
+        paragraphs: [
+          `총 ${counts.total}개의 크로스핏 워크아웃을 담고 있습니다. Girl WOD ${counts.girl}개, Hero WOD ${counts.hero}개, 크로스핏 오픈 워크아웃 ${counts.open}개이고, 각 워크아웃마다 동작, 목표 기록, 스케일링 옵션, 태그를 확인하고 바로 타이머를 켜거나 기록을 남길 수 있습니다.`,
+        ],
+      },
+      {
+        heading: 'Girl · Hero · Open WOD',
+        items: [
+          'Girl WOD(Fran, Grace, Helen, Cindy 등)는 반복해서 체력 변화를 확인하는 대표적인 벤치마크입니다.',
+          'Hero WOD(Murph, DT, Michael 등)는 군인과 소방관 등을 기리는 워크아웃으로 길고 힘든 경우가 많습니다.',
+          '크로스핏 오픈 워크아웃은 매년 열리는 전 세계 온라인 대회에서 나온 것이라, 지난 시즌 워크아웃을 다시 해보며 기록을 비교할 수 있습니다.',
+        ],
+      },
+      {
+        heading: '워크아웃 읽는 법',
+        paragraphs: [
+          '무게는 남자/여자 순서로 적혀 있고(예: 43kg/30kg) RX 기준을 뜻합니다. 좋은 자세로 RX를 소화하기 어렵다면 각 WOD 페이지의 스케일링 옵션(더 가벼운 무게, 쉬운 동작, 더 적은 반복 수)을 활용하세요.',
+          '목표 기록은 Elite, Competitive, Recreational 같은 대략의 수준을 보여주는 참고치입니다. 처음에는 올바른 자세로 완주하는 것을 목표로 하고, 그다음 자신의 기록을 넘어서 보세요.',
+        ],
+      },
+      {
+        heading: '나에게 맞는 WOD 찾기',
+        items: [
+          '검색창에서 이름, 동작, 태그로 워크아웃을 찾을 수 있습니다.',
+          '카테고리(Girl, Hero, Open)나 가지고 있는 장비로 걸러서 볼 수 있습니다.',
+          'WOD 페이지를 열면 같은 동작이 들어간 비슷한 WOD도 함께 볼 수 있습니다.',
+        ],
+      },
+    ],
+  }
+}

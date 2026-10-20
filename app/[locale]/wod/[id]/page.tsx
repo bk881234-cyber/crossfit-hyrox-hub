@@ -6,6 +6,7 @@ import Header from '@/components/layout/Header'
 import MobileNav from '@/components/layout/MobileNav'
 import { WODS as WODS_KO, type WOD } from '@/lib/wod-data'
 import { localizeWod } from '@/lib/wod-data-en'
+import { getWodGuide, getRelatedWods } from '@/lib/wod-guide'
 import { getMovementSlug } from '@/lib/movement-links'
 import { localizedAlternates } from '@/lib/seo'
 import WodHistoryPanel from '@/components/wod/WodHistoryPanel'
@@ -125,6 +126,9 @@ export default async function WODDetailPage({ params }: Props) {
   if (!wod) notFound()
 
   const wodIndex = WODS.indexOf(wod)
+  const isEnPage = locale === 'en'
+  const guide = getWodGuide(wod, locale)
+  const related = getRelatedWods(wod, WODS)
 
   const TYPE_LABELS: Record<WOD['type'], string> = {
     girl: 'Girl WOD',
@@ -205,7 +209,7 @@ export default async function WODDetailPage({ params }: Props) {
               <polyline points="12 6 12 12 16 14" />
             </svg>
             <div>
-              <p className="text-xs font-bold gradient-text">{t('targetTime')}</p>
+              <p className="text-xs font-bold gradient-text leading-normal mb-0.5">{t('targetTime')}</p>
               <p className="text-white text-sm font-bold">{wod.timeTarget}</p>
             </div>
           </div>
@@ -263,6 +267,33 @@ export default async function WODDetailPage({ params }: Props) {
             {wod.scaling}
           </div>
         </div>
+
+        {/* About + pacing strategy */}
+        <div className="card mb-6">
+          <h2 className="font-black text-white text-xl mb-3">{isEnPage ? `About ${wod.name}` : `${wod.name} 알아보기`}</h2>
+          <p className="text-white/70 text-sm leading-relaxed mb-5">{guide.about}</p>
+          <h3 className="font-bold text-white text-base mb-2">{isEnPage ? 'Pacing strategy' : '페이스 전략'}</h3>
+          <p className="text-white/70 text-sm leading-relaxed">{guide.pace}</p>
+        </div>
+
+        {/* Related WODs */}
+        {related.length > 0 && (
+          <div className="card mb-6">
+            <h2 className="font-black text-white text-xl mb-4">{isEnPage ? 'Related WODs' : '비슷한 WOD'}</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              {related.map((r) => (
+                <Link
+                  key={r.id}
+                  href={`/wod/${r.id}`}
+                  className="flex flex-col gap-0.5 px-4 py-3 bg-rx-surface rounded-xl hover:bg-white/10 transition-colors"
+                >
+                  <span className="text-white font-bold text-sm">{r.name}</span>
+                  <span className="text-rx-muted text-xs">{r.movements.slice(0, 3).join(' · ')}</span>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Tags */}
         <div className="flex flex-wrap gap-2 mb-6">

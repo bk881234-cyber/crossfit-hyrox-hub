@@ -323,7 +323,7 @@ export default function CompetitionsPage() {
         <p className="text-rx-muted text-xs mb-4">{t('scheduleVerified', { date: SCHEDULE_VERIFIED_AT.replace(/-/g, '.') })}</p>
 
         {/* Tab Selector */}
-        <div className="flex gap-1 bg-rx-surface rounded-xl p-1 mb-6">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-1 bg-rx-surface rounded-xl p-1 mb-6">
           {([
             { id: 'major', label: t('tabMajor') },
             { id: 'hyrox', label: t('tabHyrox') },
@@ -687,11 +687,11 @@ function HardcodedCompCard({ comp, t, locale }: { comp: MajorComp; t: (key: stri
         <h3 className="font-black text-white text-lg mb-3">{isEn ? comp.nameEn : comp.name}</h3>
         <div className="space-y-1.5 mb-3">
           <div className="flex items-start gap-2">
-            <span className="text-rx-muted text-xs w-10 flex-shrink-0 pt-0.5">{t('majorScale')}</span>
+            <span className="text-rx-muted text-xs w-14 flex-shrink-0 pt-0.5">{t('majorScale')}</span>
             <span className="text-white text-sm leading-snug">{isEn ? comp.scaleEn : comp.scale}</span>
           </div>
           <div className="flex items-start gap-2">
-            <span className="text-rx-muted text-xs w-10 flex-shrink-0 pt-0.5">{t('majorPeriod')}</span>
+            <span className="text-rx-muted text-xs w-14 flex-shrink-0 pt-0.5">{t('majorPeriod')}</span>
             <span className="text-rx-orange text-sm font-bold leading-snug">{isEn ? comp.periodEn : comp.period}</span>
           </div>
         </div>
