@@ -47,3 +47,13 @@ export function toLinkHref(href: string): { pathname: '/timer'; query: Record<st
   const query = Object.fromEntries(new URLSearchParams(q === -1 ? '' : href.slice(q)))
   return { pathname: '/timer', query }
 }
+
+/**
+ * 제한 시간이 없는 For Time(예: Murph)은 타이머 화면이 허용하는 최대 제한 시간으로 연다.
+ * 기본값 20분을 그대로 쓰면 긴 WOD가 운동 도중에 끝나버린다. 지어낸 제한 시간을 붙이지 않기 위해 최대값을 쓴다.
+ */
+export const UNCAPPED_FORTIME_MINUTES = 99
+
+export function forTimeCapMinutes(preset: { mode: 'fortime'; minutes?: number }): number {
+  return preset.minutes ?? UNCAPPED_FORTIME_MINUTES
+}

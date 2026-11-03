@@ -58,3 +58,18 @@ describe('toLinkHref', () => {
     expect(toLinkHref('/timer?mode=fortime')).toEqual({ pathname: '/timer', query: { mode: 'fortime' } })
   })
 })
+
+describe('forTimeCapMinutes', () => {
+  it('uses the timer maximum for an uncapped For Time so long WODs like Murph never end early', async () => {
+    const { forTimeCapMinutes, UNCAPPED_FORTIME_MINUTES } = await import('@/lib/timer-preset')
+    expect(UNCAPPED_FORTIME_MINUTES).toBe(99)
+    expect(forTimeCapMinutes({ mode: 'fortime' })).toBe(99)
+    expect(forTimeCapMinutes({ mode: 'fortime', minutes: 12 })).toBe(12)
+  })
+  it('gives Murph (no cap) a cap longer than its slowest listed target of 70 minutes', async () => {
+    const { forTimeCapMinutes } = await import('@/lib/timer-preset')
+    const preset = parseTimerPreset(timerHrefForWod(wod('murph')).slice('/timer'.length))
+    expect(preset?.mode).toBe('fortime')
+    expect(forTimeCapMinutes(preset as { mode: 'fortime'; minutes?: number })).toBeGreaterThan(70)
+  })
+})

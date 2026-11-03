@@ -5,7 +5,7 @@ import Header from '@/components/layout/Header'
 import MobileNav from '@/components/layout/MobileNav'
 import GuideSection from '@/components/layout/GuideSection'
 import { TIMER_GUIDE } from '@/lib/guide-content'
-import { parseTimerPreset } from '@/lib/timer-preset'
+import { forTimeCapMinutes, parseTimerPreset } from '@/lib/timer-preset'
 
 const XIcon = ({ size = 24 }: { size?: number }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -131,8 +131,8 @@ export default function TimerPage() {
       setConfig((c) => ({ ...c, amrap: { minutes: preset.minutes } }))
     } else if (preset.mode === 'emom') {
       setConfig((c) => ({ ...c, emom: { rounds: preset.rounds, workSeconds: 60 } }))
-    } else if (preset.minutes !== undefined) {
-      const minutes = preset.minutes
+    } else {
+      const minutes = forTimeCapMinutes(preset)
       setConfig((c) => ({ ...c, fortime: { minutes } }))
     }
     setMode(preset.mode)
