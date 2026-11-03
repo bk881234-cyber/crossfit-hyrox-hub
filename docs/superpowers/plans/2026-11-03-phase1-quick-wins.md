@@ -16,7 +16,7 @@
 - 한국어·영어 문구는 모두 `messages/ko.json`, `messages/en.json`에 넣는다. 화면에 하드코딩 금지(기존 locale 분기 패턴 예외 없음).
 - 영어 화면에 한글이 보이면 안 된다(기존 검증 기준 유지).
 - 1RM 공식은 Epley: `weight × (1 + reps / 30)`, reps가 1이면 weight 그대로.
-- 기본 단위: `ko` → `kg`, `en` → `lb`.
+- 기본 단위: 한국어·영어 모두 `lb` (소유자 결정: 한국 크로스핏 박스도 lb를 쓴다). 사용자가 단위를 바꾸면 그 선택을 기억한다.
 - 광고 스크립트는 `www.fittersstudio.com`, `fittersstudio.com`에서만 불러온다. 기존 제외 경로(login, mypage, privacy, terms)는 유지한다.
 - localStorage는 try/catch로 감싸고, 실패해도 기본값으로 동작한다.
 - 확인되지 않은 정보를 새로 쓰지 않는다.
@@ -25,7 +25,7 @@
 
 1. 주소 파라미터가 엉망일 때(`?mode=xyz`, `?min=abc`, `?min=-5`, `?min=9999`) 타이머는 깨지지 않고 기본 화면을 보여줘야 한다 → Task 3 테스트에 포함.
 2. 계산기 무게 입력이 비었거나 0, 음수, 숫자가 아닐 때 결과는 `NaN`이 아니라 "—"로 보여야 한다 → Task 2 테스트(`estimate1RM`이 null 반환).
-3. localStorage를 쓸 수 없는 브라우저(사생활 보호 모드)에서도 계산기는 언어별 기본 단위로 동작해야 한다 → Task 2 `readSavedUnit` 테스트.
+3. localStorage를 쓸 수 없는 브라우저(사생활 보호 모드)에서도 계산기는 기본 단위 lb로 동작해야 한다 → Task 2 `readSavedUnit` 테스트.
 4. "오늘의 벤치마크"는 한국 시간 기준 같은 날이면 같은 WOD여야 하고, 서버 렌더링과 브라우저 렌더링이 달라서 하이드레이션 경고가 나면 안 된다 → Task 4 테스트 + 마운트 후 계산.
 5. 미리보기 주소(`*.vercel.app`)와 `localhost`에서는 광고가 로드되지 않아야 한다 → Task 6 테스트.
 
@@ -36,13 +36,13 @@
 | 파일 | 역할 |
 |---|---|
 | `vitest.config.ts` (신규) | vitest 설정, `@` 경로 별칭 |
-| `lib/one-rm.ts` (신규) | `estimate1RM`, `defaultUnitForLocale`, `readSavedUnit`, `saveUnit` |
+| `lib/one-rm.ts` (신규) | `estimate1RM`, `DEFAULT_UNIT`, `readSavedUnit`, `saveUnit` |
 | `lib/timer-preset.ts` (신규) | `parseTimerPreset`, `timerHrefForWod` |
 | `lib/daily-wod.ts` (신규) | `pickDailyWod` |
 | `lib/ads.ts` (신규) | `shouldLoadAds` |
 | `lib/content-dates.ts` (신규) | 사이트맵용 실제 수정일 상수 |
 | `tests/*.test.ts` (신규) | 위 순수 함수 테스트 |
-| `app/[locale]/calculator/page.tsx` | 기본 단위, 결과 위치, PR 배너 위치 |
+| `app/[locale]/calculator/page.tsx` | 단위 기억, 결과 위치, PR 배너 위치 |
 | `app/[locale]/timer/page.tsx` | 주소 파라미터로 사전 설정 |
 | `app/[locale]/wod/[id]/page.tsx` | 타이머 링크를 사전 설정 주소로 |
 | `app/[locale]/page.tsx` | 첫 화면 개편, 통계 카운트업 제거 |
@@ -79,8 +79,8 @@
 - Produces:
   - `type Unit = 'kg' | 'lb'`
   - `estimate1RM(weight: number, reps: number): number | null` — weight가 유한한 양수가 아니면 `null`. reps는 1~30으로 자름. reps=1이면 weight.
-  - `defaultUnitForLocale(locale: string): Unit`
-  - `readSavedUnit(storage: Pick<Storage,'getItem'> | null, locale: string): Unit` — 키 `fs-unit`. 값이 `kg`/`lb`가 아니거나 storage가 null이거나 getItem이 throw하면 `defaultUnitForLocale(locale)`.
+  - `DEFAULT_UNIT: Unit = 'lb'`
+  - `readSavedUnit(storage: Pick<Storage,'getItem'> | null): Unit` — 키 `fs-unit`. 값이 `kg`/`lb`가 아니거나 storage가 null이거나 getItem이 throw하면 `DEFAULT_UNIT`.
   - `saveUnit(storage: Pick<Storage,'setItem'> | null, unit: Unit): void` — throw를 삼킨다.
 
 - [ ] **Step 1: 실패하는 테스트 작성** (`tests/one-rm.test.ts`)
@@ -88,21 +88,21 @@
   - `estimate1RM(100, 1)` → `100`
   - `estimate1RM(100, 40)` → `estimate1RM(100, 30)`과 같음(=200)
   - `estimate1RM(0, 5)`, `estimate1RM(-10, 5)`, `estimate1RM(NaN, 5)` → `null`
-  - `defaultUnitForLocale('ko')` → `'kg'`, `('en')` → `'lb'`
-  - `readSavedUnit(null, 'ko')` → `'kg'`
-  - `readSavedUnit({ getItem: () => { throw new Error('blocked') } }, 'en')` → `'lb'`
-  - `readSavedUnit({ getItem: () => 'kg' }, 'en')` → `'kg'`
-  - `readSavedUnit({ getItem: () => 'stone' }, 'ko')` → `'kg'`
+  - `DEFAULT_UNIT` → `'lb'`
+  - `readSavedUnit(null)` → `'lb'`
+  - `readSavedUnit({ getItem: () => { throw new Error('blocked') } })` → `'lb'`
+  - `readSavedUnit({ getItem: () => 'kg' })` → `'kg'`
+  - `readSavedUnit({ getItem: () => 'stone' })` → `'lb'`
 - [ ] **Step 2:** `npm test` → FAIL(모듈 없음).
 - [ ] **Step 3:** `lib/one-rm.ts` 구현.
 - [ ] **Step 4:** `npm test` → PASS.
 - [ ] **Step 5: 계산기 화면 수정** (`app/[locale]/calculator/page.tsx`)
   - 파일 안의 Epley 함수를 `estimate1RM`으로 교체.
-  - 단위 초기값: 첫 렌더는 `defaultUnitForLocale(locale)`, 마운트 후 `readSavedUnit(window.localStorage 접근을 try로 감싼 값, locale)`로 갱신. 단위 전환 시 `saveUnit`.
+  - 단위 초기값: 첫 렌더는 `DEFAULT_UNIT`(lb, 현재 동작과 동일), 마운트 후 `readSavedUnit(window.localStorage 접근을 try로 감싼 값)`로 갱신. 단위 전환 시 `saveUnit`.
   - 추정 1RM 결과 블록을 무게 입력 카드 **위**로 옮기고, 모바일(`md` 미만)에서는 `sticky top-20` + 배경색으로 스크롤 중에도 보이게 한다. 결과가 null이면 "—".
   - "나의 PR 기록하기" 배너를 퍼센트 표 아래로 옮긴다.
-- [ ] **Step 6:** `npx tsc --noEmit` 통과. 로컬 `npm run build && npm run start -- -p 3121`에서 `/ko/calculator`의 단위 표시가 kg, `/en/calculator`가 lb인지 curl 또는 playwright로 확인.
-- [ ] **Step 7:** Commit `feat(calculator): locale default unit, pinned result, shared 1RM logic`.
+- [ ] **Step 6:** `npx tsc --noEmit` 통과. 로컬 빌드에서 `/ko/calculator`, `/en/calculator` 모두 처음에 lb로 보이고, kg로 바꾼 뒤 새로고침하면 kg가 유지되는지 playwright로 확인.
+- [ ] **Step 7:** Commit `feat(calculator): remember unit, pinned result, shared 1RM logic`.
 
 ### Task 3: 타이머 사전 설정 주소와 WOD 연결
 
@@ -140,7 +140,7 @@
 - Modify: `app/[locale]/page.tsx`, `messages/ko.json`, `messages/en.json`
 
 **Interfaces:**
-- Consumes: `estimate1RM`, `defaultUnitForLocale`, `readSavedUnit`, `saveUnit`(Task 2), `timerHrefForWod`(Task 3), `localizeWod`(`lib/wod-data-en.ts`)
+- Consumes: `estimate1RM`, `DEFAULT_UNIT`, `readSavedUnit`, `saveUnit`(Task 2), `timerHrefForWod`(Task 3), `localizeWod`(`lib/wod-data-en.ts`)
 - Produces: `pickDailyWod(wods: WOD[], now: Date): WOD` — 한국 시간(UTC+9) 날짜 문자열 `YYYY-MM-DD`의 간단한 해시로 인덱스를 고른다.
 
 - [ ] **Step 1: 실패하는 테스트 작성** (`tests/daily-wod.test.ts`)
