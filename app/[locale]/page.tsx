@@ -2,6 +2,8 @@
 import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { WODS } from '@/lib/wod-data'
+import QuickOneRm from '@/components/home/QuickOneRm'
+import DailyBenchmark from '@/components/home/DailyBenchmark'
 import {
   motion,
   useMotionValue,
@@ -35,141 +37,7 @@ function useReveal(delay = 0) {
 }
 
 /* ─── Count-Up ─── */
-function CountUp({ end, suffix = '', duration = 1800 }: { end: number; suffix?: string; duration?: number }) {
-  const [count, setCount] = useState(0)
-  const [started, setStarted] = useState(false)
-  const ref = useRef<HTMLSpanElement>(null)
-  useEffect(() => {
-    const el = ref.current
-    if (!el) return
-    const obs = new IntersectionObserver(
-      ([e]) => { if (e.isIntersecting) { setStarted(true); obs.unobserve(el) } },
-      { threshold: 0.5 }
-    )
-    obs.observe(el)
-    return () => obs.disconnect()
-  }, [])
-  useEffect(() => {
-    if (!started) return
-    const t0 = performance.now()
-    const tick = (now: number) => {
-      const p = Math.min((now - t0) / duration, 1)
-      setCount(Math.floor((1 - Math.pow(1 - p, 3)) * end))
-      if (p < 1) requestAnimationFrame(tick)
-    }
-    requestAnimationFrame(tick)
-  }, [started, end, duration])
-  return <span ref={ref}>{count}{suffix}</span>
-}
 
-/* ─── Hero Two-Line Typing — single continuous sequence, one cursor ───
- *  Types line1 (plain white) then immediately continues on line2 (gradient).
- *  A single blinking cursor sits at the current character position across both lines.
- *  Invisible placeholders prevent layout shifts throughout.
- * ─── */
-function HeroTypeTitle({ line1, line2 }: { line1: string; line2: string }) {
-  const total = line1.length + line2.length
-  const [count, setCount] = useState(0)
-  const [cursorDone, setCursorDone] = useState(false)
-
-  useEffect(() => {
-    setCount(0)
-    setCursorDone(false)
-    let interval: ReturnType<typeof setInterval>
-    const startId = setTimeout(() => {
-      let n = 0
-      interval = setInterval(() => {
-        n += 1
-        setCount(n)
-        if (n >= total) {
-          clearInterval(interval)
-          setTimeout(() => setCursorDone(true), 1200)
-        }
-      }, 70)
-    }, 200)
-    return () => { clearTimeout(startId); clearInterval(interval) }
-  }, [total])
-
-  const l1Visible = line1.slice(0, Math.min(count, line1.length))
-  const l1Hidden  = line1.slice(Math.min(count, line1.length))
-  const l2Count   = Math.max(0, count - line1.length)
-  const l2Visible = line2.slice(0, l2Count)
-  const l2Hidden  = line2.slice(l2Count)
-
-  const cursorOnLine2 = count > line1.length
-
-  const gradientStyle: React.CSSProperties = {
-    background: 'linear-gradient(90deg, #E8321A 0%, #FF2D8B 100%)',
-    WebkitBackgroundClip: 'text',
-    WebkitTextFillColor: 'transparent',
-    backgroundClip: 'text',
-  }
-
-  const cursorStyle: React.CSSProperties = {
-    display: 'inline-block',
-    width: '3px',
-    height: '0.82em',
-    marginLeft: '4px',
-    verticalAlign: 'middle',
-    background: 'linear-gradient(180deg, #E8321A 0%, #FF2D8B 100%)',
-    borderRadius: '1.5px',
-    boxShadow: '0 0 14px rgba(232,50,26,0.65)',
-  }
-
-  // Line 1 cursor: conditionally rendered (disappears when cursor moves to line 2, no jump)
-  const line1Cursor = !cursorOnLine2 && !cursorDone ? (
-    <motion.span
-      aria-hidden
-      animate={{ opacity: [1, 0, 1] }}
-      transition={{ duration: 0.85, repeat: Infinity, ease: 'linear' }}
-      style={cursorStyle}
-    />
-  ) : null
-
-  // Line 2 cursor: always in DOM to prevent layout shift — opacity only
-  const line2Cursor = (
-    <motion.span
-      aria-hidden
-      animate={
-        cursorDone ? { opacity: 0 }
-        : cursorOnLine2 ? { opacity: [1, 0, 1] }
-        : { opacity: 0 }
-      }
-      transition={
-        cursorDone
-          ? { duration: 0.6, ease: 'easeOut' }
-          : { duration: 0.85, repeat: Infinity, ease: 'linear' }
-      }
-      style={cursorStyle}
-    />
-  )
-
-  return (
-    <>
-      {/* Line 1: FITTERS — plain white */}
-      <span className="block text-white" style={{ minHeight: '1.05em' }}>
-        <span aria-label={line1} style={{ position: 'relative', display: 'inline-block' }}>
-          <span>{l1Visible}</span>
-          <span aria-hidden style={{ opacity: 0, pointerEvents: 'none' }}>{l1Hidden}</span>
-          {line1Cursor}
-        </span>
-      </span>
-
-      {/* Line 2: STUDIO — gradient */}
-      <span className="block drop-shadow-[0_0_24px_rgba(232,50,26,0.3)]" style={{ minHeight: '1.05em' }}>
-        <span aria-label={line2} style={{ position: 'relative', display: 'inline-block' }}>
-          <span style={l2Visible.length > 0 ? gradientStyle : {}}>
-            {l2Visible || '\u200B'}
-          </span>
-          <span aria-hidden style={{ opacity: 0, pointerEvents: 'none', ...gradientStyle }}>
-            {l2Hidden}
-          </span>
-          {line2Cursor}
-        </span>
-      </span>
-    </>
-  )
-}
 
 /* ─── High-End Tilt Card ─── */
 function ToolCard({
@@ -392,7 +260,6 @@ export default function HomePage() {
   const t = useTranslations('home')
   const locale = useLocale()
   const r3 = useReveal(100)
-  const r4 = useReveal(0)
   const r5 = useReveal(0)
 
   // Cursor following values (can still be used for other parallax if needed)
@@ -437,13 +304,6 @@ export default function HomePage() {
     { href: `/${locale}/competitions`, label: t('tools.communityLabel'), desc: t('tools.communityDesc'), detail: t('tools.communityDetail'), icon: icons.community },
   ]
 
-  const stats = [
-    { end: WODS.length, suffix: '', label: t('stats.wods'), sub: t('stats.wodsSub') },
-    { end: 20, suffix: '+', label: t('stats.boxes'), sub: t('stats.boxesSub') },
-    { end: 5, suffix: locale === 'ko' ? '가지' : '', label: t('stats.timer'), sub: t('stats.timerSub') },
-    { end: 100, suffix: '%', label: t('stats.free'), sub: t('stats.freeSub') },
-  ]
-
   const crossfitPoints = [
     { icon: '⚡', title: t('points.p1Title'), desc: t('points.p1Desc') },
     { icon: '🔥', title: t('points.p2Title'), desc: t('points.p2Desc') },
@@ -467,7 +327,7 @@ export default function HomePage() {
 
       {/* ═══ SECTION 1: HERO with Parallax ═══ */}
       <section
-        className="relative pt-32 pb-9 px-4 overflow-hidden flex flex-col justify-center min-h-[50vh] md:min-h-[60vh]"
+        className="relative pt-24 md:pt-28 pb-10 px-4 overflow-hidden"
         onMouseMove={handleHeroMouse}
         onMouseLeave={handleHeroLeave}
       >
@@ -480,25 +340,33 @@ export default function HomePage() {
         {/* Static ambient blobs — no JS needed, CSS blur is GPU-composited */}
         <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse 70% 55% at 50% 45%, rgba(232,50,26,0.12) 0%, transparent 70%)' }} />
 
-        <div className="relative text-center max-w-[992px] mx-auto z-10 w-full">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-white/40 text-[10px] font-bold mb-6 tracking-widest uppercase animate-fade-in-up">
-            <span className="w-1 h-1 rounded-full gradient-bg animate-pulse" />
-            {t('heroBadge')}
+        <div className="relative max-w-[992px] mx-auto z-10 w-full">
+          <div className="text-center mb-6 md:mb-8">
+            <h1
+              className="font-heading font-black tracking-tight leading-none mb-3"
+              style={{ fontSize: 'clamp(2.25rem, 8vw, 4.5rem)' }}
+            >
+              <span className="text-white">{t('heroTitle1')} </span>
+              <span className="gradient-text">{t('heroTitle2')}</span>
+            </h1>
+            <p className="text-rx-muted text-sm md:text-base max-w-2xl mx-auto leading-relaxed">{t('heroDesc')}</p>
           </div>
 
-          <h1
-            className="font-heading font-black uppercase tracking-tighter mb-6 leading-[0.9]"
-            style={{ fontSize: 'clamp(2.5rem, 11vw, 7.5rem)', letterSpacing: '-0.02em' }}
-          >
-            <HeroTypeTitle line1={t('heroTitle1')} line2={t('heroTitle2')} />
-          </h1>
-
-          <p
-            className="text-rx-muted text-sm md:text-lg max-w-2xl mx-auto leading-relaxed opacity-60 animate-fade-in-up"
-            style={{ animationDelay: '1.8s' }}
-          >
-            {t('heroDesc')}
-          </p>
+          {/* 첫 화면에서 바로 쓰는 도구: 1RM 빠른 계산 + 타이머·WOD 바로가기 + 오늘의 벤치마크 */}
+          <div id="fs-hero-tools" className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <QuickOneRm />
+            <div className="flex flex-col gap-4">
+              <div className="grid grid-cols-2 gap-3">
+                <Link href={`/${locale}/timer`} className="btn-primary py-4 rounded-xl text-center text-base">
+                  {t('cta.timer')}
+                </Link>
+                <Link href={`/${locale}/wod`} className="btn-secondary py-4 rounded-xl text-center text-base">
+                  {t('cta.wod')}
+                </Link>
+              </div>
+              <DailyBenchmark />
+            </div>
+          </div>
         </div>
       </section>
 
@@ -535,30 +403,6 @@ export default function HomePage() {
 
       {/* Diagonal divider */}
       <div style={{ height: '60px', clipPath: 'polygon(0 0, 100% 60%, 100% 100%, 0 100%)', background: '#0D0D0D', marginTop: '-1px' }} />
-
-      {/* ═══ SECTION 4: STATS ═══ */}
-      <section aria-label="stats" className="relative px-4 py-16">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[560px] h-[280px] rounded-full pointer-events-none" style={{ background: 'rgba(255,45,139,0.14)', filter: 'blur(140px)' }} />
-        <div className="absolute top-[15%] left-[5%] w-[260px] h-[260px] rounded-full pointer-events-none" style={{ background: 'rgba(232,50,26,0.15)', filter: 'blur(110px)' }} />
-        <div className="absolute bottom-[15%] right-[5%] w-[240px] h-[240px] rounded-full pointer-events-none" style={{ background: 'rgba(232,50,26,0.12)', filter: 'blur(100px)' }} />
-        <div className="relative z-10 max-w-[992px] mx-auto">
-          <div ref={r4} className="text-center mb-12">
-            <h2 className="font-heading font-black text-4xl md:text-5xl uppercase text-white tracking-tight">{t('statsTitle')}</h2>
-            <p className="text-rx-muted text-sm mt-2">{t('statsDesc')}</p>
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {stats.map((s) => (
-              <div key={s.label} className="glass-card p-6 md:p-8 text-center group">
-                <div className="font-heading font-normal text-5xl md:text-6xl mb-2 group-hover:scale-110 transition-transform duration-300 inline-block" style={{ color: '#999999' }}>
-                  <CountUp end={s.end} suffix={s.suffix} duration={1800} />
-                </div>
-                <div className="font-bold text-sm mb-1 gradient-text">{s.label}</div>
-                <div className="text-rx-muted text-xs">{s.sub}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* ═══ SECTION 5: CROSSFIT 소개 ═══ */}
       <section aria-label="about crossfit" className="relative px-4 bg-rx-surface" style={{ paddingTop: '80px', paddingBottom: '80px' }}>

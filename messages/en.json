@@ -77,18 +77,6 @@
     "toolShortcut": "Go to Tool →",
     "featuresTitle": "More Features",
     "featuresDesc": "CrossFit Box Drop-in Map & HYROX / CrossFit Competition Calendar",
-    "statsTitle": "By the Numbers",
-    "statsDesc": "CrossFit & HYROX training contents provided by FITTERS STUDIO",
-    "stats": {
-      "wods": "WODs",
-      "wodsSub": "Girl · Hero · Open",
-      "boxes": "Boxes Nationwide",
-      "boxesSub": "Drop-in Info",
-      "timer": "Timer Modes",
-      "timerSub": "AMRAP · EMOM · Tabata",
-      "free": "Free",
-      "freeSub": "No sign-up needed"
-    },
     "aboutTitle": "What is CrossFit?",
     "aboutDesc": "CrossFit is a training methodology that performs <strong>Functional Movements</strong> that are <strong>Constantly Varied</strong> at <strong>High Intensity</strong>. It improves real-life and sports performance by balancing the <strong>10 elements of fitness</strong>, including cardiovascular endurance, strength, power, flexibility, and agility.",
     "points": {
@@ -105,7 +93,24 @@
       "t3Ko": "Every Minute on the Minute",
       "t4Ko": "As Prescribed"
     },
-    "learnMore": "Learn More"
+    "learnMore": "Learn More",
+    "quick": {
+      "title": "Quick 1RM",
+      "unit": "Unit",
+      "weight": "Weight lifted",
+      "reps": "Reps",
+      "result": "Estimated 1RM",
+      "openFull": "Open full calculator"
+    },
+    "daily": {
+      "title": "Today's benchmark",
+      "startTimer": "Start this WOD",
+      "details": "View details"
+    },
+    "cta": {
+      "timer": "Start timer",
+      "wod": "Find a WOD"
+    }
   },
   "about": {
     "heroLabel": "Guide",
@@ -137,8 +142,16 @@
     "ctaWod": "View WOD Library",
     "ctaMap": "Find Drop-in Box",
     "fitnessElements": "10 Elements of Fitness",
-    "el1": "Cardio Endurance", "el2": "Muscular Endurance", "el3": "Strength", "el4": "Flexibility", "el5": "Power",
-    "el6": "Speed", "el7": "Agility", "el8": "Balance", "el9": "Coordination", "el10": "Accuracy"
+    "el1": "Cardio Endurance",
+    "el2": "Muscular Endurance",
+    "el3": "Strength",
+    "el4": "Flexibility",
+    "el5": "Power",
+    "el6": "Speed",
+    "el7": "Agility",
+    "el8": "Balance",
+    "el9": "Coordination",
+    "el10": "Accuracy"
   },
   "calculator": {
     "title": "1RM Calculator",
@@ -500,9 +513,18 @@
     "totalRecords": "Total Records",
     "exerciseDays": "Exercise Days",
     "avgDifficulty": "Avg Difficulty",
-    "daySun": "Sun", "dayMon": "Mon", "dayTue": "Tue", "dayWed": "Wed",
-    "dayThu": "Thu", "dayFri": "Fri", "daySat": "Sat",
-    "diff1": "Very Easy", "diff2": "Easy", "diff3": "Normal", "diff4": "Hard", "diff5": "Extreme"
+    "daySun": "Sun",
+    "dayMon": "Mon",
+    "dayTue": "Tue",
+    "dayWed": "Wed",
+    "dayThu": "Thu",
+    "dayFri": "Fri",
+    "daySat": "Sat",
+    "diff1": "Very Easy",
+    "diff2": "Easy",
+    "diff3": "Normal",
+    "diff4": "Hard",
+    "diff5": "Extreme"
   },
   "mypage": {
     "member": "FITTERS STUDIO Member",
@@ -531,7 +553,7 @@
     "menuAriaLabel": "Open menu"
   },
   "footer": {
-    "businessInfo": "Business: Fitters Studio\u00a0\u00a0|\u00a0\u00a0CEO: Lim Byungkwon\u00a0\u00a0|\u00a0\u00a0Email: bkbk881234@gmail.com",
+    "businessInfo": "Business: Fitters Studio  |  CEO: Lim Byungkwon  |  Email: bkbk881234@gmail.com",
     "terms": "Terms of Service",
     "privacy": "Privacy Policy"
   },

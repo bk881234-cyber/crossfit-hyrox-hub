@@ -77,18 +77,6 @@
     "toolShortcut": "바로가기 →",
     "featuresTitle": "More Features",
     "featuresDesc": "전국 크로스핏 박스 드랍인 지도 & HYROX·크로스핏 대회 일정",
-    "statsTitle": "By the Numbers",
-    "statsDesc": "FITTERS STUDIO가 제공하는 크로스핏 & HYROX 훈련 콘텐츠",
-    "stats": {
-      "wods": "WODs",
-      "wodsSub": "Girl · Hero · Open",
-      "boxes": "전국 박스",
-      "boxesSub": "드랍인 정보",
-      "timer": "타이머 모드",
-      "timerSub": "AMRAP · EMOM · Tabata",
-      "free": "무료",
-      "freeSub": "가입 없이 바로 사용"
-    },
     "aboutTitle": "What is CrossFit?",
     "aboutDesc": "크로스핏은 <strong>기능적 동작(Functional Movement)</strong>을 <strong>끊임없이 변화</strong>하는 방식으로 <strong>고강도(High Intensity)</strong>로 수행하는 훈련 방법론입니다. 심폐지구력·근력·파워·유연성·민첩성 등 <strong>체력의 10가지 요소</strong>를 균형 있게 발전시켜 실생활과 스포츠 퍼포먼스를 향상합니다.",
     "points": {
@@ -105,7 +93,24 @@
       "t3Ko": "매 분 시작",
       "t4Ko": "정규 무게/기준"
     },
-    "learnMore": "더 알아보기"
+    "learnMore": "더 알아보기",
+    "quick": {
+      "title": "1RM 빠른 계산",
+      "unit": "단위",
+      "weight": "들어 올린 무게",
+      "reps": "반복 횟수",
+      "result": "예상 1RM",
+      "openFull": "전체 계산기 열기"
+    },
+    "daily": {
+      "title": "오늘의 벤치마크",
+      "startTimer": "이 WOD 시작하기",
+      "details": "자세히 보기"
+    },
+    "cta": {
+      "timer": "타이머 시작",
+      "wod": "WOD 찾기"
+    }
   },
   "about": {
     "heroLabel": "가이드",
@@ -137,8 +142,16 @@
     "ctaWod": "WOD Library 보기",
     "ctaMap": "드랍인 박스 찾기",
     "fitnessElements": "체력의 10가지 요소",
-    "el1": "심폐지구력", "el2": "근지구력", "el3": "근력", "el4": "유연성", "el5": "파워",
-    "el6": "스피드", "el7": "민첩성", "el8": "균형", "el9": "협응", "el10": "정확성"
+    "el1": "심폐지구력",
+    "el2": "근지구력",
+    "el3": "근력",
+    "el4": "유연성",
+    "el5": "파워",
+    "el6": "스피드",
+    "el7": "민첩성",
+    "el8": "균형",
+    "el9": "협응",
+    "el10": "정확성"
   },
   "calculator": {
     "title": "1RM 계산기",
@@ -500,9 +513,18 @@
     "totalRecords": "총 기록",
     "exerciseDays": "운동 일수",
     "avgDifficulty": "평균 난이도",
-    "daySun": "일", "dayMon": "월", "dayTue": "화", "dayWed": "수",
-    "dayThu": "목", "dayFri": "금", "daySat": "토",
-    "diff1": "매우 쉬움", "diff2": "쉬움", "diff3": "보통", "diff4": "힘듦", "diff5": "극한"
+    "daySun": "일",
+    "dayMon": "월",
+    "dayTue": "화",
+    "dayWed": "수",
+    "dayThu": "목",
+    "dayFri": "금",
+    "daySat": "토",
+    "diff1": "매우 쉬움",
+    "diff2": "쉬움",
+    "diff3": "보통",
+    "diff4": "힘듦",
+    "diff5": "극한"
   },
   "mypage": {
     "member": "FITTERS STUDIO 회원",
@@ -531,7 +553,7 @@
     "menuAriaLabel": "메뉴 열기"
   },
   "footer": {
-    "businessInfo": "상호명: Fitters Studio (핏터스 스튜디오/피터스 스튜디오)\u00a0\u00a0|\u00a0\u00a0대표자: 임병권\u00a0\u00a0|\u00a0\u00a0이메일: bkbk881234@gmail.com",
+    "businessInfo": "상호명: Fitters Studio (핏터스 스튜디오/피터스 스튜디오)  |  대표자: 임병권  |  이메일: bkbk881234@gmail.com",
     "terms": "이용약관",
     "privacy": "개인정보 처리방침"
   },
