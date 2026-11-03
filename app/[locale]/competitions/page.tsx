@@ -4,6 +4,7 @@ import { useRouter } from '@/navigation'
 import Header from '@/components/layout/Header'
 import MobileNav from '@/components/layout/MobileNav'
 import { HYROX_EVENTS, BOARD_POSTS, SCHEDULE_VERIFIED_AT, type BoardPost } from '@/lib/community-data'
+import { ddayLabel, isEnded, isOngoing, scheduleReferenceDate } from '@/lib/event-dates'
 import { localizeEvent, localizePost } from '@/lib/community-data-en'
 import { CROSSFIT_GLOBAL_EVENTS, CROSSFIT_OFFICIAL_CALENDAR_URL } from '@/lib/crossfit-global'
 import type { HyroxRegion } from '@/lib/community-data'
@@ -127,15 +128,6 @@ const HARDCODED_COMPS: MajorComp[] = [
 ]
 
 // ─── HYROX 날짜 유틸 ──────────────────────────────────────────────────────────
-const TODAY = new Date()
-
-function getDday(dateStr: string): string {
-  const diff = Math.ceil((new Date(dateStr).getTime() - TODAY.getTime()) / (1000 * 60 * 60 * 24))
-  if (diff < 0) return '종료'
-  if (diff === 0) return 'D-Day'
-  return `D-${diff}`
-}
-
 function formatDate(dateStr: string): string {
   const d = new Date(dateStr)
   return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')}`
@@ -151,13 +143,8 @@ function formatRange(start: string, end?: string): string {
   return `${formatDate(start)} – ${tail}`
 }
 
-function isEnded(start: string, end?: string): boolean {
-  const last = new Date(end ?? start).getTime() + 24 * 60 * 60 * 1000
-  return last < TODAY.getTime()
-}
-
 function nowStr(): string {
-  return formatDate(TODAY.toISOString().slice(0, 10))
+  return formatDate(new Date().toISOString().slice(0, 10))
 }
 
 // ─── 빈 폼 초기값 ─────────────────────────────────────────────────────────────
@@ -191,6 +178,13 @@ export default function CompetitionsPage() {
 
   const [tab, setTab] = useState<Tab>('major')
   const [region, setRegion] = useState<RegionFilter>('all')
+  // 페이지는 빌드 시 미리 만들어진다. 첫 렌더는 빌드 시각(서버·브라우저 동일), 마운트 후 실제 오늘로 바꾼다.
+  const [now, setNow] = useState<Date>(() =>
+    process.env.NEXT_PUBLIC_BUILD_TIME ? new Date(process.env.NEXT_PUBLIC_BUILD_TIME) : scheduleReferenceDate(SCHEDULE_VERIFIED_AT),
+  )
+  useEffect(() => {
+    setNow(new Date())
+  }, [])
 
   // URL 해시(#hyrox 등)로 직접 접근 시 해당 탭 활성화
   useEffect(() => {
@@ -247,8 +241,8 @@ export default function CompetitionsPage() {
     .map((e) => localizeEvent(e, locale))
   // 예정된 대회는 가까운 순, 지난 대회는 맨 아래에 최근 순
   const sortedHyrox = [
-    ...hyroxFiltered.filter((e) => !isEnded(e.date, e.endDate)).sort(byTime),
-    ...hyroxFiltered.filter((e) => isEnded(e.date, e.endDate)).sort((a, b) => byTime(b, a)),
+    ...hyroxFiltered.filter((e) => !isEnded(e.date, e.endDate, now)).sort(byTime),
+    ...hyroxFiltered.filter((e) => isEnded(e.date, e.endDate, now)).sort((a, b) => byTime(b, a)),
   ]
 
   const toggleLike = (id: string) =>
@@ -363,10 +357,10 @@ export default function CompetitionsPage() {
             </div>
             <div className="space-y-3">
               {sortedHyrox.map((event) => {
-                const ended = isEnded(event.date, event.endDate)
-                const dday = ended ? '종료' : getDday(event.date)
+                const ended = isEnded(event.date, event.endDate, now)
+                const dday = ended ? '종료' : ddayLabel(event.date, now)
                 const isPast = ended
-                const isToday = !ended && new Date(event.date).getTime() <= TODAY.getTime()
+                const isToday = isOngoing(event.date, event.endDate, now)
                 const ddayDisplay = isPast ? t('hyroxEnded') : isToday ? t('hyroxDDay') : dday
                 return (
                   <div key={event.id} className={`card ${isPast ? 'opacity-60' : 'hover:border-rx-red/40'} transition-all`}>
@@ -440,7 +434,7 @@ export default function CompetitionsPage() {
                 <h2 className="font-black text-white text-base mb-3">{t(cat === 'official' ? 'globalOfficial' : 'globalInvitational')}</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {CROSSFIT_GLOBAL_EVENTS.filter((e) => e.category === cat).map((e) => {
-                    const ended = isEnded(e.date, e.endDate)
+                    const ended = isEnded(e.date, e.endDate, now)
                     return (
                       <div key={e.id} className={`card flex flex-col ${ended ? 'opacity-60' : 'hover:border-rx-red/40'} transition-all`}>
                         <div className="flex-1">

@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { getTranslations } from 'next-intl/server'
+import { getTranslations, setRequestLocale } from 'next-intl/server'
 import { Link } from '@/navigation'
 import { notFound } from 'next/navigation'
 import Header from '@/components/layout/Header'
@@ -120,6 +120,7 @@ interface Props {
 
 export default async function WODDetailPage({ params }: Props) {
   const { id, locale } = await params
+  setRequestLocale(locale)
   const t = await getTranslations('wod')
 
   const WODS = WODS_KO.map((w) => localizeWod(w, locale))

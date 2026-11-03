@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { getTranslations } from 'next-intl/server'
+import { getTranslations, setRequestLocale } from 'next-intl/server'
 import Header from '@/components/layout/Header'
 import MobileNav from '@/components/layout/MobileNav'
 import { MOVEMENTS, type MovementCategory } from '@/lib/movements-data'
@@ -60,6 +60,7 @@ const CATEGORY_ICONS: Record<MovementCategory, string> = {
 export default async function MovementsIndexPage({ params: { locale } }: { params: { locale: string } }) {
   const isEn = locale === 'en'
   const diffLabels = isEn ? DIFFICULTY_LABELS_EN : DIFFICULTY_LABELS
+  setRequestLocale(locale)
   const t = await getTranslations('movements')
 
   const catInfo: Record<MovementCategory, { label: string; desc: string }> = {

@@ -4,7 +4,7 @@ import Script from 'next/script'
 import '../globals.css'
 import { rootMetadata, rootViewport } from '@/lib/root-metadata'
 import { NextIntlClientProvider } from 'next-intl'
-import { getMessages } from 'next-intl/server'
+import { getMessages, setRequestLocale } from 'next-intl/server'
 import { notFound } from 'next/navigation'
 import Footer from '@/components/layout/Footer'
 import AdSenseLoader from '@/components/layout/AdSenseLoader'
@@ -107,8 +107,15 @@ export async function generateMetadata({ params: { locale } }: Props): Promise<M
   }
 }
 
+// ko/en 페이지를 빌드 시 미리 만들어 전 세계 CDN에서 바로 내보낸다.
+export function generateStaticParams() {
+  return locales.map((locale) => ({ locale }))
+}
+
 export default async function LocaleLayout({ children, params: { locale } }: Props) {
   if (!locales.includes(locale as (typeof locales)[number])) notFound()
+  // 요청 헤더 대신 이 값을 쓰게 해서 정적 렌더링을 가능하게 한다 (next-intl 공식 방식)
+  setRequestLocale(locale)
 
   const messages = await getMessages()
 
