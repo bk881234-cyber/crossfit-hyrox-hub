@@ -1,7 +1,6 @@
 'use client'
 import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
-import { WODS } from '@/lib/wod-data'
 import QuickOneRm from '@/components/home/QuickOneRm'
 import DailyBenchmark from '@/components/home/DailyBenchmark'
 import {
@@ -36,8 +35,116 @@ function useReveal(delay = 0) {
   return ref
 }
 
-/* ─── Count-Up ─── */
 
+
+/* ─── Hero Two-Line Typing — single continuous sequence, one cursor ───
+ *  Types line1 (plain white) then immediately continues on line2 (gradient).
+ *  A single blinking cursor sits at the current character position across both lines.
+ *  Invisible placeholders prevent layout shifts throughout.
+ * ─── */
+function HeroTypeTitle({ line1, line2 }: { line1: string; line2: string }) {
+  const total = line1.length + line2.length
+  const [count, setCount] = useState(0)
+  const [cursorDone, setCursorDone] = useState(false)
+
+  useEffect(() => {
+    setCount(0)
+    setCursorDone(false)
+    let interval: ReturnType<typeof setInterval>
+    const startId = setTimeout(() => {
+      let n = 0
+      interval = setInterval(() => {
+        n += 1
+        setCount(n)
+        if (n >= total) {
+          clearInterval(interval)
+          setTimeout(() => setCursorDone(true), 1200)
+        }
+      }, 70)
+    }, 200)
+    return () => { clearTimeout(startId); clearInterval(interval) }
+  }, [total])
+
+  const l1Visible = line1.slice(0, Math.min(count, line1.length))
+  const l1Hidden  = line1.slice(Math.min(count, line1.length))
+  const l2Count   = Math.max(0, count - line1.length)
+  const l2Visible = line2.slice(0, l2Count)
+  const l2Hidden  = line2.slice(l2Count)
+
+  const cursorOnLine2 = count > line1.length
+
+  const gradientStyle: React.CSSProperties = {
+    background: 'linear-gradient(90deg, #E8321A 0%, #FF2D8B 100%)',
+    WebkitBackgroundClip: 'text',
+    WebkitTextFillColor: 'transparent',
+    backgroundClip: 'text',
+  }
+
+  const cursorStyle: React.CSSProperties = {
+    display: 'inline-block',
+    width: '3px',
+    height: '0.82em',
+    marginLeft: '4px',
+    verticalAlign: 'middle',
+    background: 'linear-gradient(180deg, #E8321A 0%, #FF2D8B 100%)',
+    borderRadius: '1.5px',
+    boxShadow: '0 0 14px rgba(232,50,26,0.65)',
+  }
+
+  // Line 1 cursor: conditionally rendered (disappears when cursor moves to line 2, no jump)
+  const line1Cursor = !cursorOnLine2 && !cursorDone ? (
+    <motion.span
+      aria-hidden
+      animate={{ opacity: [1, 0, 1] }}
+      transition={{ duration: 0.85, repeat: Infinity, ease: 'linear' }}
+      style={cursorStyle}
+    />
+  ) : null
+
+  // Line 2 cursor: always in DOM to prevent layout shift — opacity only
+  const line2Cursor = (
+    <motion.span
+      aria-hidden
+      animate={
+        cursorDone ? { opacity: 0 }
+        : cursorOnLine2 ? { opacity: [1, 0, 1] }
+        : { opacity: 0 }
+      }
+      transition={
+        cursorDone
+          ? { duration: 0.6, ease: 'easeOut' }
+          : { duration: 0.85, repeat: Infinity, ease: 'linear' }
+      }
+      style={cursorStyle}
+    />
+  )
+
+  return (
+    <>
+      {/* Line 1: FITTERS — plain white */}
+      <span className="block text-white" style={{ minHeight: '1.05em' }}>
+        <span aria-label={line1} style={{ position: 'relative', display: 'inline-block' }}>
+          <span>{l1Visible}</span>
+          <span aria-hidden style={{ opacity: 0, pointerEvents: 'none' }}>{l1Hidden}</span>
+          {line1Cursor}
+        </span>
+      </span>
+
+      {/* Line 2: STUDIO — gradient */}
+      <span className="block drop-shadow-[0_0_24px_rgba(232,50,26,0.3)]" style={{ minHeight: '1.05em' }}>
+        <span aria-label={line2} style={{ position: 'relative', display: 'inline-block' }}>
+          <span style={l2Visible.length > 0 ? gradientStyle : {}}>
+            {l2Visible || '\u200B'}
+          </span>
+          <span aria-hidden style={{ opacity: 0, pointerEvents: 'none', ...gradientStyle }}>
+            {l2Hidden}
+          </span>
+          {line2Cursor}
+        </span>
+      </span>
+    </>
+  )
+}
 
 /* ─── High-End Tilt Card ─── */
 function ToolCard({
@@ -293,12 +400,6 @@ export default function HomePage() {
   }
   const handleHeroLeave = () => { heroMouseX.set(0); heroMouseY.set(0) }
 
-  const coreTools = [
-    { href: `/${locale}/calculator`, label: t('tools.calculatorLabel'), desc: t('tools.calculatorDesc'), detail: t('tools.calculatorDetail'), icon: icons.calculator },
-    { href: `/${locale}/timer`, label: t('tools.timerLabel'), desc: t('tools.timerDesc'), detail: t('tools.timerDetail'), icon: icons.timer },
-    { href: `/${locale}/wod`, label: t('tools.wodLabel'), desc: t('tools.wodDesc', { count: WODS.length }), detail: t('tools.wodDetail'), icon: icons.wod },
-  ]
-
   const auxTools = [
     { href: `/${locale}/map`, label: t('tools.mapLabel'), desc: t('tools.mapDesc'), detail: t('tools.mapDetail'), icon: icons.map },
     { href: `/${locale}/competitions`, label: t('tools.communityLabel'), desc: t('tools.communityDesc'), detail: t('tools.communityDetail'), icon: icons.community },
@@ -320,14 +421,15 @@ export default function HomePage() {
   const shortcut = t('toolShortcut')
 
   return (
-    <div className="min-h-screen bg-rx-bg overflow-x-hidden">
+    <div id="fs-home" className="min-h-screen bg-rx-bg overflow-x-hidden">
+      {/* id="fs-home": 애드센스 "제외 영역"으로 홈의 인페이지 광고만 막을 때 쓰는 고정 선택자 */}
       <InteractiveHeroGrid />
 
       <Header />
 
       {/* ═══ SECTION 1: HERO with Parallax ═══ */}
       <section
-        className="relative pt-24 md:pt-28 pb-10 px-4 overflow-hidden"
+        className="relative pt-32 pb-9 px-4 overflow-hidden flex flex-col justify-center min-h-[50vh] md:min-h-[60vh]"
         onMouseMove={handleHeroMouse}
         onMouseLeave={handleHeroLeave}
       >
@@ -340,18 +442,33 @@ export default function HomePage() {
         {/* Static ambient blobs — no JS needed, CSS blur is GPU-composited */}
         <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse 70% 55% at 50% 45%, rgba(232,50,26,0.12) 0%, transparent 70%)' }} />
 
-        <div className="relative max-w-[992px] mx-auto z-10 w-full">
-          <div className="text-center mb-6 md:mb-8">
-            <h1
-              className="font-heading font-black tracking-tight leading-none mb-3"
-              style={{ fontSize: 'clamp(2.25rem, 8vw, 4.5rem)' }}
-            >
-              <span className="text-white">{t('heroTitle1')} </span>
-              <span className="gradient-text">{t('heroTitle2')}</span>
-            </h1>
-            <p className="text-rx-muted text-sm md:text-base max-w-2xl mx-auto leading-relaxed">{t('heroDesc')}</p>
+        <div className="relative text-center max-w-[992px] mx-auto z-10 w-full">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-white/40 text-[10px] font-bold mb-6 tracking-widest uppercase animate-fade-in-up">
+            <span className="w-1 h-1 rounded-full gradient-bg animate-pulse" />
+            {t('heroBadge')}
           </div>
 
+          <h1
+            className="font-heading font-black uppercase tracking-tighter mb-6 leading-[0.9]"
+            style={{ fontSize: 'clamp(2.5rem, 11vw, 7.5rem)', letterSpacing: '-0.02em' }}
+          >
+            <HeroTypeTitle line1={t('heroTitle1')} line2={t('heroTitle2')} />
+          </h1>
+
+          <p
+            className="text-rx-muted text-sm md:text-lg max-w-2xl mx-auto leading-relaxed opacity-60 animate-fade-in-up"
+            style={{ animationDelay: '1.8s' }}
+          >
+            {t('heroDesc')}
+          </p>
+        </div>
+      </section>
+
+      {/* ═══ SECTION 2: 바로 쓰는 도구 — 1RM 빠른 계산 + 타이머·WOD 바로가기 + 오늘의 벤치마크 ═══ */}
+      <section aria-label="core tools" className="relative px-4 pb-16 pt-9">
+        <div className="absolute top-1/2 left-[8%] -translate-y-1/2 w-[420px] h-[420px] rounded-full pointer-events-none" style={{ background: 'rgba(232,50,26,0.20)', filter: 'blur(130px)' }} />
+        <div className="absolute top-1/4 right-[8%] w-[340px] h-[340px] rounded-full pointer-events-none" style={{ background: 'rgba(255,45,139,0.16)', filter: 'blur(120px)' }} />
+        <div className="relative z-10 max-w-[992px] mx-auto">
           {/* 첫 화면에서 바로 쓰는 도구: 1RM 빠른 계산 + 타이머·WOD 바로가기 + 오늘의 벤치마크 */}
           <div id="fs-hero-tools" className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <QuickOneRm />
@@ -366,19 +483,6 @@ export default function HomePage() {
               </div>
               <DailyBenchmark />
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ═══ SECTION 2: CORE 3 TOOLS ═══ */}
-      <section aria-label="core tools" className="relative px-4 pb-16 pt-9">
-        <div className="absolute top-1/2 left-[8%] -translate-y-1/2 w-[420px] h-[420px] rounded-full pointer-events-none" style={{ background: 'rgba(232,50,26,0.20)', filter: 'blur(130px)' }} />
-        <div className="absolute top-1/4 right-[8%] w-[340px] h-[340px] rounded-full pointer-events-none" style={{ background: 'rgba(255,45,139,0.16)', filter: 'blur(120px)' }} />
-        <div className="relative z-10 max-w-[992px] mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {coreTools.map((tool) => (
-              <ToolCard key={tool.href} {...tool} shortcut={shortcut} />
-            ))}
           </div>
         </div>
       </section>
