@@ -1,13 +1,13 @@
 'use client'
-import { useState, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import { useTranslations, useLocale } from 'next-intl'
 import Header from '@/components/layout/Header'
 import MobileNav from '@/components/layout/MobileNav'
 import GuideSection from '@/components/layout/GuideSection'
 import { CALCULATOR_GUIDE } from '@/lib/guide-content'
+import { DEFAULT_UNIT, browserStorage, estimate1RM, readSavedUnit, saveUnit, type Unit } from '@/lib/one-rm'
 
 type Tab = 'barbell' | 'dumbbell' | 'bodyweight'
-type Unit = 'kg' | 'lb'
 
 const PERCENTAGES = [100, 95, 90, 85, 80, 75, 70, 65, 60]
 
@@ -18,11 +18,6 @@ const BODYWEIGHT_MOVEMENTS = [
   { key: 'bwNameHspu', multiplier: 1.0 },
   { key: 'bwNameMuscleup', multiplier: 1.1 },
 ] as const
-
-function epley(weight: number, reps: number): number {
-  if (reps === 1) return weight
-  return weight * (1 + reps / 30)
-}
 
 function kgToLb(kg: number): number {
   return Math.round(kg * 2.2046 * 10) / 10
@@ -38,7 +33,12 @@ export default function CalculatorPage() {
   const t = useTranslations('calculator')
   const isEn = useLocale() === 'en'
   const [tab, setTab] = useState<Tab>('barbell')
-  const [unit, setUnit] = useState<Unit>('lb')
+  const [unit, setUnit] = useState<Unit>(DEFAULT_UNIT)
+
+  // 마지막으로 고른 단위를 기억한다 (첫 렌더는 lb로 고정해 서버·브라우저 화면을 맞춘다)
+  useEffect(() => {
+    setUnit(readSavedUnit(browserStorage()))
+  }, [])
   // 바벨·덤벨 탭 각각 독립적인 상태
   const [tabStates, setTabStates] = useState<Record<'barbell' | 'dumbbell', WeightTabState>>({
     barbell: { weightInput: '', reps: 1 },
@@ -61,32 +61,21 @@ export default function CalculatorPage() {
     setTabStates(prev => ({ ...prev, [currentKey]: { ...prev[currentKey], reps: val } }))
   }
 
-  const weightKg = useCallback(() => {
-    const w = parseFloat(weightInput)
-    if (isNaN(w) || w <= 0) return 0
-    return unit === 'kg' ? w : lbToKg(w)
-  }, [weightInput, unit])
-
-  const oneRM = useCallback(() => {
-    const kg = weightKg()
-    if (kg === 0) return 0
-    return Math.round(epley(kg, reps) * 10) / 10
-  }, [weightKg, reps])
-
-  const displayWeight = (kg: number) => {
-    if (unit === 'kg') return `${kg.toFixed(1)} kg`
-    return `${kgToLb(kg).toFixed(1)} lb`
-  }
+  // 입력한 단위 그대로 계산한다 (kg로 바꿨다 되돌리면 반올림 오차가 생긴다)
+  const estimated = estimate1RM(parseFloat(weightInput), reps)
+  const otherUnit: Unit = unit === 'kg' ? 'lb' : 'kg'
+  const convert = (v: number) => (unit === 'kg' ? kgToLb(v) : lbToKg(v))
 
   const toggleUnit = () => {
     const current = parseFloat(weightInput)
     if (!isNaN(current) && current > 0) {
       handleWeightChange(unit === 'kg' ? kgToLb(current).toFixed(1) : lbToKg(current).toFixed(1))
     }
-    setUnit(unit === 'kg' ? 'lb' : 'kg')
+    const next: Unit = unit === 'kg' ? 'lb' : 'kg'
+    setUnit(next)
+    saveUnit(browserStorage(), next)
   }
 
-  const rm = oneRM()
   const bw = parseFloat(bodyweight)
 
   return (
@@ -100,28 +89,6 @@ export default function CalculatorPage() {
 
         <h1 className="section-title mt-2">{t('title')}</h1>
         <p className="section-sub">{t('subtitle')}</p>
-
-        {/* Strength Hub CTA */}
-        <a
-          href="calculator/1rm"
-          className="flex items-center justify-between gap-3 mb-5 p-4 rounded-2xl group"
-          style={{
-            background: 'linear-gradient(135deg, rgba(232,50,26,0.10), rgba(255,45,139,0.10))',
-            border: '1px solid rgba(232,50,26,0.35)',
-          }}
-        >
-          <div className="flex items-center gap-3">
-            <span className="text-2xl">💪</span>
-            <div>
-              <p className="text-white font-black" style={{ fontSize: 16 }}>{t('ctaTitle')}</p>
-              <p className="text-rx-muted" style={{ fontSize: 16 }}>{t('ctaDesc')}</p>
-            </div>
-          </div>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"
-            className="text-rx-muted group-hover:text-white group-hover:translate-x-1 transition-all flex-shrink-0">
-            <path d="M5 12h14M12 5l7 7-7 7" />
-          </svg>
-        </a>
 
         {/* Tab Selector */}
         <div className="flex gap-1 bg-rx-surface rounded-xl p-1 mb-6">
@@ -140,6 +107,26 @@ export default function CalculatorPage() {
 
         {tab !== 'bodyweight' ? (
           <>
+            {/* 1RM Result — 입력칸 바로 위, 모바일에서는 스크롤해도 화면 위에 고정 */}
+            <div
+              className="sticky top-20 z-30 md:static -mx-4 px-4 py-2 mb-4 bg-rx-bg/95 backdrop-blur md:mx-0 md:px-0 md:py-0 md:bg-transparent md:backdrop-blur-none"
+              aria-live="polite"
+            >
+              <div className="card text-center py-4 px-4 relative overflow-hidden border-rx-red/40">
+                <div className="absolute inset-0 gradient-bg opacity-15 pointer-events-none" />
+                <p className="text-rx-muted text-sm mb-1 relative z-10">{t('estimated1rm')}</p>
+                <p className="relative z-10 text-4xl font-black text-white tabular-nums">
+                  {estimated === null ? '—' : estimated.toFixed(1)}
+                  <span className="text-xl text-rx-muted ml-1">{unit}</span>
+                </p>
+                {estimated !== null && (
+                  <p className="relative z-10 text-rx-muted text-sm mt-1 tabular-nums">
+                    = {convert(estimated).toFixed(1)} {otherUnit}
+                  </p>
+                )}
+              </div>
+            </div>
+
             {/* Weight Input */}
             <div className="card mb-4">
               <div className="flex items-center justify-between mb-3">
@@ -170,38 +157,6 @@ export default function CalculatorPage() {
                 </p>
               )}
             </div>
-
-            {/* Percentage Table — 반복횟수보다 위 */}
-            {rm > 0 && (
-              <div className="card mb-4">
-                <h2 className="font-black text-white mb-4">{t('pctTable')}</h2>
-                <div className="space-y-2">
-                  {PERCENTAGES.map((pct) => {
-                    const pctKg = Math.round(rm * pct / 100 * 10) / 10
-                    const pctDisplay = unit === 'kg'
-                      ? `${pctKg.toFixed(1)} kg`
-                      : `${kgToLb(pctKg).toFixed(1)} lb`
-                    const isMax = pct === 100
-                    return (
-                      <div
-                        key={pct}
-                        className={`flex items-center justify-between px-4 py-3 rounded-lg flex-wrap gap-2 ${
-                          isMax ? 'gradient-bg border border-white/20' : 'bg-rx-surface'
-                        }`}
-                      >
-                        <span className={`font-bold ${isMax ? 'text-white' : 'text-rx-muted'}`}>{pct}%</span>
-                        <span className={`font-black text-lg ${isMax ? 'text-white' : 'text-white'}`}>{pctDisplay}</span>
-                        <span className="text-rx-muted text-xs">
-                          {unit === 'kg'
-                            ? `${kgToLb(pctKg).toFixed(0)} lb`
-                            : `${lbToKg(pctKg).toFixed(1)} kg`}
-                        </span>
-                      </div>
-                    )
-                  })}
-                </div>
-              </div>
-            )}
 
             {/* Reps Input */}
             <div className="card mb-4">
@@ -234,17 +189,34 @@ export default function CalculatorPage() {
               </div>
             </div>
 
-            {/* 1RM Result — 맨 아래, 크기 축소 */}
-            {rm > 0 && (
-              <div className="card mb-6 text-center py-3 px-4 bg-rx-surface/80 border-white/10 relative overflow-hidden">
-                <div className="absolute inset-0 gradient-bg opacity-20 pointer-events-none" />
-                <p className="text-rx-muted text-sm mb-1 relative z-10">{t('estimated1rm')}</p>
-                <p className="text-3xl font-black text-white">
-                  {unit === 'kg' ? rm.toFixed(1) : kgToLb(rm).toFixed(1)}
-                  <span className="text-xl text-rx-muted ml-1">{unit}</span>
-                </p>
+            {/* Percentage Table */}
+            {estimated !== null && (
+              <div className="card mb-4">
+                <h2 className="font-black text-white mb-4">{t('pctTable')}</h2>
+                <div className="space-y-2">
+                  {PERCENTAGES.map((pct) => {
+                    const pctValue = Math.round(estimated * pct / 100 * 10) / 10
+                    const pctDisplay = `${pctValue.toFixed(1)} ${unit}`
+                    const isMax = pct === 100
+                    return (
+                      <div
+                        key={pct}
+                        className={`flex items-center justify-between px-4 py-3 rounded-lg flex-wrap gap-2 ${
+                          isMax ? 'gradient-bg border border-white/20' : 'bg-rx-surface'
+                        }`}
+                      >
+                        <span className={`font-bold ${isMax ? 'text-white' : 'text-rx-muted'}`}>{pct}%</span>
+                        <span className={`font-black text-lg ${isMax ? 'text-white' : 'text-white'}`}>{pctDisplay}</span>
+                        <span className="text-rx-muted text-xs">
+                          {`${convert(pctValue).toFixed(unit === 'kg' ? 0 : 1)} ${otherUnit}`}
+                        </span>
+                      </div>
+                    )
+                  })}
+                </div>
               </div>
             )}
+
           </>
         ) : (
           // Bodyweight tab
@@ -310,6 +282,27 @@ export default function CalculatorPage() {
             <span className="text-rx-muted text-xs">{isEn ? 'Affiliate ad space' : '제휴 광고 영역 (Affiliate)'}</span>
           </div>
         </div>
+        {/* Strength Hub CTA */}
+        <a
+          href="calculator/1rm"
+          className="flex items-center justify-between gap-3 mt-6 p-4 rounded-2xl group"
+          style={{
+            background: 'linear-gradient(135deg, rgba(232,50,26,0.10), rgba(255,45,139,0.10))',
+            border: '1px solid rgba(232,50,26,0.35)',
+          }}
+        >
+          <div className="flex items-center gap-3">
+            <span className="text-2xl">💪</span>
+            <div>
+              <p className="text-white font-black" style={{ fontSize: 16 }}>{t('ctaTitle')}</p>
+              <p className="text-rx-muted" style={{ fontSize: 16 }}>{t('ctaDesc')}</p>
+            </div>
+          </div>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"
+            className="text-rx-muted group-hover:text-white group-hover:translate-x-1 transition-all flex-shrink-0">
+            <path d="M5 12h14M12 5l7 7-7 7" />
+          </svg>
+        </a>
       </main>
       <GuideSection {...CALCULATOR_GUIDE[isEn ? 'en' : 'ko']} />
       <MobileNav />
