@@ -5,6 +5,7 @@ import Header from '@/components/layout/Header'
 import MobileNav from '@/components/layout/MobileNav'
 import GuideSection from '@/components/layout/GuideSection'
 import { TIMER_GUIDE } from '@/lib/guide-content'
+import { parseTimerPreset } from '@/lib/timer-preset'
 
 const XIcon = ({ size = 24 }: { size?: number }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -120,6 +121,22 @@ export default function TimerPage() {
     fortime: { minutes: 20 },
     interval: { workSeconds: 40, restSeconds: 20, rounds: 8 },
   })
+
+  // 주소로 미리 설정 (예: WOD 페이지의 "타이머로 이동" → ?mode=amrap&min=20).
+  // useSearchParams 대신 마운트 후 window.location을 읽어 정적 렌더링을 유지한다.
+  useEffect(() => {
+    const preset = parseTimerPreset(window.location.search)
+    if (!preset) return
+    if (preset.mode === 'amrap') {
+      setConfig((c) => ({ ...c, amrap: { minutes: preset.minutes } }))
+    } else if (preset.mode === 'emom') {
+      setConfig((c) => ({ ...c, emom: { rounds: preset.rounds, workSeconds: 60 } }))
+    } else if (preset.minutes !== undefined) {
+      const minutes = preset.minutes
+      setConfig((c) => ({ ...c, fortime: { minutes } }))
+    }
+    setMode(preset.mode)
+  }, [])
 
   const [running, setRunning] = useState(false)
   const [phase, setPhase] = useState<Phase>('idle')

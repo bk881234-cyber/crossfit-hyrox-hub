@@ -7,6 +7,7 @@ import MobileNav from '@/components/layout/MobileNav'
 import { WODS as WODS_KO, type WOD } from '@/lib/wod-data'
 import { localizeWod } from '@/lib/wod-data-en'
 import { getWodGuide, getRelatedWods } from '@/lib/wod-guide'
+import { timerHrefForWod, toLinkHref } from '@/lib/timer-preset'
 import { getMovementSlug } from '@/lib/movement-links'
 import { localizedAlternates } from '@/lib/seo'
 import WodHistoryPanel from '@/components/wod/WodHistoryPanel'
@@ -129,6 +130,8 @@ export default async function WODDetailPage({ params }: Props) {
   const isEnPage = locale === 'en'
   const guide = getWodGuide(wod, locale)
   const related = getRelatedWods(wod, WODS)
+  // 형식은 한국어 원본 설명에서 읽는다 (영어 번역본은 문구가 다름)
+  const timerHref = timerHrefForWod(WODS_KO.find((w) => w.id === id) ?? wod)
 
   const TYPE_LABELS: Record<WOD['type'], string> = {
     girl: 'Girl WOD',
@@ -309,7 +312,7 @@ export default async function WODDetailPage({ params }: Props) {
 
         {/* CTA Row */}
         <div className="grid grid-cols-2 gap-3 mb-6">
-          <Link href="/timer" className="btn-primary text-sm py-3.5 rounded-xl text-center">
+          <Link href={toLinkHref(timerHref)} className="btn-primary text-sm py-3.5 rounded-xl text-center">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="inline mr-1.5 -mt-0.5">
               <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
             </svg>
