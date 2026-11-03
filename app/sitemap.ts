@@ -1,6 +1,7 @@
 import { MetadataRoute } from 'next'
 import { WODS } from '@/lib/wod-data'
 import { MOVEMENTS } from '@/lib/movements-data'
+import { CONTENT_DATES, MOVEMENT_CONTENT_DATE, WOD_CONTENT_DATE } from '@/lib/content-dates'
 
 const baseUrl = 'https://www.fittersstudio.com'
 const locales = ['ko', 'en'] as const
@@ -25,14 +26,13 @@ const STATIC_PAGES: StaticPage[] = [
 ]
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const lastModified = new Date()
   const entries: MetadataRoute.Sitemap = []
 
   for (const { path, changeFrequency, priority } of STATIC_PAGES) {
     for (const locale of locales) {
       entries.push({
         url: `${baseUrl}/${locale}${path}`,
-        lastModified,
+        lastModified: CONTENT_DATES[path],
         changeFrequency,
         priority,
         alternates: {
@@ -50,7 +50,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     for (const locale of locales) {
       entries.push({
         url: `${baseUrl}/${locale}/wod/${wod.id}`,
-        lastModified,
+        lastModified: WOD_CONTENT_DATE,
         changeFrequency: 'monthly',
         priority: 0.6,
         alternates: {
@@ -68,7 +68,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     for (const locale of locales) {
       entries.push({
         url: `${baseUrl}/${locale}/movements/${movement.slug}`,
-        lastModified,
+        lastModified: MOVEMENT_CONTENT_DATE,
         changeFrequency: 'monthly',
         priority: 0.6,
         alternates: {
