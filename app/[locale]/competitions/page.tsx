@@ -467,36 +467,86 @@ export default function CompetitionsPage() {
         {/* ── 해외 크로스핏 탭 ─────────────────────────────────────────────── */}
         {tab === 'global' && (
           <div>
-            <p className="text-rx-muted text-sm mb-4">{t('globalNote')}</p>
-            {(['official', 'invitational'] as const).map((cat) => (
-              <div key={cat} className="mb-6">
-                <h2 className="font-black text-white text-base mb-3">{t(cat === 'official' ? 'globalOfficial' : 'globalInvitational')}</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {CROSSFIT_GLOBAL_EVENTS.filter((e) => e.category === cat).map((e) => {
-                    const ended = isEnded(e.date, e.endDate, now)
-                    return (
-                      <div key={e.id} className={`card flex flex-col ${ended ? 'opacity-60' : 'hover:border-rx-red/40'} transition-all`}>
-                        <div className="flex-1">
-                          <h3 className="font-black text-white text-lg mb-2">{locale === 'en' ? e.nameEn : e.name}</h3>
-                          <p className="text-rx-muted text-sm">{formatRange(e.date, e.endDate)}</p>
-                          <p className="text-rx-muted text-xs mt-1">{locale === 'en' ? e.placeEn : e.place}</p>
-                          <p className="text-rx-muted text-sm mt-3 leading-relaxed">{locale === 'en' ? e.descEn : e.descKo}</p>
+            <p className="text-rx-muted text-sm mb-6">{t('globalNote')}</p>
+            {(['official', 'invitational'] as const).map((cat) => {
+              const items = CROSSFIT_GLOBAL_EVENTS.filter((e) => e.category === cat)
+              if (items.length === 0) return null
+              const isSingle = items.length === 1
+              return (
+                <div key={cat} className="mb-6">
+                  <h2 className="font-black text-white text-base mb-3">
+                    {t(cat === 'official' ? 'globalOfficial' : 'globalInvitational')}
+                  </h2>
+                  <div className={isSingle ? 'space-y-3' : 'grid grid-cols-1 md:grid-cols-2 gap-4'}>
+                    {items.map((e) => {
+                      const ended = isEnded(e.date, e.endDate, now)
+                      const ongoing = isOngoing(e.date, e.endDate, now)
+                      const dday = ended ? t('hyroxEnded') : ongoing ? t('hyroxDDay') : ddayLabel(e.date, now)
+                      return (
+                        <div
+                          key={e.id}
+                          className={`card flex flex-col justify-between gap-4 ${
+                            isSingle ? 'sm:flex-row sm:items-center' : ''
+                          } ${ended ? 'opacity-60' : 'hover:border-rx-red/40'} transition-all`}
+                        >
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 flex-wrap mb-1.5">
+                              <span
+                                className={`badge border text-xs ${
+                                  ended
+                                    ? 'bg-rx-surface border-rx-border text-rx-muted'
+                                    : ongoing
+                                      ? 'gradient-bg border-white/20 text-white'
+                                      : 'bg-green-500/20 text-green-400 border-green-500/30'
+                                }`}
+                              >
+                                {dday}
+                              </span>
+                              <span className="text-rx-muted text-xs">{formatRange(e.date, e.endDate)}</span>
+                            </div>
+                            <h3 className="font-black text-white text-lg leading-tight">
+                              {locale === 'en' ? e.nameEn : e.name}
+                            </h3>
+                            <p className="text-rx-muted text-xs mt-1">{locale === 'en' ? e.placeEn : e.place}</p>
+                            <p className="text-rx-muted text-sm mt-2.5 leading-relaxed break-keep">
+                              {locale === 'en' ? e.descEn : e.descKo}
+                            </p>
+                          </div>
+                          <div className="flex-shrink-0">
+                            <a
+                              href={e.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1.5 bg-blue-500/20 text-blue-400 border border-blue-500/30 text-xs font-bold px-3.5 py-2 rounded-lg hover:bg-blue-500/30 transition-colors whitespace-nowrap"
+                            >
+                              {t('globalOfficialLink')}
+                              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                                <polyline points="15 3 21 3 21 9" />
+                                <line x1="10" y1="14" x2="21" y2="3" />
+                              </svg>
+                            </a>
+                          </div>
                         </div>
-                        <a href={e.url} target="_blank" rel="noopener noreferrer"
-                          className="mt-4 inline-block self-start bg-blue-500/20 text-blue-400 border border-blue-500/30 text-xs font-bold px-3 py-1.5 rounded-lg hover:bg-blue-500/30 transition-colors">
-                          {t('globalOfficialLink')}
-                        </a>
-                      </div>
-                    )
-                  })}
+                      )
+                    })}
+                  </div>
                 </div>
+              )
+            })}
+            <div className="card flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <p className="text-white font-bold mb-1">{t('globalMoreTitle')}</p>
+                <p className="text-rx-muted text-sm leading-relaxed break-keep">{t('globalMoreDesc')}</p>
               </div>
-            ))}
-            <div className="card">
-              <p className="text-white font-bold mb-1">{t('globalMoreTitle')}</p>
-              <p className="text-rx-muted text-sm mb-3">{t('globalMoreDesc')}</p>
-              <a href={CROSSFIT_OFFICIAL_CALENDAR_URL} target="_blank" rel="noopener noreferrer"
-                className="inline-block text-blue-400 text-sm font-bold hover:underline">{t('globalOfficialCalendar')} →</a>
+              <a
+                href={CROSSFIT_OFFICIAL_CALENDAR_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex-shrink-0 inline-flex items-center gap-1 text-blue-400 text-sm font-bold hover:underline whitespace-nowrap"
+              >
+                {t('globalOfficialCalendar')} →
+              </a>
             </div>
           </div>
         )}
