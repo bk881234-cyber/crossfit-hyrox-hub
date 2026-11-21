@@ -12,7 +12,7 @@ export const CONTENT_DATES: Record<string, string> = {
   '/wod/log': '2026-10-14',
   '/movements': '2026-10-20',
   '/map': '2026-10-14',
-  '/competitions': '2026-10-20',
+  '/competitions': '2026-11-21',
   '/about': '2026-10-14',
 }
 

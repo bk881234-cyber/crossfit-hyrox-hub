@@ -37,7 +37,7 @@ export interface BoardPost {
 // 존재한 적이 없습니다 — 확인 안 되는 대회(2026년 도쿄·시카고 등)는 추측으로 지어내지
 // 않고 제외했습니다. 날짜 확인 기준: 2026-10-05. (2026-10-14 정정: 서울 2026은 hyrox.com 공식 페이지 기준 킨텍스(고양) 11.13~15)
 /** 일정을 마지막으로 공식 사이트와 대조한 날짜. 일정을 갱신할 때 같이 바꾼다. */
-export const SCHEDULE_VERIFIED_AT = '2026-10-14'
+export const SCHEDULE_VERIFIED_AT = '2026-11-21'
 
 export const HYROX_EVENTS: HyroxEvent[] = [
   // ===== 한국 =====
@@ -88,7 +88,8 @@ export const HYROX_EVENTS: HyroxEvent[] = [
     endDate: '2026-11-15',
     venue: '킨텍스, 고양시 일산서구',
     registrationUrl: 'https://korea.hyrox.com/',
-    isOpen: true,
+    isOpen: false,
+    isPast: true,
   },
   {
     id: 'hyrox-incheon-2027',

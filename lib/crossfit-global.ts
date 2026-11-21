@@ -28,8 +28,8 @@ export const CROSSFIT_GLOBAL_EVENTS: CrossfitGlobalEvent[] = [
     endDate: '2027-03-08',
     place: '온라인 (전 세계 누구나 참가)',
     placeEn: 'Online (open to everyone worldwide)',
-    descKo: '27.1 (2/18) · 27.2 (2/25) · 27.3 (3/4) 공개. 매주 목요일 워크아웃 발표, 점수는 다음 주 월요일까지 제출.',
-    descEn: 'Workouts 27.1 (Feb 18), 27.2 (Feb 25) and 27.3 (Mar 4) are released weekly on Thursdays; scores are due the following Monday.',
+    descKo: '27.1 (2/18) · 27.2 (2/25) · 27.3 (3/4) 공개, 등록 시작 1/7. 2027 시즌부터 와드 공개가 수요일(한국 목요일 새벽)로 앞당겨지고, 2인조 파트너 부문(Open Pairs)이 신설됩니다.',
+    descEn: 'Workouts 27.1 (Feb 18), 27.2 (Feb 25) and 27.3 (Mar 4); registration opens Jan 7. New for 2027: workouts release earlier on Wednesdays and a 2-person Open Pairs division is introduced.',
     url: 'https://games.crossfit.com/open/schedule',
   },
   {

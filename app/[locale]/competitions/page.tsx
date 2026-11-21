@@ -39,11 +39,16 @@ interface MajorComp {
   id: string
   name: string        // 한국명
   nameEn: string      // 영문명
+  badge?: string
+  badgeEn?: string
   scale: string
   scaleEn: string
   period: string      // "매년 4~6월 (예정)" 형식
   periodEn: string
+  description?: string
+  descriptionEn?: string
   instagramUrl: string
+  websiteUrl?: string
   isHardcoded: true
 }
 
@@ -66,64 +71,98 @@ type AnyComp = MajorComp | RegisteredComp
 
 const HARDCODED_COMPS: MajorComp[] = [
   {
+    id: 'zonex', name: '존엑스 (ZoneX)', nameEn: 'ZoneX',
+    badge: '26/27 겨울 시즌', badgeEn: '26/27 Winter Season',
+    scale: '1:1 매치메이킹 피트니스 리그 · 컴바인(선발전) 및 넘버링 본선',
+    scaleEn: '1:1 matchmaking fitness league · Combine qualifiers & numbering main event',
+    period: '2026년 12월 ~ 2027년 2월 (SEASON 02)',
+    periodEn: 'Dec 2026 – Feb 2027 (SEASON 02)',
+    description: '크리에이터후드가 기획한 국내 1:1 컴뱃형 크로스핏 리그입니다. 전용 앱(zone-x.app)의 Daily WOD 기록 인증과 Weekly 챌린지, 선발전(Combine)을 거쳐 두 선수가 무대에서 정면 승부를 펼치는 관람형 스포츠 리그로 운영됩니다.',
+    descriptionEn: 'Korea’s 1:1 combat-style CrossFit league produced by Creatorhood. Athletes advance from Daily WOD logs and Weekly challenges on zone-x.app through Combine qualifiers to head-to-head matchups on stage.',
+    instagramUrl: 'https://www.instagram.com/zonex_games',
+    websiteUrl: 'https://home.zone-x.app',
+    isHardcoded: true,
+  },
+  {
+    id: 'cfkoreaopen', name: '크로스핏 코리아 오픈', nameEn: 'CrossFit Korea Open',
+    badge: '공식 오픈 시즌', badgeEn: 'Official Open Season',
+    scale: 'CrossFit LLC / Korea 공식 주관 오픈 챌린지', scaleEn: 'Official open challenge hosted by CrossFit LLC / Korea',
+    period: '2027년 2월~3월 (1월 7일 등록 시작)', periodEn: 'Feb–Mar 2027 (Registration opens Jan 7)',
+    description: '전 세계 크로스피터가 참여하는 공식 시즌의 시작점입니다. 2027 시즌부터는 2인 1조로 함께 참여하는 Open Pairs 부문이 신설됩니다.',
+    descriptionEn: 'The global kickoff to the official CrossFit season. New for 2027: an Open Pairs division lets 2-person teams compete together.',
+    instagramUrl: 'https://www.instagram.com/crossfitkorea', isHardcoded: true,
+  },
+  {
     id: 'teamoffour', name: '팀오브포', nameEn: 'Team of Four',
     scale: '4인 팀 대회 (남2 여2 / 동일성별 팀)', scaleEn: '4-person team event (2 men, 2 women / same-gender teams)',
-    period: '2026년 4월~6월 (시즌 예정)', periodEn: 'Apr–Jun 2026 (season expected)',
+    period: '2027년 4월~6월 (예정)', periodEn: 'Apr–Jun 2027 (expected)',
+    description: '네 명이 한 팀을 이루어 전략과 호흡을 겨루는 국내 대표 팀 단위 스로우다운 대회입니다.',
+    descriptionEn: 'A flagship Korean 4-person team throwdown testing strategy, synchronization, and teamwork.',
     instagramUrl: 'https://www.instagram.com/teamof_four', isHardcoded: true,
+  },
+  {
+    id: 'nwnd', name: '엔스윈드', nameEn: 'NWND',
+    scale: '개인/팀 피트니스 챔피언십', scaleEn: 'Individual/team fitness championship',
+    period: '2027년 4월~6월 (예정)', periodEn: 'Apr–Jun 2027 (expected)',
+    description: '체계적인 디비전 구성으로 초보자부터 엘리트 선수까지 함께 경쟁할 수 있는 국내 피트니스 챔피언십입니다.',
+    descriptionEn: 'A Korean fitness championship offering structured divisions for beginners through elite athletes.',
+    instagramUrl: 'https://www.instagram.com/nwnd_kr', isHardcoded: true,
+  },
+  {
+    id: 'girlfit', name: '걸핏코리아', nameEn: 'GirlFit Korea',
+    scale: '여성 전용 피트니스 & 크로스핏 대회', scaleEn: "Women-only fitness & CrossFit competition",
+    period: '2027년 4월~6월 (예정)', periodEn: 'Apr–Jun 2027 (expected)',
+    description: '여성 크로스피터와 피트니스 애슬리트들을 위한 국내 대표 여성 전용 대회입니다.',
+    descriptionEn: 'Korea’s premier women-only fitness and CrossFit competition.',
+    instagramUrl: 'https://www.instagram.com/girlfit_korea', isHardcoded: true,
   },
   {
     id: 'kboxrise', name: '케이박스라이즈', nameEn: 'K-Box Rise',
     scale: '박스 단위 팀 대회 · 국내 최대 규모 대표 대회', scaleEn: 'Box-vs-box team event · one of the largest in Korea',
-    period: '2026년 5월~7월 (시즌 예정)', periodEn: 'May–Jul 2026 (season expected)',
+    period: '2027년 5월~7월 (예정)', periodEn: 'May–Jul 2027 (expected)',
+    description: '각 크로스핏 박스의 명예를 걸고 박스 대표 팀들이 맞붙는 국내 최대 규모의 박스 대항전입니다.',
+    descriptionEn: 'One of Korea’s largest box-vs-box team competitions where affiliates field teams to represent their gym.',
     instagramUrl: 'https://www.instagram.com/k_box_rise', isHardcoded: true,
   },
   {
     id: 'makia', name: '마키아', nameEn: 'Makia',
     scale: '개인/팀 대회 · 제주 축제형 종합 대회', scaleEn: 'Individual/team event · festival-style competition in Jeju',
-    period: '예선 2026년 5월 · 본대회 2026년 여름', periodEn: 'Qualifiers May 2026 · Finals summer 2026',
+    period: '예선 2027년 5월 · 본대회 2027년 여름 (예정)', periodEn: 'Qualifiers May 2027 · Finals summer 2027 (expected)',
+    description: '제주도에서 열리는 축제형 종합 피트니스 대회로, 온라인 예선을 거쳐 여름 본선 무대가 펼쳐집니다.',
+    descriptionEn: 'A festival-style comprehensive fitness competition held in Jeju following spring online qualifiers.',
     instagramUrl: 'https://www.instagram.com/makia_official_', isHardcoded: true,
-  },
-  {
-    id: 'battlecrew', name: '배틀크루', nameEn: 'Battle Crew',
-    scale: '크루(4~6명) 단위 · 전국 지역 예선→파이널 챔피언십', scaleEn: 'Crew-based (4–6 people) · regional qualifiers → national finals',
-    period: '2026년 5월~9월 (진행 예정)', periodEn: 'May–Sep 2026 (expected)',
-    instagramUrl: 'https://www.instagram.com/battlecrew_korea', isHardcoded: true,
-  },
-  {
-    id: 'suff', name: '서프', nameEn: 'SUFF',
-    scale: '서머 피트니스 페스티벌 · 대표 해변/여름 대회', scaleEn: 'Summer fitness festival · flagship beach/summer event',
-    period: '2026년 7월~8월 (예정)', periodEn: 'Jul–Aug 2026 (expected)',
-    instagramUrl: 'https://www.instagram.com/suff_estival', isHardcoded: true,
-  },
-  {
-    id: 'cfkoreaopen', name: '크로스핏 코리아 오픈', nameEn: 'CrossFit Korea Open',
-    scale: 'CrossFit LLC / Korea 공식 주관 오픈 챌린지', scaleEn: 'Official open challenge hosted by CrossFit LLC / Korea',
-    period: '2026년 2월~3월 (공식 진행)', periodEn: 'Feb–Mar 2026 (official)',
-    instagramUrl: 'https://www.instagram.com/crossfitkorea', isHardcoded: true,
-  },
-  {
-    id: 'nwnd', name: '엔스윈드', nameEn: 'NWND',
-    scale: '개인/팀 피트니스 챔피언십', scaleEn: 'Individual/team fitness championship',
-    period: '2026년 4월~6월 (예정)', periodEn: 'Apr–Jun 2026 (expected)',
-    instagramUrl: 'https://www.instagram.com/nwnd_kr', isHardcoded: true,
   },
   {
     id: 'enuf', name: '이너프', nameEn: 'ENUF',
     scale: '개인/팀 아웃도어 피트니스 챌린지', scaleEn: 'Individual/team outdoor fitness challenge',
-    period: '2026년 5월~7월 (예정)', periodEn: 'May–Jul 2026 (expected)',
+    period: '2027년 5월~7월 (예정)', periodEn: 'May–Jul 2027 (expected)',
+    description: '야외 환경에서 다채로운 펑셔널 피트니스 종목을 소화하는 아웃도어 챌린지 대회입니다.',
+    descriptionEn: 'An outdoor functional fitness challenge featuring diverse workouts in an open-air setting.',
     instagramUrl: 'https://www.instagram.com/enuf.sports', isHardcoded: true,
   },
   {
-    id: 'girlfit', name: '걸핏코리아', nameEn: 'GirlFit Korea',
-    scale: '여성 전용 피트니스 & 크로스핏 대회', scaleEn: "Women-only fitness & CrossFit competition",
-    period: '2026년 4월~6월 (예정)', periodEn: 'Apr–Jun 2026 (expected)',
-    instagramUrl: 'https://www.instagram.com/girlfit_korea', isHardcoded: true,
+    id: 'battlecrew', name: '배틀크루', nameEn: 'Battle Crew',
+    scale: '크루(4~6명) 단위 · 전국 지역 예선→파이널 챔피언십', scaleEn: 'Crew-based (4–6 people) · regional qualifiers → national finals',
+    period: '2027년 5월~9월 (예정)', periodEn: 'May–Sep 2027 (expected)',
+    description: '4~6인 크루가 지역 예선을 통과해 전국 파이널 챔피언십까지 진출하는 크루 배틀 리그입니다.',
+    descriptionEn: 'A crew battle league where 4–6 person teams compete in regional qualifiers to reach the national finals.',
+    instagramUrl: 'https://www.instagram.com/battlecrew_korea', isHardcoded: true,
   },
   {
     id: 'kffa', name: '대한기능성피트니스협회 대회', nameEn: 'KFFA Championship',
     scale: '국가대표 선발전 및 전국 챔피언십', scaleEn: 'National team trials and national championship',
-    period: '2026년 6월~8월 (예정)', periodEn: 'Jun–Aug 2026 (expected)',
+    period: '2027년 6월~8월 (예정)', periodEn: 'Jun–Aug 2027 (expected)',
+    description: '국제기능성피트니스연맹(iF3) 규정에 따른 국내 공식 기능성 피트니스 챔피언십 및 국가대표 선발전입니다.',
+    descriptionEn: 'Official national functional fitness championship and national team trials following iF3 standards.',
     instagramUrl: 'https://www.instagram.com/kffa_official', isHardcoded: true,
+  },
+  {
+    id: 'suff', name: '서프', nameEn: 'SUFF',
+    scale: '서머 피트니스 페스티벌 · 대표 해변/여름 대회', scaleEn: 'Summer fitness festival · flagship beach/summer event',
+    period: '2027년 7월~8월 (예정)', periodEn: 'Jul–Aug 2027 (expected)',
+    description: '한여름 해변과 페스티벌 분위기를 결합한 국내 대표 서머 피트니스 이벤트입니다.',
+    descriptionEn: 'Korea’s flagship summer fitness festival combining functional workouts with beach vibes.',
+    instagramUrl: 'https://www.instagram.com/suff_estival', isHardcoded: true,
   },
 ]
 
@@ -674,10 +713,19 @@ function IgIcon() {
 // ─── 하드코딩 대회 카드 ─────────────────────────────────────────────────────────
 function HardcodedCompCard({ comp, t, locale }: { comp: MajorComp; t: (key: string, values?: Record<string, string | number | Date>) => string; locale: string }) {
   const isEn = locale === 'en'
+  const badgeText = isEn ? comp.badgeEn : comp.badge
+  const descText = isEn ? comp.descriptionEn : comp.description
   return (
     <div className="card hover:border-rx-red/40 transition-all flex flex-col">
       <div className="flex-1">
-        {!isEn && <p className="text-rx-muted text-xs mb-0.5">{comp.nameEn}</p>}
+        <div className="flex items-center justify-between gap-2 mb-0.5">
+          {!isEn ? <p className="text-rx-muted text-xs">{comp.nameEn}</p> : <span />}
+          {badgeText && (
+            <span className="badge bg-rx-red/15 text-rx-red border border-rx-red/30 text-[11px] font-bold">
+              {badgeText}
+            </span>
+          )}
+        </div>
         <h3 className="font-black text-white text-lg mb-3">{isEn ? comp.nameEn : comp.name}</h3>
         <div className="space-y-1.5 mb-3">
           <div className="flex items-start gap-2">
@@ -689,17 +737,37 @@ function HardcodedCompCard({ comp, t, locale }: { comp: MajorComp; t: (key: stri
             <span className="text-rx-orange text-sm font-bold leading-snug">{isEn ? comp.periodEn : comp.period}</span>
           </div>
         </div>
-        <p className="text-rx-muted text-xs mb-4">{t('majorNote')}</p>
+        {descText && (
+          <p className="text-rx-muted text-xs leading-relaxed mb-3">{descText}</p>
+        )}
+        <p className="text-rx-muted/70 text-[11px] mb-4">{t('majorNote')}</p>
       </div>
-      <a
-        href={comp.instagramUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-rx-surface border border-rx-border text-rx-muted hover:text-white hover:border-rx-red text-sm font-bold transition-colors self-start"
-      >
-        <IgIcon />
-        {t('majorInsta')}
-      </a>
+      <div className="flex flex-wrap items-center gap-2">
+        <a
+          href={comp.instagramUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-rx-surface border border-rx-border text-rx-muted hover:text-white hover:border-rx-red text-sm font-bold transition-colors"
+        >
+          <IgIcon />
+          {t('majorInsta')}
+        </a>
+        {comp.websiteUrl && (
+          <a
+            href={comp.websiteUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-blue-500/15 border border-blue-500/30 text-blue-400 hover:bg-blue-500/25 text-sm font-bold transition-colors"
+          >
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+              <polyline points="15 3 21 3 21 9" />
+              <line x1="10" y1="14" x2="21" y2="3" />
+            </svg>
+            {t('globalOfficialLink')}
+          </a>
+        )}
+      </div>
     </div>
   )
 }

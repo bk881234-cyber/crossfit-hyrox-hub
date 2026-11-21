@@ -92,7 +92,7 @@ export default function WODPage() {
         wod.tags.some(tag => tag.toLowerCase().includes(search.toLowerCase()))
       return matchCat && matchEq && matchSearch
     })
-  }, [category, equipment, search])
+  }, [WODS, category, equipment, search])
 
   return (
     <div className="min-h-screen bg-rx-bg">

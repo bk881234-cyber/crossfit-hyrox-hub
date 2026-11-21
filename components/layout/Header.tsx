@@ -58,7 +58,7 @@ export default function Header() {
       setUser(session?.user ?? null)
     })
     return () => subscription.unsubscribe()
-  }, [])
+  }, [supabase.auth])
 
   const handleLocaleSwitch = useCallback(() => {
     const newLocale = locale === 'ko' ? 'en' : 'ko'
