@@ -11,7 +11,7 @@ export async function generateMetadata({ params: { locale } }: { params: { local
       ? 'Free online WOD timer with AMRAP, EMOM, Tabata, For Time, and Interval modes. Sound alerts, screen-wake lock, and a 10-second countdown — built for CrossFit and HYROX training.'
       : 'AMRAP·EMOM·Tabata·For Time·Interval 5가지 모드를 지원하는 크로스핏·하이록스 전용 타이머. 소리 알림, 화면 꺼짐 방지, 10초 후 시작 옵션 포함. 가입 없이 바로 쓰는 무료 온라인 크로스핏·하이록스 타이머.',
     keywords: isEn
-      ? ['wod timer', 'crossfit timer', 'amrap timer', 'emom timer', 'tabata timer', 'for time timer', 'hyrox timer', 'interval timer', 'free crossfit timer app']
+      ? ['wod timer', 'emom timer online', 'amrap timer', 'crossfit timer', 'emom timer', 'tabata timer', 'for time timer', 'hyrox timer', 'interval timer', 'free crossfit timer app']
       : [
           'WOD 타이머',
           '크로스핏 타이머',

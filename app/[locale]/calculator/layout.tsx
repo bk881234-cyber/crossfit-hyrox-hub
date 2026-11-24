@@ -11,7 +11,7 @@ export async function generateMetadata({ params: { locale } }: { params: { local
       ? 'Calculate your one-rep max instantly with the Epley formula. Barbell, dumbbell, and bodyweight modes, kg/lb conversion, and a 60–100% percentage table — free, no sign-up.'
       : '크로스핏·파워리프팅 1RM(최대 중량)을 Epley 공식으로 즉시 계산하세요. 바벨·덤벨·맨몸 탭, KG/LB 전환, 60~100% 퍼센트 테이블 제공. 가입 없이 무료로 쓰는 크로스핏 전용 1RM 계산기.',
     keywords: isEn
-      ? ['1rm calculator', 'one rep max calculator', 'crossfit max calculator', 'epley formula calculator', 'kg to lbs calculator', 'barbell weight calculator', 'powerlifting 1rm calculator', 'free 1rm calculator']
+      ? ['1rm calculator', 'one rep max calculator', 'bench press 1rm calculator', 'squat 1rm calculator', 'deadlift 1rm calculator', 'crossfit max calculator', 'epley formula calculator', 'kg to lbs calculator', 'free 1rm calculator']
       : [
           '1RM 계산기',
           '크로스핏 최대 중량',

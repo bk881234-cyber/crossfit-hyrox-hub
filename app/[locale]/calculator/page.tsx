@@ -4,6 +4,7 @@ import { useTranslations, useLocale } from 'next-intl'
 import Header from '@/components/layout/Header'
 import MobileNav from '@/components/layout/MobileNav'
 import GuideSection from '@/components/layout/GuideSection'
+import AdBanner from '@/components/layout/AdBanner'
 import { CALCULATOR_GUIDE } from '@/lib/guide-content'
 import { DEFAULT_UNIT, browserStorage, estimate1RM, readSavedUnit, saveUnit, type Unit } from '@/lib/one-rm'
 
@@ -282,6 +283,9 @@ export default function CalculatorPage() {
             <span className="text-rx-muted text-xs">{isEn ? 'Affiliate ad space' : '제휴 광고 영역 (Affiliate)'}</span>
           </div>
         </div>
+        {/* AdSense (1RM 계산 결과 하단) */}
+        <AdBanner slot={process.env.NEXT_PUBLIC_ADSENSE_SLOT_CALC} className="mt-6" />
+
         {/* Strength Hub CTA */}
         <a
           href="calculator/1rm"

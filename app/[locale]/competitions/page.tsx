@@ -3,6 +3,9 @@ import { useState, useEffect, useMemo } from 'react'
 import { useRouter } from '@/navigation'
 import Header from '@/components/layout/Header'
 import MobileNav from '@/components/layout/MobileNav'
+import GuideSection from '@/components/layout/GuideSection'
+import AdBanner from '@/components/layout/AdBanner'
+import { COMPETITIONS_GUIDE } from '@/lib/guide-content'
 import { HYROX_EVENTS, BOARD_POSTS, SCHEDULE_VERIFIED_AT, type BoardPost } from '@/lib/community-data'
 import { ddayLabel, isEnded, isOngoing, scheduleReferenceDate } from '@/lib/event-dates'
 import { localizeEvent, localizePost } from '@/lib/community-data-en'
@@ -215,7 +218,7 @@ export default function CompetitionsPage() {
     return () => subscription.unsubscribe()
   }, [supabase])
 
-  const [tab, setTab] = useState<Tab>('major')
+  const [tab, setTab] = useState<Tab>(() => (locale === 'en' ? 'hyrox' : 'major'))
   const [region, setRegion] = useState<RegionFilter>('all')
   // 페이지는 빌드 시 미리 만들어진다. 첫 렌더는 빌드 시각(서버·브라우저 동일), 마운트 후 실제 오늘로 바꾼다.
   const [now, setNow] = useState<Date>(() =>
@@ -228,7 +231,7 @@ export default function CompetitionsPage() {
   // URL 해시(#hyrox 등)로 직접 접근 시 해당 탭 활성화
   useEffect(() => {
     const hash = window.location.hash.slice(1) as Tab
-    if (hash === 'hyrox' || hash === 'major' || hash === 'board') {
+    if (hash === 'hyrox' || hash === 'major' || hash === 'global' || hash === 'board') {
       setTab(hash)
     }
   }, [])
@@ -357,12 +360,19 @@ export default function CompetitionsPage() {
 
         {/* Tab Selector */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-1 bg-rx-surface rounded-xl p-1 mb-6">
-          {([
-            { id: 'major', label: t('tabMajor') },
-            { id: 'hyrox', label: t('tabHyrox') },
-            { id: 'global', label: t('tabGlobal') },
-            { id: 'board', label: t('tabBoard') },
-          ] as { id: Tab; label: string }[]).map((tab_item) => (
+          {((locale === 'en'
+            ? [
+                { id: 'hyrox', label: t('tabHyrox') },
+                { id: 'global', label: t('tabGlobal') },
+                { id: 'major', label: t('tabMajor') },
+                { id: 'board', label: t('tabBoard') },
+              ]
+            : [
+                { id: 'major', label: t('tabMajor') },
+                { id: 'hyrox', label: t('tabHyrox') },
+                { id: 'global', label: t('tabGlobal') },
+                { id: 'board', label: t('tabBoard') },
+              ]) as { id: Tab; label: string }[]).map((tab_item) => (
             <button
               key={tab_item.id}
               onClick={() => setTab(tab_item.id)}
@@ -577,7 +587,10 @@ export default function CompetitionsPage() {
             </div>
           </div>
         )}
+
+        <AdBanner slot={process.env.NEXT_PUBLIC_ADSENSE_SLOT_COMP} className="mt-8" />
       </main>
+      <GuideSection {...COMPETITIONS_GUIDE[locale === 'en' ? 'en' : 'ko']} />
 
       {/* ── 대회 등록 모달 ─────────────────────────────────────────────────── */}
       {showCompModal && (

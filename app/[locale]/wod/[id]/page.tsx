@@ -11,6 +11,7 @@ import { timerHrefForWod, toLinkHref } from '@/lib/timer-preset'
 import { getMovementSlug } from '@/lib/movement-links'
 import { localizedAlternates } from '@/lib/seo'
 import WodHistoryPanel from '@/components/wod/WodHistoryPanel'
+import AdBanner from '@/components/layout/AdBanner'
 
 export function generateStaticParams() {
   const locales = ['ko', 'en']
@@ -310,6 +311,9 @@ export default async function WODDetailPage({ params }: Props) {
 
         {/* Personal History & Re-challenge (client component, auth-aware) */}
         <WodHistoryPanel wodId={wod.id} />
+
+        {/* AdSense (WOD 상세 하단) */}
+        <AdBanner slot={process.env.NEXT_PUBLIC_ADSENSE_SLOT_WOD} className="mb-6" />
 
         {/* CTA Row */}
         <div className="grid grid-cols-2 gap-3 mb-6">

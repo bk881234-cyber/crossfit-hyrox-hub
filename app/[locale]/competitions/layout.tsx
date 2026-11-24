@@ -11,12 +11,15 @@ export async function generateMetadata({ params: { locale } }: { params: { local
       ? 'HYROX race calendar for Korea and worldwide (Asia, Europe, Americas and more) by region, plus the 2027 CrossFit Open, major international and Korean CrossFit competitions — all in one place.'
       : '2026 HYROX Korea 서울(킨텍스)·인천 대회 일정과 해외 HYROX 대회, 팀오브포·마키아·배틀크루·크로스핏 코리아 오픈 등 국내 크로스핏 대회 정보를 한곳에서 확인하세요. 대회 직접 등록도 가능합니다.',
     keywords: isEn
-      ? ['hyrox korea schedule', 'hyrox seoul', 'hyrox incheon', 'crossfit competition korea', 'korean crossfit events', 'crossfit korea open']
+      ? ['hyrox 2026 schedule', 'hyrox 2027 schedule', 'hyrox race calendar', 'hyrox korea schedule', 'crossfit open 2027', 'crossfit competition calendar', 'hyrox seoul', 'hyrox incheon', 'korean crossfit events']
       : [
           '크로스핏 대회',
-          'HYROX 2025',
+          'HYROX 2026',
+          'HYROX 2027',
           '하이록스 한국',
           '크로스핏 대회 일정',
+          '존엑스',
+          'ZoneX',
           '팀오브포',
           '마키아',
           '배틀크루',

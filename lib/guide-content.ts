@@ -30,7 +30,15 @@ export const CALCULATOR_GUIDE: Record<Loc, { title: string; blocks: GuideBlock[]
       {
         heading: 'Using the percentage table',
         paragraphs: [
-          'Most strength programs prescribe loads as a percentage of 1RM: roughly 60–70% for technique and high reps, 75–85% for strength sets of 3–6 reps, and 90%+ for heavy singles. Pair this tool with the WOD Library to pick RX weights and scaling for benchmark workouts.',
+          'Most strength programs prescribe loads as a percentage of 1RM: roughly 60–70% for technique and high reps, 75–85% for strength sets of 3–6 reps, and 90%+ for heavy singles. Pair this 1RM calculator with the WOD Library to pick RX weights and scaling for benchmark workouts.',
+        ],
+      },
+      {
+        heading: 'Frequently asked questions (FAQ)',
+        items: [
+          'How accurate is a 1RM calculator? Estimates from 2–6 reps are typically within 2–5% of a true tested max. Above 10 reps, muscular endurance affects the score more than pure strength.',
+          'Should I use kg or lb for CrossFit? CrossFit workouts and barbell plates vary by gym—our converter displays both kg and lb side by side so you can load any bar accurately.',
+          'Which lifts work best? Barbell Squat, Deadlift, Bench Press, Overhead Press, Clean, and Snatch all work well with this one-rep max calculator.',
         ],
       },
     ],
@@ -99,6 +107,14 @@ export const TIMER_GUIDE: Record<Loc, { title: string; blocks: GuideBlock[] }> =
           'A 10-second countdown before the clock starts so you can get into position.',
           'Sound alerts for the final seconds and each new round.',
           'Screen wake lock keeps the display on during a workout on most mobile browsers.',
+        ],
+      },
+      {
+        heading: 'FAQ — EMOM timer online & AMRAP timer',
+        items: [
+          'How does an EMOM timer online work? Choose EMOM mode, set your minute interval and total rounds, and the timer beeps at the start of every minute so you never lose track of rest.',
+          'What is a typical AMRAP timer setup? Most CrossFit AMRAP workouts run 10, 12, 15, or 20 minutes. Pick a preset or enter custom minutes and hit start.',
+          'Can I use this for Tabata and HYROX intervals? Yes—switch to Tabata (20s work / 10s rest × 8) or Interval mode for custom work-to-rest ratios.',
         ],
       },
     ],
@@ -218,9 +234,9 @@ export function wodLibraryGuide(locale: string, counts: { total: number; girl: n
         {
           heading: 'Finding the right WOD',
           items: [
-            'Use the search box to find a workout by name, movement or tag.',
+            'Use the search box to find a workout by name (such as Murph WOD, Fran WOD, or Cindy), movement, or tag.',
             'Filter by category (Girl, Hero, Open) or by the equipment you have.',
-            'Open a WOD to see related workouts that share the same movements.',
+            'Open a WOD to see pacing strategies, scaling options, and related workouts that share the same movements.',
           ],
         },
       ],
@@ -260,4 +276,53 @@ export function wodLibraryGuide(locale: string, counts: { total: number; girl: n
       },
     ],
   }
+}
+
+export const COMPETITIONS_GUIDE: Record<Loc, { title: string; blocks: GuideBlock[] }> = {
+  en: {
+    title: 'About the HYROX & CrossFit schedule',
+    blocks: [
+      {
+        heading: 'HYROX 2026–2027 global race calendar',
+        paragraphs: [
+          'This page tracks the official HYROX 2026 and 2027 schedule worldwide—covering North America, Europe, Asia-Pacific (including Korea), and the Middle East & Africa. Filter by region to check dates, cities, and registration links.',
+        ],
+      },
+      {
+        heading: 'CrossFit Open 2027 & international events',
+        paragraphs: [
+          'Alongside the HYROX schedule, you can follow the 2027 CrossFit Open (registration opens January 7; weekly workouts 27.1–27.3 starting February 18) and major invitational competitions. New for 2027, CrossFit introduces the 2-person Open Pairs division.',
+        ],
+      },
+      {
+        heading: 'Korean CrossFit competitions & ZoneX',
+        paragraphs: [
+          'Planning a trip or competing in South Korea? Switch to the Korean CrossFit tab for domestic throwdowns such as ZoneX (1:1 matchmaking league), Team of Four, K-Box Rise, Makia, and Battle Crew.',
+        ],
+      },
+    ],
+  },
+  ko: {
+    title: 'HYROX · 크로스핏 대회 일정 안내',
+    blocks: [
+      {
+        heading: '2026–2027 HYROX 한국 및 해외 일정',
+        paragraphs: [
+          '한국(인천·서울) 대회와 아시아·유럽·아메리카 등 전 세계 공식 HYROX 일정을 지역별로 필터링해 D-Day와 참가 링크를 한눈에 확인할 수 있습니다.',
+        ],
+      },
+      {
+        heading: '2027 크로스핏 오픈 & 해외 메이저 대회',
+        paragraphs: [
+          '매년 전 세계 크로스피터가 함께 참여하는 CrossFit Open(2027 시즌 1월 7일 등록 시작, 2월 18일 27.1 공개)과 로그 인비테이셔널 등 공식 일정이 확인된 해외 대회를 함께 안내합니다.',
+        ],
+      },
+      {
+        heading: '국내 크로스핏 대회 및 ZoneX 리그',
+        paragraphs: [
+          '1:1 매치메이킹 리그인 존엑스(ZoneX)를 비롯해 팀오브포, 케이박스라이즈, 마키아, 배틀크루 등 국내 주요 크로스핏 대회의 시즌 일정과 공식 채널 정보를 제공합니다.',
+        ],
+      },
+    ],
+  },
 }

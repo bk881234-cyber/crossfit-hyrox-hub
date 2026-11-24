@@ -4,6 +4,7 @@ import { useTranslations, useLocale } from 'next-intl'
 import Header from '@/components/layout/Header'
 import MobileNav from '@/components/layout/MobileNav'
 import GuideSection from '@/components/layout/GuideSection'
+import AdBanner from '@/components/layout/AdBanner'
 import { TIMER_GUIDE } from '@/lib/guide-content'
 import { forTimeCapMinutes, parseTimerPreset } from '@/lib/timer-preset'
 
@@ -869,10 +870,10 @@ export default function TimerPage() {
           </p>
         </div>}
 
-        {/* AdSense bottom */}
-        <div className="hidden w-full h-16 bg-rx-surface border border-rx-border rounded-lg flex items-center justify-center">
-          <span className="text-rx-muted text-xs">{isEn ? 'Ad space (AdSense)' : '광고 영역 (AdSense)'}</span>
-        </div>
+        {/* AdSense bottom (타이머 대기 화면에서만 노출) */}
+        {!isFullscreen && !running && (
+          <AdBanner slot={process.env.NEXT_PUBLIC_ADSENSE_SLOT_TIMER} className="mb-6" />
+        )}
       </main>
       {!isFullscreen && <GuideSection {...TIMER_GUIDE[isEn ? 'en' : 'ko']} />}
       {countingDown && (

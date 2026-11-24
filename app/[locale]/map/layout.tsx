@@ -5,7 +5,7 @@ export async function generateMetadata({ params: { locale } }: { params: { local
   const isEn = locale === 'en'
   return {
     title: isEn
-      ? 'CrossFit Box Finder Korea — Drop-in Locations & Fees | FITTERS STUDIO'
+      ? 'Korea CrossFit Box Finder — Drop-in Map & Fees | FITTERS STUDIO'
       : '드랍인 지도 | 전국 크로스핏 박스 위치·드랍인 비용 — FITTERS STUDIO',
     description: isEn
       ? 'Find CrossFit boxes across Korea — Seoul, Busan, Daegu, Incheon, and more — with drop-in fees, amenities, and directions on an interactive map. Perfect for travelers and expats.'

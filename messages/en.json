@@ -6,7 +6,7 @@
     "community": "Competitions",
     "about": "What is CrossFit?",
     "movements": "Movements",
-    "map": "Drop-in Map",
+    "map": "Korea Drop-in Map",
     "addLog": "+ My Records"
   },
   "auth": {
@@ -67,9 +67,9 @@
       "wodLabel": "WOD LIBRARY",
       "wodDesc": "{count} Benchmark WODs",
       "wodDetail": "Girl · Hero · Open WODs. Includes scaling options.",
-      "mapLabel": "DROP-IN MAP",
-      "mapDesc": "CrossFit Boxes Drop-in Map",
-      "mapDetail": "Check drop-in prices and info for CrossFit boxes across the country at a glance.",
+      "mapLabel": "KOREA DROP-IN MAP",
+      "mapDesc": "CrossFit Boxes in South Korea",
+      "mapDetail": "Check drop-in prices and info for CrossFit boxes across Seoul, Gyeonggi, Busan, and Korea.",
       "communityLabel": "COMPETITIONS",
       "communityDesc": "HYROX Worldwide · CrossFit Comps · Calendar",
       "communityDetail": "HYROX worldwide calendar · CrossFit competitions · Free board"
@@ -281,8 +281,8 @@
     "viewAllSuffix": " — View all"
   },
   "map": {
-    "title": "Drop-in Map",
-    "subtitle": "Find CrossFit boxes nationwide and check drop-in info",
+    "title": "Korea Drop-in Map",
+    "subtitle": "Find CrossFit boxes across South Korea and check drop-in info",
     "searchPlaceholder": "Search box name...",
     "regionAll": "All",
     "directions": "Directions",

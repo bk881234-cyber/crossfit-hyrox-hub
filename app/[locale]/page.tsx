@@ -400,10 +400,9 @@ export default function HomePage() {
   }
   const handleHeroLeave = () => { heroMouseX.set(0); heroMouseY.set(0) }
 
-  const auxTools = [
-    { href: `/${locale}/map`, label: t('tools.mapLabel'), desc: t('tools.mapDesc'), detail: t('tools.mapDetail'), icon: icons.map },
-    { href: `/${locale}/competitions`, label: t('tools.communityLabel'), desc: t('tools.communityDesc'), detail: t('tools.communityDetail'), icon: icons.community },
-  ]
+  const mapTool = { href: `/${locale}/map`, label: t('tools.mapLabel'), desc: t('tools.mapDesc'), detail: t('tools.mapDetail'), icon: icons.map }
+  const compTool = { href: `/${locale}/competitions`, label: t('tools.communityLabel'), desc: t('tools.communityDesc'), detail: t('tools.communityDetail'), icon: icons.community }
+  const auxTools = locale === 'en' ? [compTool, mapTool] : [mapTool, compTool]
 
   const crossfitPoints = [
     { icon: '⚡', title: t('points.p1Title'), desc: t('points.p1Desc') },
